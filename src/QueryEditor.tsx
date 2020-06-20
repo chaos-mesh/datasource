@@ -1,49 +1,64 @@
 import defaults from 'lodash/defaults';
 
 import React, { ChangeEvent, PureComponent } from 'react';
-import { LegacyForms } from '@grafana/ui';
-import { QueryEditorProps } from '@grafana/data';
+import { InlineFormLabel, LegacyForms } from '@grafana/ui';
+import { QueryEditorProps, SelectableValue } from '@grafana/data';
 import { DataSource } from './DataSource';
-import { defaultQuery, MyDataSourceOptions, MyQuery } from './types';
+import { defaultQuery, MyDataSourceOptions, EventsQuery } from './types';
 
-const { FormField } = LegacyForms;
+const { FormField, Select } = LegacyForms;
 
-type Props = QueryEditorProps<DataSource, MyQuery, MyDataSourceOptions>;
+type Props = QueryEditorProps<DataSource, EventsQuery, MyDataSourceOptions>;
+
+const kindOptions: Array<SelectableValue<string>> = [
+  { value: 'PodChaos', label: 'pod chaos' },
+  { value: 'NetworkChaos', label: 'network chaos' },
+  { value: 'IOChaos', label: 'io chaos' },
+  { value: 'TimeChaos', label: 'time chaos' },
+  { value: 'KernelChaos', label: 'kernel chaos' },
+  { value: 'StressChaos', label: 'stress chaos' },
+];
 
 export class QueryEditor extends PureComponent<Props> {
-  onQueryTextChange = (event: ChangeEvent<HTMLInputElement>) => {
+  onNamespaceChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { onChange, query } = this.props;
-    onChange({ ...query, queryText: event.target.value });
+    onChange({ ...query, namespace: event.target.value });
   };
 
-  onConstantChange = (event: ChangeEvent<HTMLInputElement>) => {
+  onKindChange = (item: SelectableValue<string>) => {
+    const { onChange, query } = this.props;
+    onChange({ ...query, kind: item.value! });
+  };
+
+  onExperimentChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { onChange, query, onRunQuery } = this.props;
-    onChange({ ...query, constant: parseFloat(event.target.value) });
+    onChange({ ...query, experiment: event.target.value });
     // executes the query
     onRunQuery();
   };
 
   render() {
     const query = defaults(this.props.query, defaultQuery);
-    const { queryText, constant } = query;
+    const { namespace, experiment } = query;
+    const selectedKind = kindOptions.find(o => o.value === query.kind);
 
     return (
-      <div className="gf-form">
-        <FormField
-          width={4}
-          value={constant}
-          onChange={this.onConstantChange}
-          label="Constant"
-          type="number"
-          step="0.1"
-        />
-        <FormField
-          labelWidth={8}
-          value={queryText || ''}
-          onChange={this.onQueryTextChange}
-          label="Query Text"
-          tooltip="Not used yet"
-        />
+      <div>
+        <div className="gf-form">
+          <FormField width={4} value={namespace} onChange={this.onNamespaceChange} label="Namespace" />
+          <FormField
+            labelWidth={12}
+            value={experiment || ''}
+            onChange={this.onExperimentChange}
+            label="Experiment Name"
+            tooltip="Not used yet"
+          />
+        </div>
+
+        <div className="gf-form">
+          <InlineFormLabel width={8}>Chaos Kind</InlineFormLabel>
+          <Select width={8} value={selectedKind} onChange={this.onKindChange} options={kindOptions}></Select>
+        </div>
       </div>
     );
   }

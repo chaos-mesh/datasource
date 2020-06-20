@@ -1,13 +1,13 @@
 {
   "type": "datasource",
-  "name": "chaos-mesh",
-  "id": "chaos-mesh-chaos-mesh",
+  "name": "Chaos Mesh Data Source",
+  "id": "yeya24-chaos-mesh",
   "metrics": true,
+  "annotations": true,
   "info": {
     "description": "",
     "author": {
-      "name": "yeya24",
-      "url": ""
+      "name": "yeya24"
     },
     "keywords": [],
     "logos": {
