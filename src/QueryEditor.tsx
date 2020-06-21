@@ -52,7 +52,6 @@ export class QueryEditor extends PureComponent<Props> {
             value={experiment || ''}
             onChange={this.onExperimentChange}
             label="Experiment Name"
-            tooltip="Not used yet"
           />
         </div>
 
