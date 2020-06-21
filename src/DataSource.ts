@@ -113,7 +113,6 @@ export class DataSource extends DataSourceApi<EventsQuery, MyDataSourceOptions> 
     // Implement a health check for your data source.
 
     const response = await this.checkLiveness();
-    console.log(response);
     return response.status === 200
       ? { status: 'success', message: 'Data source is working' }
       : { status: 'error', message: response.error };
