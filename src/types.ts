@@ -1,18 +1,18 @@
 import { DataQuery, DataSourceJsonData } from '@grafana/data';
 
 export interface EventsQuery extends DataQuery {
-  namespace: string;
+  namespace?: string;
   kind: string;
   experiment?: string;
+  // startTime: string;
+  // endTime: string;
 }
 
 export const defaultQuery: Partial<EventsQuery> = {
-  kind: 'PodChaos',
+  namespace: '',
 };
 
 /**
  * These are options configured for each DataSource instance
  */
-export interface MyDataSourceOptions extends DataSourceJsonData {
-  url?: string;
-}
+export interface MyDataSourceOptions extends DataSourceJsonData {}

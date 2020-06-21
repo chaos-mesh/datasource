@@ -1,9 +1,7 @@
 import React, { ChangeEvent, PureComponent } from 'react';
-import { LegacyForms } from '@grafana/ui';
-import { DataSourcePluginOptionsEditorProps } from '@grafana/data';
+import { DataSourceHttpSettings } from '@grafana/ui';
+import { DataSourcePluginOptionsEditorProps, DataSourceSettings } from '@grafana/data';
 import { MyDataSourceOptions } from './types';
-
-const { FormField } = LegacyForms;
 
 interface Props extends DataSourcePluginOptionsEditorProps<MyDataSourceOptions> {}
 
@@ -14,25 +12,32 @@ export class ConfigEditor extends PureComponent<Props, State> {
     const { onOptionsChange, options } = this.props;
     const jsonData = {
       ...options.jsonData,
-      url: event.target.value,
+      directUrl: event.target.value,
     };
     onOptionsChange({ ...options, jsonData });
   };
 
+  updateDataSourceSettings = (setting: DataSourceSettings<MyDataSourceOptions, {}>) => {
+    const { onOptionsChange, options } = this.props;
+    const datasourceSettings = {
+      ...options,
+      ...setting,
+    };
+    onOptionsChange({ ...options, ...datasourceSettings });
+  };
+
   render() {
     const { options } = this.props;
-    const { jsonData } = options;
+    // const { jsonData } = options;
 
     return (
       <div className="gf-form-group">
         <div className="gf-form">
-          <FormField
-            label="URL"
-            labelWidth={6}
-            inputWidth={20}
-            onChange={this.onURLChange}
-            value={jsonData.url || ''}
-            placeholder="chaos-dashboard:chaos-testing:2333"
+          <DataSourceHttpSettings
+            defaultUrl="http://historienserver:port/api/grafana/v0"
+            dataSourceConfig={options}
+            onChange={this.updateDataSourceSettings}
+            showAccessOptions={true}
           />
         </div>
       </div>
