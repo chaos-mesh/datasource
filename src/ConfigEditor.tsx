@@ -8,7 +8,7 @@ interface Props extends DataSourcePluginOptionsEditorProps<MyDataSourceOptions> 
 interface State {}
 
 export class ConfigEditor extends PureComponent<Props, State> {
-  updateDataSourceSettings = (setting: DataSourceSettings<MyDataSourceOptions, {}>) => {
+  updateDataSourceSettings = (setting: DataSourceSettings<MyDataSourceOptions>) => {
     const { onOptionsChange, options } = this.props;
     const datasourceSettings = {
       ...options,

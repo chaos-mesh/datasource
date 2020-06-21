@@ -60,10 +60,10 @@ export class DataSource extends DataSourceApi<EventsQuery, MyDataSourceOptions> 
       kind: req.kind,
     };
 
-    if (req.experiment !== undefined) {
+    if (req.experiment !== undefined && req.experiment !== '') {
       data.experimentName = req.experiment;
     }
-    if (req.namespace !== undefined) {
+    if (req.namespace !== undefined && req.namespace !== '') {
       data.experimentNamespace = req.namespace;
     }
 

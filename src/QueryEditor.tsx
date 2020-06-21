@@ -46,7 +46,7 @@ export class QueryEditor extends PureComponent<Props> {
     return (
       <div>
         <div className="gf-form">
-          <FormField width={4} value={namespace} onChange={this.onNamespaceChange} label="Namespace" />
+          <FormField width={4} value={namespace || ''} onChange={this.onNamespaceChange} label="Namespace" />
           <FormField
             labelWidth={12}
             value={experiment || ''}

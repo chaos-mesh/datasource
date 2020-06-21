@@ -9,7 +9,7 @@ export interface EventsQuery extends DataQuery {
 }
 
 export const defaultQuery: Partial<EventsQuery> = {
-  namespace: '',
+  kind: 'PodChaos',
 };
 
 /**
