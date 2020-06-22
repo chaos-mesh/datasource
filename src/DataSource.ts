@@ -43,7 +43,7 @@ export class DataSource extends DataSourceApi<EventsQuery, MyDataSourceOptions> 
   }
 
   checkLiveness() {
-    const url = '/api/common/namespaces';
+    const url = '/ping';
 
     return this._request(url).catch((err: any) => {
       if (err.cancelled) {
