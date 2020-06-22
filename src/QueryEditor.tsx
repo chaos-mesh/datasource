@@ -1,22 +1,22 @@
 import defaults from 'lodash/defaults';
 
-import React, {ChangeEvent, PureComponent} from 'react';
-import {InlineFormLabel, LegacyForms} from '@grafana/ui';
-import {QueryEditorProps, SelectableValue} from '@grafana/data';
-import {DataSource} from './DataSource';
-import {defaultQuery, MyDataSourceOptions, EventsQuery} from './types';
+import React, { ChangeEvent, PureComponent } from 'react';
+import { InlineFormLabel, LegacyForms } from '@grafana/ui';
+import { QueryEditorProps, SelectableValue } from '@grafana/data';
+import { DataSource } from './DataSource';
+import { defaultQuery, MyDataSourceOptions, EventsQuery } from './types';
 
-const {Input, Select} = LegacyForms;
+const { Input, Select } = LegacyForms;
 
 type Props = QueryEditorProps<DataSource, EventsQuery, MyDataSourceOptions>;
 
 const kindOptions: Array<SelectableValue<string>> = [
-  {value: 'PodChaos', label: 'pod chaos'},
-  {value: 'NetworkChaos', label: 'network chaos'},
-  {value: 'IOChaos', label: 'io chaos'},
-  {value: 'TimeChaos', label: 'time chaos'},
-  {value: 'KernelChaos', label: 'kernel chaos'},
-  {value: 'StressChaos', label: 'stress chaos'},
+  { value: 'PodChaos', label: 'pod chaos' },
+  { value: 'NetworkChaos', label: 'network chaos' },
+  { value: 'IOChaos', label: 'io chaos' },
+  { value: 'TimeChaos', label: 'time chaos' },
+  { value: 'KernelChaos', label: 'kernel chaos' },
+  { value: 'StressChaos', label: 'stress chaos' },
 ];
 
 export class QueryEditor extends PureComponent<Props> {
@@ -41,13 +41,13 @@ export class QueryEditor extends PureComponent<Props> {
   };
 
   onRunQuery = () => {
-    const {query} = this;
+    const { query } = this;
     this.props.onChange(query);
     this.props.onRunQuery();
   };
 
   render() {
-    const {namespace, experiment} = this.query;
+    const { namespace, experiment } = this.query;
     const selectedKind = kindOptions.find(o => o.value === this.query.kind);
 
     return (
