@@ -1,11 +1,16 @@
 {
   "type": "datasource",
-  "name": "Chaos Mesh Data Source",
-  "id": "yeya24-chaos-mesh",
+  "name": "Chaos Mesh",
+  "id": "chaos-mesh",
+
   "metrics": true,
   "annotations": true,
+  "logs": false,
+  "streaming": false,
+  "tracing": false,
+
   "info": {
-    "description": "",
+    "description": "A Chaos Engineering Platform for Kubernetes",
     "author": {
       "name": "yeya24"
     },
@@ -16,12 +21,16 @@
     },
     "links": [
       {
+        "name": "Learn more",
+        "url": "https://chaos-mesh.org/"
+      },
+      {
         "name": "Website",
-        "url": "https://github.com/grafana/simple-datasource"
+        "url": "https://github.com/chaos-mesh/chaos-mesh-datasource"
       },
       {
         "name": "License",
-        "url": "https://github.com/grafana/simple-datasource/blob/master/LICENSE"
+        "url": "https://github.com/chaos-mesh/chaos-mesh-datasource/blob/master/LICENSE"
       }
     ],
     "screenshots": [],
