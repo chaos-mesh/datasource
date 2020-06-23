@@ -13,9 +13,9 @@ import {
 
 import { getBackendSrv } from '@grafana/runtime';
 
-import { defaultQuery, EventsQuery, MyDataSourceOptions } from './types';
+import { ChaosEvent, defaultQuery, ChaosEventsQuery, MyDataSourceOptions, ChaosEventsQueryResponse } from './types';
 
-export class DataSource extends DataSourceApi<EventsQuery, MyDataSourceOptions> {
+export class DataSource extends DataSourceApi<ChaosEventsQuery, MyDataSourceOptions> {
   url: string;
 
   constructor(instanceSettings: DataSourceInstanceSettings<MyDataSourceOptions>) {
@@ -46,14 +46,12 @@ export class DataSource extends DataSourceApi<EventsQuery, MyDataSourceOptions> 
     const url = '/ping';
 
     return this._request(url).catch((err: any) => {
-      if (err.cancelled) {
-        return err;
-      }
+      return err;
     });
   }
 
   // TODO: support start time and finish time filter
-  queryEvents(req: EventsQuery) {
+  queryEvents(req: ChaosEventsQuery) {
     const url = '/api/events';
     const data: any = {
       // startTime: req.startTime,
@@ -68,13 +66,11 @@ export class DataSource extends DataSourceApi<EventsQuery, MyDataSourceOptions> 
     }
 
     return this._request(url, data).catch((err: any) => {
-      if (err.cancelled) {
-        return err;
-      }
+      return err;
     });
   }
 
-  async query(options: DataQueryRequest<EventsQuery>): Promise<DataQueryResponse> {
+  async query(options: DataQueryRequest<ChaosEventsQuery>): Promise<DataQueryResponse> {
     const { range } = options;
     const from = range!.from.valueOf();
     const to = range!.to.valueOf();
@@ -92,8 +88,8 @@ export class DataSource extends DataSourceApi<EventsQuery, MyDataSourceOptions> 
           { name: 'Finish Time', type: FieldType.time },
         ],
       });
-      this.queryEvents(query).then((results: any) => {
-        for (let event of results.data) {
+      this.queryEvents(query).then((response: ChaosEventsQueryResponse) => {
+        response.data.forEach(event => {
           const value: any = {};
           value.Kind = event.Kind;
           value['Start Time'] = event.StartTime;
@@ -101,7 +97,7 @@ export class DataSource extends DataSourceApi<EventsQuery, MyDataSourceOptions> 
           value.Namespace = event.Namespace;
           value.Experiment = event.Experiment;
           frame.add(value);
-        }
+        });
       });
       return frame;
     });
@@ -118,21 +114,19 @@ export class DataSource extends DataSourceApi<EventsQuery, MyDataSourceOptions> 
       : { status: 'error', message: response.error };
   }
 
-  async annotationQuery(options: AnnotationQueryRequest<EventsQuery>): Promise<AnnotationEvent[]> {
+  async annotationQuery(options: AnnotationQueryRequest<ChaosEventsQuery>): Promise<AnnotationEvent[]> {
     const query = defaults(options.annotation, defaultQuery);
-    return this.queryEvents(query).then((results: any) => {
-      const events: AnnotationEvent[] = [];
-      for (let event of results.data) {
-        const regionEvent: AnnotationEvent = {
-          time: Date.parse(event.StartTime),
-          timeEnd: Date.parse(event.FinishTime),
-          isRegion: true,
-          text: `${event.Namespace}-${event.Experiment}`,
-          tags: [event.Kind],
-        };
-        events.push(regionEvent);
-      }
-      return events;
+    const response: ChaosEventsQueryResponse = await this.queryEvents(query);
+
+    return response.data.map((event: ChaosEvent) => {
+      const regionEvent: AnnotationEvent = {
+        time: Date.parse(event.StartTime),
+        timeEnd: Date.parse(event.FinishTime),
+        isRegion: true,
+        text: `${event.Experiment}`,
+        tags: [`kind:${event.Kind}`, `namespace:${event.Namespace}`],
+      };
+      return regionEvent;
     });
   }
 }
