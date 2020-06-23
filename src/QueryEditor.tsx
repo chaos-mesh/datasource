@@ -4,23 +4,23 @@ import React, { ChangeEvent, PureComponent } from 'react';
 import { InlineFormLabel, LegacyForms } from '@grafana/ui';
 import { QueryEditorProps, SelectableValue } from '@grafana/data';
 import { DataSource } from './DataSource';
-import { defaultQuery, MyDataSourceOptions, EventsQuery } from './types';
+import { defaultQuery, MyDataSourceOptions, ChaosEventsQuery } from './types';
 
 const { Input, Select } = LegacyForms;
 
-type Props = QueryEditorProps<DataSource, EventsQuery, MyDataSourceOptions>;
+type Props = QueryEditorProps<DataSource, ChaosEventsQuery, MyDataSourceOptions>;
 
 const kindOptions: Array<SelectableValue<string>> = [
-  { value: 'PodChaos', label: 'pod chaos' },
-  { value: 'NetworkChaos', label: 'network chaos' },
-  { value: 'IOChaos', label: 'io chaos' },
-  { value: 'TimeChaos', label: 'time chaos' },
-  { value: 'KernelChaos', label: 'kernel chaos' },
-  { value: 'StressChaos', label: 'stress chaos' },
+  { value: 'PodChaos', label: 'Pod Chaos' },
+  { value: 'NetworkChaos', label: 'Network Chaos' },
+  { value: 'IOChaos', label: 'IO Chaos' },
+  { value: 'TimeChaos', label: 'Time Chaos' },
+  { value: 'KernelChaos', label: 'Kernel Chaos' },
+  { value: 'StressChaos', label: 'Stress Chaos' },
 ];
 
 export class QueryEditor extends PureComponent<Props> {
-  query: EventsQuery;
+  query: ChaosEventsQuery;
 
   constructor(props: Props) {
     super(props);
@@ -67,7 +67,7 @@ export class QueryEditor extends PureComponent<Props> {
           </div>
 
           <div className="gf-form">
-            <InlineFormLabel width={12} tooltip="Name of the Chaos Experiment">
+            <InlineFormLabel width={10} tooltip="Name of the Chaos Experiment">
               Experiment Name
             </InlineFormLabel>
             <Input
@@ -78,18 +78,18 @@ export class QueryEditor extends PureComponent<Props> {
               onBlur={this.onRunQuery}
             />
           </div>
+        </div>
 
-          <div className="gf-form">
-            <InlineFormLabel width={8}>Chaos Kind</InlineFormLabel>
-            <Select
-              width={8}
-              value={selectedKind}
-              onChange={this.onKindChange}
-              onBlur={this.onRunQuery}
-              options={kindOptions}
-              isSearchable={false}
-            />
-          </div>
+        <div className="gf-form">
+          <InlineFormLabel width={8}>Chaos Kind</InlineFormLabel>
+          <Select
+            width={8}
+            value={selectedKind}
+            onChange={this.onKindChange}
+            onBlur={this.onRunQuery}
+            options={kindOptions}
+            isSearchable={false}
+          />
         </div>
       </div>
     );
