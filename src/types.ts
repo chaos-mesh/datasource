@@ -10,7 +10,6 @@ export interface ChaosEventsQuery extends DataQuery {
 
 export const defaultQuery: Partial<ChaosEventsQuery> = {
   kind: 'PodChaos',
-  namespace: 'chaos-testing',
 };
 
 /**
