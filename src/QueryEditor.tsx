@@ -63,6 +63,7 @@ export class QueryEditor extends PureComponent<Props> {
               value={namespace}
               onChange={this.onNamespaceChange}
               onBlur={this.onRunQuery}
+              placeholder="chaos-testing"
             />
           </div>
 
