@@ -19,25 +19,52 @@ const kindOptions: Array<SelectableValue<string>> = [
   { value: 'StressChaos', label: 'Stress Chaos' },
 ];
 
-export class QueryEditor extends PureComponent<Props> {
+interface State {
+  allNamespaces: Array<SelectableValue<string>>;
+  namespace: string;
+  experiment: string;
+  kind: string;
+}
+
+export class QueryEditor extends PureComponent<Props, State> {
   query: ChaosEventsQuery;
+  dataSource: DataSource;
 
   constructor(props: Props) {
     super(props);
 
+    this.dataSource = this.props.datasource;
     this.query = defaults(this.props.query, defaultQuery);
+    this.state = {
+      allNamespaces: [],
+      namespace: this.query.namespace!,
+      kind: this.query.kind,
+      experiment: this.query.experiment!,
+    };
   }
 
-  onNamespaceChange = (event: ChangeEvent<HTMLInputElement>) => {
-    this.query.namespace = event.target.value;
+  componentDidMount() {
+    this.dataSource.queryNamespaces().then((results: any) => {
+      this.setState({ allNamespaces: results.data.map((ns: string) => ({ label: ns, value: ns })) });
+    });
+  }
+
+  onNamespaceChange = (item: SelectableValue<string>) => {
+    const namespace = item.value!;
+    this.query.namespace = namespace;
+    this.setState({ namespace }, this.onRunQuery);
   };
 
   onKindChange = (item: SelectableValue<string>) => {
-    this.query.kind = item.value!;
+    const kind = item.value!;
+    this.query.kind = kind;
+    this.setState({ kind }, this.onRunQuery);
   };
 
   onExperimentChange = (event: ChangeEvent<HTMLInputElement>) => {
-    this.query.experiment = event.target.value;
+    const experiment = event.target.value;
+    this.query.experiment = experiment;
+    this.setState({ experiment });
   };
 
   onRunQuery = () => {
@@ -47,8 +74,9 @@ export class QueryEditor extends PureComponent<Props> {
   };
 
   render() {
-    const { namespace, experiment } = this.query;
+    const { experiment, allNamespaces } = this.state;
     const selectedKind = kindOptions.find(o => o.value === this.query.kind);
+    const selectedNamespace = allNamespaces.find(o => o.value === this.query.namespace);
 
     return (
       <div>
@@ -57,13 +85,12 @@ export class QueryEditor extends PureComponent<Props> {
             <InlineFormLabel width={12} tooltip="Namespace of Chaos Experiments">
               Experiment Namespace
             </InlineFormLabel>
-            <Input
-              type="text"
-              className="gf-form-input"
-              value={namespace}
+            <Select
+              value={selectedNamespace}
               onChange={this.onNamespaceChange}
               onBlur={this.onRunQuery}
-              placeholder="chaos-testing"
+              options={allNamespaces}
+              isSearchable={false}
             />
           </div>
 
