@@ -1,5 +1,7 @@
 export class AnnotationsQueryCtrl {
   annotation: any;
+  datasource: any;
+  namespaces: any;
 
   kinds = [
     { value: 'PodChaos', text: 'Pod Chaos' },
@@ -14,5 +16,13 @@ export class AnnotationsQueryCtrl {
 
   constructor() {
     this.annotation.kind = this.annotation.kind || 'PodChaos';
+    this.namespaces = [];
+    this.initDropDown();
+  }
+
+  async initDropDown() {
+    this.datasource.queryNamespaces().then((result: any) => {
+      this.namespaces = result.data.map((ns: string) => ({ text: ns, value: ns }));
+    });
   }
 }

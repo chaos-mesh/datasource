@@ -50,6 +50,13 @@ export class DataSource extends DataSourceApi<ChaosEventsQuery, MyDataSourceOpti
     });
   }
 
+  queryNamespaces() {
+    const url = '/api/common/namespaces';
+    return this._request(url).catch((err: any) => {
+      return err;
+    });
+  }
+
   // TODO: support start time and finish time filter
   queryEvents(req: ChaosEventsQuery) {
     const url = '/api/events';
