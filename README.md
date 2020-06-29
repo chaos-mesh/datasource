@@ -1,13 +1,28 @@
-# Grafana Data Source Plugin Template
+# Chaos Mesh Data Source
 
-[![CircleCI](https://circleci.com/gh/grafana/simple-datasource/tree/master.svg?style=svg)](https://circleci.com/gh/grafana/simple-datasource/tree/master)
+Visualize Chaos Mesh Events with Grafana
 
-This template is a starting point for building Grafana Data Source Plugins
+![screenshot](images/example.png)
 
-## What is Grafana Data Source Plugin?
-Grafana supports a wide range of data sources, including Prometheus, MySQL, and even Datadog. There’s a good chance you can already visualize metrics from the systems you have set up. In some cases, though, you already have an in-house metrics solution that you’d like to add to your Grafana dashboards. Grafana Data Source Plugins enables integrating such solutions with Grafana.
+## Getting Started
 
-## Getting started
+### Use Grafana image with Chaos Mesh data source
+
+Since Chaos Mesh data source is not officially released, it is not supported to install it from [Grafana Plugins Hub](https://grafana.com/grafana/plugins).
+
+But you can still try to use the customized Grafana Docker image, with the Chaos Mesh data source built-in.
+
+```bash
+docker pull yeya24/grafana:chaos
+```
+
+### Development
+
+You need to install the following first:
+
+- [yarn](https://yarnpkg.com/)
+- [Docker Compose](https://docs.docker.com/compose/)
+
 1. Install dependencies
 ```BASH
 yarn install
@@ -25,8 +40,27 @@ yarn watch
 yarn build
 ```
 
+### Develop using Docker Compose
+
+First build the data source locally
+
+```bash
+yarn dev
+```
+
+You can develop using Docker Compose easily.
+
+```bash
+docker-compose up -d
+```
+
+Then you can open `localhost:3000` at the browser and find the Chaos Mesh data source.
+
+![find data source](images/find-data-source.png)
+
+Remember that every time the source code changes, you need to restart the Grafana container to load the latest plugin.
+
 ## Learn more
+- [Chaos Mesh Repository](https://github.com/pingcap/chaos-mesh)
+- [Chaos Mesh Website](https://chaos-mesh.org/)
 - [Build a data source plugin tutorial](https://grafana.com/tutorials/build-a-data-source-plugin)
-- [Grafana documentation](https://grafana.com/docs/)
-- [Grafana Tutorials](https://grafana.com/tutorials/) - Grafana Tutorials are step-by-step guides that help you make the most of Grafana
-- [Grafana UI Library](https://developers.grafana.com/ui) - UI components to help you build interfaces using Grafana Design System
