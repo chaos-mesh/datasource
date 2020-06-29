@@ -2,7 +2,7 @@
 
 Visualize Chaos Mesh Events with Grafana
 
-![screenshot](images/example.png)
+![screenshot](assets/example.png)
 
 ## Getting Started
 
@@ -56,7 +56,7 @@ docker-compose up -d
 
 Then you can open `localhost:3000` at the browser and find the Chaos Mesh data source.
 
-![find data source](images/find-data-source.png)
+![find data source](assets/find-data-source.png)
 
 Remember that every time the source code changes, you need to restart the Grafana container to load the latest plugin.
 
