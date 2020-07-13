@@ -12,7 +12,8 @@
   "info": {
     "description": "A Chaos Engineering Platform for Kubernetes",
     "author": {
-      "name": "yeya24"
+      "name": "yeya24",
+      "url": "https://github.com/yeya24"
     },
     "keywords": [],
     "logos": {
