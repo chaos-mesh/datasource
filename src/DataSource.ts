@@ -3,6 +3,7 @@ import defaults from 'lodash/defaults';
 import {
   AnnotationEvent,
   AnnotationQueryRequest,
+  DataQueryError,
   DataQueryRequest,
   DataQueryResponse,
   DataSourceApi,
@@ -48,14 +49,14 @@ export class DataSource extends DataSourceApi<ChaosEventsQuery, ChaosMeshOptions
     const url = '/ping';
 
     return this._request(url).catch((err: any) => {
-      return err;
+      console.error(err);
     });
   }
 
   queryNamespaces() {
     const url = '/api/common/namespaces';
     return this._request(url).catch((err: any) => {
-      return err;
+      console.error(err);
     });
   }
 
@@ -75,9 +76,47 @@ export class DataSource extends DataSourceApi<ChaosEventsQuery, ChaosMeshOptions
     }
 
     return this._request(url, data).catch((err: any) => {
-      return err;
+      throw this.handleErrors(err, req);
     });
   }
+
+  handleErrors = (err: any, target: ChaosEventsQuery) => {
+    const error: DataQueryError = {
+      message: (err && err.statusText) || 'Unknown error during query transaction. Please check JS console logs.',
+      refId: target.refId,
+    };
+
+    if (err.data) {
+      if (typeof err.data === 'string') {
+        error.message = err.data;
+      } else if (err.data.error) {
+        error.message = this.safeStringifyValue(err.data.error);
+      }
+    } else if (err.message) {
+      error.message = err.message;
+    } else if (typeof err === 'string') {
+      error.message = err;
+    }
+
+    error.status = err.status;
+    error.statusText = err.statusText;
+
+    return error;
+  };
+
+  safeStringifyValue = (value: any, space?: number) => {
+    if (!value) {
+      return '';
+    }
+
+    try {
+      return JSON.stringify(value, null, space);
+    } catch (error) {
+      console.error(error);
+    }
+
+    return '';
+  };
 
   async query(options: DataQueryRequest<ChaosEventsQuery>): Promise<DataQueryResponse> {
     const { range } = options;
@@ -150,6 +189,9 @@ export class DataSource extends DataSourceApi<ChaosEventsQuery, ChaosMeshOptions
     // Implement a health check for your data source.
 
     const response = await this.checkLiveness();
+    if (!response) {
+      return { status: 'error', message: 'Cannot connect to Data source' };
+    }
     return response.status === 200
       ? { status: 'success', message: 'Data source is working' }
       : { status: 'error', message: response.error };
