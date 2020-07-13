@@ -1,7 +1,7 @@
 {
   "type": "datasource",
   "name": "Chaos Mesh",
-  "id": "chaos-mesh",
+  "id": "chaos-mesh-datasource",
 
   "metrics": true,
   "annotations": true,
