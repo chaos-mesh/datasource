@@ -58,7 +58,7 @@ export class DataSource extends DataSourceApi<ChaosEventsQuery, MyDataSourceOpti
   }
 
   queryEvents(req: ChaosEventsQuery) {
-    const url = '/api/events';
+    const url = '/api/events/dry';
     const data: any = {
       startTime: req.startTime,
       finishTime: req.finishTime,
@@ -163,10 +163,10 @@ export class DataSource extends DataSourceApi<ChaosEventsQuery, MyDataSourceOpti
 
     return response.data.map((event: ChaosEvent) => {
       const regionEvent: AnnotationEvent = {
+        title: `${event.Experiment}`,
         time: Date.parse(event.StartTime),
         timeEnd: Date.parse(event.FinishTime),
         isRegion: true,
-        text: `${event.Experiment}`,
         tags: [`kind:${event.Kind}`, `namespace:${event.Namespace}`],
       };
       return regionEvent;
