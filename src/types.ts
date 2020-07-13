@@ -15,7 +15,9 @@ export const defaultQuery: Partial<ChaosEventsQuery> = {
 /**
  * These are options configured for each DataSource instance
  */
-export interface MyDataSourceOptions extends DataSourceJsonData {}
+export interface ChaosMeshOptions extends DataSourceJsonData {
+  defaultUrl: string;
+}
 
 export interface ChaosEvent {
   ID: number;
