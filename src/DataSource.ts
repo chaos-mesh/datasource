@@ -13,15 +13,17 @@ import {
 
 import { getBackendSrv } from '@grafana/runtime';
 
-import { ChaosEvent, defaultQuery, ChaosEventsQuery, MyDataSourceOptions, ChaosEventsQueryResponse } from './types';
+import { ChaosEvent, defaultQuery, ChaosEventsQuery, ChaosMeshOptions, ChaosEventsQueryResponse } from './types';
 
-export class DataSource extends DataSourceApi<ChaosEventsQuery, MyDataSourceOptions> {
+export class DataSource extends DataSourceApi<ChaosEventsQuery, ChaosMeshOptions> {
   url: string;
+  defaultUrl: string;
 
-  constructor(instanceSettings: DataSourceInstanceSettings<MyDataSourceOptions>) {
+  constructor(instanceSettings: DataSourceInstanceSettings<ChaosMeshOptions>) {
     super(instanceSettings);
 
     this.url = instanceSettings.url!;
+    this.defaultUrl = instanceSettings.jsonData.defaultUrl;
   }
 
   _request(url: string, data: Record<string, string> = {}) {
@@ -162,11 +164,13 @@ export class DataSource extends DataSourceApi<ChaosEventsQuery, MyDataSourceOpti
     const response: ChaosEventsQueryResponse = await this.queryEvents(query);
 
     return response.data.map((event: ChaosEvent) => {
+      const eventPage = `${this.defaultUrl}/experiments/${event.Experiment}?namespace=${event.Namespace}&kind=${event.Kind}&event=${event.ID}`;
       const regionEvent: AnnotationEvent = {
         title: `${event.Experiment}`,
         time: Date.parse(event.StartTime),
         timeEnd: Date.parse(event.FinishTime),
         isRegion: true,
+        text: `<a target="_blank" href=${eventPage}>Event Details</a>`,
         tags: [`kind:${event.Kind}`, `namespace:${event.Namespace}`],
       };
       return regionEvent;
