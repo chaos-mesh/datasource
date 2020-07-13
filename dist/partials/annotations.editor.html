@@ -1,0 +1,23 @@
+<div class="gf-form-group">
+  <div class="gf-form">
+    <span class="gf-form-label width-10">Kind</span>
+    <div class="gf-form-select-wrapper width-12">
+      <select class="gf-form-input" ng-model="ctrl.annotation.kind" ng-options="f.value as f.text for f in ctrl.kinds">
+      </select>
+    </div>
+  </div>
+  <div class="gf-form">
+    <span class="gf-form-label width-10">Experiment Namespace</span>
+    <div class="gf-form-select-wrapper width-12">
+      <select
+        class="gf-form-input service-dropdown"
+        ng-model="ctrl.annotation.namespace"
+        ng-options="f.value as f.text for f in ctrl.namespaces"
+      ></select>
+    </div>
+  </div>
+  <div class="gf-form">
+    <span class="gf-form-label width-10">Experiment Name</span>
+    <input type="text" class="gf-form-input max-width-12" ng-model='ctrl.annotation.experiment'/>
+  </div>
+</div>
