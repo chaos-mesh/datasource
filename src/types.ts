@@ -4,8 +4,8 @@ export interface ChaosEventsQuery extends DataQuery {
   namespace?: string;
   kind: string;
   experiment?: string;
-  // startTime: string;
-  // endTime: string;
+  startTime: string;
+  finishTime: string;
 }
 
 export const defaultQuery: Partial<ChaosEventsQuery> = {

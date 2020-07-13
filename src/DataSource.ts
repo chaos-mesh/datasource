@@ -57,18 +57,18 @@ export class DataSource extends DataSourceApi<ChaosEventsQuery, MyDataSourceOpti
     });
   }
 
-  // TODO: support start time and finish time filter
   queryEvents(req: ChaosEventsQuery) {
     const url = '/api/events';
     const data: any = {
-      // startTime: req.startTime,
+      startTime: req.startTime,
+      finishTime: req.finishTime,
       kind: req.kind,
     };
 
-    if (req.experiment !== undefined && req.experiment !== '') {
+    if (req.experiment) {
       data.experimentName = req.experiment;
     }
-    if (req.namespace !== undefined && req.namespace !== '') {
+    if (req.namespace) {
       data.experimentNamespace = req.namespace;
     }
 
@@ -79,12 +79,13 @@ export class DataSource extends DataSourceApi<ChaosEventsQuery, MyDataSourceOpti
 
   async query(options: DataQueryRequest<ChaosEventsQuery>): Promise<DataQueryResponse> {
     const { range } = options;
-    const from = range!.from.valueOf();
-    const to = range!.to.valueOf();
-    console.log(from, to);
+    const from = this.toRFC3339TimeStamp(range.from.toDate());
+    const to = this.toRFC3339TimeStamp(range.to.toDate());
 
     const data = options.targets.map(target => {
       const query = defaults(target, defaultQuery);
+      query.startTime = from;
+      query.finishTime = to;
       const frame = new MutableDataFrame({
         refId: query.refId,
         fields: [
@@ -112,6 +113,37 @@ export class DataSource extends DataSourceApi<ChaosEventsQuery, MyDataSourceOpti
     return { data };
   }
 
+  // Stole this from http://cbas.pandion.im/2009/10/generating-rfc-3339-timestamps-in.html
+  toRFC3339TimeStamp(date: Date) {
+    function pad(amount: number, width: number) {
+      let padding = '';
+      while (padding.length < width - 1 && amount < Math.pow(10, width - padding.length - 1)) {
+        padding += '0';
+      }
+      return padding + amount.toString();
+    }
+    let offset: number = date.getTimezoneOffset();
+    return (
+      pad(date.getFullYear(), 4) +
+      '-' +
+      pad(date.getMonth() + 1, 2) +
+      '-' +
+      pad(date.getDate(), 2) +
+      'T' +
+      pad(date.getHours(), 2) +
+      ':' +
+      pad(date.getMinutes(), 2) +
+      ':' +
+      pad(date.getSeconds(), 2) +
+      '.' +
+      pad(date.getMilliseconds(), 3) +
+      (offset > 0 ? '-' : '+') +
+      pad(Math.floor(Math.abs(offset) / 60), 2) +
+      ':' +
+      pad(Math.abs(offset) % 60, 2)
+    );
+  }
+
   async testDatasource() {
     // Implement a health check for your data source.
 
@@ -122,7 +154,11 @@ export class DataSource extends DataSourceApi<ChaosEventsQuery, MyDataSourceOpti
   }
 
   async annotationQuery(options: AnnotationQueryRequest<ChaosEventsQuery>): Promise<AnnotationEvent[]> {
+    const { range } = options;
     const query = defaults(options.annotation, defaultQuery);
+
+    query.startTime = this.toRFC3339TimeStamp(range.from.toDate());
+    query.finishTime = this.toRFC3339TimeStamp(range.to.toDate());
     const response: ChaosEventsQueryResponse = await this.queryEvents(query);
 
     return response.data.map((event: ChaosEvent) => {
