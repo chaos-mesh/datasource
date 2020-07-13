@@ -4,11 +4,11 @@ import React, { ChangeEvent, PureComponent } from 'react';
 import { InlineFormLabel, LegacyForms } from '@grafana/ui';
 import { QueryEditorProps, SelectableValue } from '@grafana/data';
 import { DataSource } from './DataSource';
-import { defaultQuery, MyDataSourceOptions, ChaosEventsQuery } from './types';
+import { defaultQuery, ChaosMeshOptions, ChaosEventsQuery } from './types';
 
 const { Input, Select } = LegacyForms;
 
-type Props = QueryEditorProps<DataSource, ChaosEventsQuery, MyDataSourceOptions>;
+type Props = QueryEditorProps<DataSource, ChaosEventsQuery, ChaosMeshOptions>;
 
 const kindOptions: Array<SelectableValue<string>> = [
   { value: 'PodChaos', label: 'Pod Chaos' },
