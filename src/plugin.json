@@ -15,7 +15,7 @@
       "name": "yeya24",
       "url": "https://github.com/yeya24"
     },
-    "keywords": [],
+    "keywords": ["chaos"],
     "logos": {
       "small": "img/logo.svg",
       "large": "img/logo.svg"
@@ -35,8 +35,7 @@
       }
     ],
     "screenshots": [],
-    "version": "%VERSION%",
-    "updated": "%TODAY%"
+    "version": "0.1.0"
   },
   "dependencies": {
     "grafanaVersion": "6.5.x",
