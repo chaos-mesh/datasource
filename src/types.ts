@@ -20,16 +20,14 @@ export interface ChaosMeshOptions extends DataSourceJsonData {
 }
 
 export interface ChaosEvent {
-  ID: number;
-  CreatedAt: string;
-  UpdatedAt: string;
-  DeletedAt: string | null;
-  Experiment: string;
-  Namespace: string;
-  Kind: string;
-  Message: string;
-  StartTime: string;
-  FinishTime: string;
+  id: number;
+  experiment_id: string;
+  experiment: string;
+  namespace: string;
+  kind: string;
+  message: string;
+  start_time: string;
+  finish_time: string;
 }
 
 export interface ChaosEventsQueryResponse {

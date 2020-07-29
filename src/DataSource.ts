@@ -138,13 +138,14 @@ export class DataSource extends DataSourceApi<ChaosEventsQuery, ChaosMeshOptions
         ],
       });
       this.queryEvents(query).then((response: ChaosEventsQueryResponse) => {
+        console.log(response);
         response.data.forEach(event => {
           const value: any = {};
-          value.Kind = event.Kind;
-          value['Start Time'] = event.StartTime;
-          value['Finish Time'] = event.FinishTime;
-          value.Namespace = event.Namespace;
-          value.Experiment = event.Experiment;
+          value.Kind = event.kind;
+          value['Start Time'] = event.start_time;
+          value['Finish Time'] = event.finish_time;
+          value.Namespace = event.namespace;
+          value.Experiment = event.experiment;
           frame.add(value);
         });
       });
@@ -203,17 +204,18 @@ export class DataSource extends DataSourceApi<ChaosEventsQuery, ChaosMeshOptions
 
     query.startTime = this.toRFC3339TimeStamp(range.from.toDate());
     query.finishTime = this.toRFC3339TimeStamp(range.to.toDate());
+    console.log(query);
     const response: ChaosEventsQueryResponse = await this.queryEvents(query);
 
     return response.data.map((event: ChaosEvent) => {
-      const eventPage = `${this.defaultUrl}/experiments/${event.Experiment}?namespace=${event.Namespace}&kind=${event.Kind}&event=${event.ID}`;
+      const eventPage = `${this.defaultUrl}/experiments/${event.experiment}?namespace=${event.namespace}&kind=${event.kind}&event=${event.id}`;
       const regionEvent: AnnotationEvent = {
-        title: `${event.Experiment}`,
-        time: Date.parse(event.StartTime),
-        timeEnd: Date.parse(event.FinishTime),
+        title: `${event.experiment}`,
+        time: Date.parse(event.start_time),
+        timeEnd: Date.parse(event.finish_time),
         isRegion: true,
         text: `<a target="_blank" href=${eventPage}>Event Details</a>`,
-        tags: [`kind:${event.Kind}`, `namespace:${event.Namespace}`],
+        tags: [`kind:${event.kind}`, `namespace:${event.namespace}`],
       };
       return regionEvent;
     });
