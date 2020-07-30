@@ -1,7 +1,7 @@
 {
   "type": "datasource",
   "name": "Chaos Mesh",
-  "id": "chaos-mesh-datasource",
+  "id": "yeya24-chaos-mesh-datasource",
 
   "metrics": true,
   "annotations": true,
@@ -35,7 +35,8 @@
       }
     ],
     "screenshots": [],
-    "version": "0.1.0"
+    "version": "0.1.1",
+    "updated": "2020-07-30"
   },
   "dependencies": {
     "grafanaVersion": "6.5.x",
