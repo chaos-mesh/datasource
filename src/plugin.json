@@ -1,21 +1,21 @@
 {
   "type": "datasource",
   "name": "Chaos Mesh",
-  "id": "chaos-mesh-datasource",
-
+  "id": "yeya24-chaosmesh-datasource",
   "metrics": true,
   "annotations": true,
   "logs": false,
   "streaming": false,
   "tracing": false,
-
   "info": {
     "description": "A Chaos Engineering Platform for Kubernetes",
     "author": {
       "name": "yeya24",
       "url": "https://github.com/yeya24"
     },
-    "keywords": ["chaos"],
+    "keywords": [
+      "chaos"
+    ],
     "logos": {
       "small": "img/logo.svg",
       "large": "img/logo.svg"
@@ -35,7 +35,8 @@
       }
     ],
     "screenshots": [],
-    "version": "0.1.0"
+    "version": "0.1.1",
+    "updated": "%TODAY%"
   },
   "dependencies": {
     "grafanaVersion": "6.5.x",
