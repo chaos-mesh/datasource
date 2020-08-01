@@ -6,37 +6,37 @@ Visualize Chaos Mesh Events with Grafana.
 
 ## Usage
 
-### Configure the data source
+### Configure data source
 
 Go to Grafana -> Configuration -> Data Sources, click `Add data source` button.
 
-![add-data-source](docs/assets/add-datasource.png)
+![add-data-source](https://raw.githubusercontent.com/chaos-mesh/chaos-mesh-datasource/master/docs/assets/add-datasource.png)
 
 Enter Chaos Mesh into the search bar and then you can see the data source.
 
-![find data source](docs/assets/find-data-source.png)
+![find data source](https://raw.githubusercontent.com/chaos-mesh/chaos-mesh-datasource/master/docs/assets/find-data-source.png)
 
 Enter the URL of Chaos Dashboard, and click `Save & Test` to check availability.
 
 It is best to make sure your network can access this URL as well.
 
-![configure data source](docs/assets/configure-datasource.png)
+![configure data source](https://raw.githubusercontent.com/chaos-mesh/chaos-mesh-datasource/master/docs/assets/configure-datasource.png)
 
-### Chaos Events Query
+### Query Chaos Events with Panels
 
 Add a new query panel and choose Chaos Mesh Data source. Enter the required parameters below for what experiment you want to search.
 
 Please note that Chaos Mesh Data source only supports `Table` type visualization.
 
-![panel query](docs/assets/new-panel.png)
+![panel query](https://raw.githubusercontent.com/chaos-mesh/chaos-mesh-datasource/master/docs/assets/new-panel.png)
 
-### Chaos Events Annotations Query
+### Query Chaos Events with Annotations
 
 #### Configure Annotation
 
 Add a new annotation, choose type as `Chaos Mesh`. Enter the required parameters below for what experiment you want to search.
 
-![configure annotation](docs/assets/configure-annotation.png)
+![configure annotation](https://raw.githubusercontent.com/chaos-mesh/chaos-mesh-datasource/master/docs/assets/configure-annotation.png)
 
 #### View the results
 
@@ -44,11 +44,11 @@ To view the annotations, you should have a panel. If the annotation is enabled a
 
 There is also a link `Event Details`, you can click this link and go to Chaos Dashboard UI to see the details of that event.
 
-![example](docs/assets/example.png)
+![example](https://raw.githubusercontent.com/chaos-mesh/chaos-mesh-datasource/master/docs/assets/example.png)
 
 ## Development
 
-For detailed development, please check [Tutorial](docs/dev.md)
+If you want to develop and contribute to this data source, please check [Tutorial](https://raw.githubusercontent.com/chaos-mesh/chaos-mesh-datasource/master/docs/dev.md)
 
 ## Learn more
 - [Chaos Mesh Repository](https://github.com/pingcap/chaos-mesh)
