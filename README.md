@@ -48,7 +48,7 @@ There is also a link `Event Details`, you can click this link and go to Chaos Da
 
 ## Development
 
-For detailed development, please check [Tutorial](https://github.com/chaos-mesh/chaos-mesh-datasource/blob/master/docs/dev.md)
+For detailed development, please check [Tutorial](docs/dev.md)
 
 ## Learn more
 - [Chaos Mesh Repository](https://github.com/pingcap/chaos-mesh)
