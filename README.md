@@ -6,7 +6,7 @@ Visualize Chaos Mesh Events with Grafana.
 
 ## Usage
 
-### Configure data source
+### Configure Data Source
 
 Go to Grafana -> Configuration -> Data Sources, click `Add data source` button.
 
@@ -38,7 +38,7 @@ Add a new annotation, choose type as `Chaos Mesh`. Enter the required parameters
 
 ![configure annotation](https://raw.githubusercontent.com/chaos-mesh/chaos-mesh-datasource/master/docs/assets/configure-annotation.png)
 
-#### View the results
+#### View Results
 
 To view the annotations, you should have a panel. If the annotation is enabled and there are some Chaos events at the time range, you can see the annotations in your dashboard.
 
@@ -50,7 +50,7 @@ There is also a link `Event Details`, you can click this link and go to Chaos Da
 
 If you want to develop and contribute to this data source, please check [Tutorial](https://github.com/chaos-mesh/chaos-mesh-datasource/blob/master/docs/dev.md)
 
-## Learn more
+## Learn More
 - [Chaos Mesh Repository](https://github.com/pingcap/chaos-mesh)
 - [Chaos Mesh Website](https://chaos-mesh.org/)
 - [Build a data source plugin tutorial](https://grafana.com/tutorials/build-a-data-source-plugin)
