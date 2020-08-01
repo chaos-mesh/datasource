@@ -22,7 +22,7 @@ yarn watch
 yarn build
 ```
 
-### Develop using Docker Compose
+## Develop using Docker Compose
 
 First build the data source locally
 
