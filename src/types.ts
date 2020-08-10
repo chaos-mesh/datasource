@@ -6,6 +6,7 @@ export interface ChaosEventsQuery extends DataQuery {
   experiment?: string;
   startTime: string;
   finishTime: string;
+  limit: number;
 }
 
 export const defaultQuery: Partial<ChaosEventsQuery> = {
@@ -17,6 +18,7 @@ export const defaultQuery: Partial<ChaosEventsQuery> = {
  */
 export interface ChaosMeshOptions extends DataSourceJsonData {
   defaultUrl: string;
+  limit: number;
 }
 
 export interface ChaosEvent {

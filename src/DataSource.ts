@@ -19,12 +19,18 @@ import { ChaosEvent, defaultQuery, ChaosEventsQuery, ChaosMeshOptions, ChaosEven
 export class DataSource extends DataSourceApi<ChaosEventsQuery, ChaosMeshOptions> {
   url: string;
   defaultUrl: string;
+  defaultLimit: number;
 
   constructor(instanceSettings: DataSourceInstanceSettings<ChaosMeshOptions>) {
     super(instanceSettings);
 
     this.url = instanceSettings.url!;
     this.defaultUrl = instanceSettings.jsonData.defaultUrl;
+    this.defaultLimit = 25;
+
+    if (instanceSettings.jsonData.limit) {
+      this.defaultLimit = instanceSettings.jsonData.limit;
+    }
   }
 
   _request(url: string, data: Record<string, string> = {}) {
@@ -66,6 +72,7 @@ export class DataSource extends DataSourceApi<ChaosEventsQuery, ChaosMeshOptions
       startTime: req.startTime,
       finishTime: req.finishTime,
       kind: req.kind,
+      limit: req.limit,
     };
 
     if (req.experiment) {
@@ -127,6 +134,7 @@ export class DataSource extends DataSourceApi<ChaosEventsQuery, ChaosMeshOptions
       const query = defaults(target, defaultQuery);
       query.startTime = from;
       query.finishTime = to;
+      query.limit = this.defaultLimit;
       const frame = new MutableDataFrame({
         refId: query.refId,
         fields: [
@@ -203,6 +211,7 @@ export class DataSource extends DataSourceApi<ChaosEventsQuery, ChaosMeshOptions
 
     query.startTime = this.toRFC3339TimeStamp(range.from.toDate());
     query.finishTime = this.toRFC3339TimeStamp(range.to.toDate());
+    query.limit = this.defaultLimit;
     const response: ChaosEventsQueryResponse = await this.queryEvents(query);
 
     return response.data.map((event: ChaosEvent) => {
