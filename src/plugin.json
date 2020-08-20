@@ -1,7 +1,7 @@
 {
   "type": "datasource",
   "name": "Chaos Mesh",
-  "id": "yeya24-chaosmesh-datasource",
+  "id": "chaosmesh-chaosmesh-datasource",
   "metrics": true,
   "annotations": true,
   "logs": false,
