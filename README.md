@@ -1,56 +1,95 @@
 # Chaos Mesh Data Source
 
-Visualize Chaos Mesh Events with Grafana.
+Grafana data source plugin for Chaos Mesh.
 
-![screenshot](https://raw.githubusercontent.com/chaos-mesh/chaos-mesh-datasource/master/docs/assets/example.png)
+## Features
 
-## Usage
+- Visualize Chaos Events on the table
+- Show Chaos Events on the graph with [Annotations](https://grafana.com/docs/grafana/latest/dashboards/annotations/)
+- Display different Chaos Events by [Variables](https://grafana.com/docs/grafana/latest/variables/)
 
-### Configure Data Source
+## Installation
 
-Go to Grafana -> Configuration -> Data Sources, click `Add data source` button.
+```sh
+grafana-cli plugins install yeya24-chaos-mesh-datasource
+```
 
-![add-data-source](https://raw.githubusercontent.com/chaos-mesh/chaos-mesh-datasource/master/docs/assets/add-datasource.png)
+## Setup
 
-Enter Chaos Mesh into the search bar and then you can see the data source.
+After installed, you can add this data source in **Configuration -> Data Sources**, then you will enter the settings page:
 
-![find data source](https://raw.githubusercontent.com/chaos-mesh/chaos-mesh-datasource/master/docs/assets/find-data-source.png)
+![Data Source settings](https://raw.githubusercontent.com/chaos-mesh/chaos-mesh-datasource/master/img/settings.jpg)
 
-Enter the URL of Chaos Dashboard, and click `Save & Test` to check availability.
+Only the `URL` field needs to be filled in and the others can be ignored.
 
-It is best to make sure your network can access this URL as well.
+Assuming you have a local Chaos Mesh installed, the dashboard will default export its API in port `2333`. So, if you don't modify anything, you can simply fill `http://localhost:2333` into it.
 
-![configure data source](https://raw.githubusercontent.com/chaos-mesh/chaos-mesh-datasource/master/docs/assets/configure-datasource.png)
+Then use **port-forward** to active:
 
-### Query Chaos Events with Panels
+```sh
+kubectl port-forward -n chaos-testing svc/chaos-dashboard 2333:2333
+```
 
-Add a new query panel and choose Chaos Mesh Data source. Enter the required parameters below for what experiment you want to search.
+Finally, click **Save & Test** to test the connection. If it shows that the connection is successful, then the setup work has been completed.
 
-Please note that Chaos Mesh Data source only supports `Table` type visualization.
+### Options
 
-![panel query](https://raw.githubusercontent.com/chaos-mesh/chaos-mesh-datasource/master/docs/assets/new-panel.png)
+Except for the `url`, this data source plugin has such options as below:
 
-### Query Chaos Events with Annotations
+| Name  | Description                                                                                                           |
+| ----- | --------------------------------------------------------------------------------------------------------------------- |
+| Limit | Limit the number of returned Chaos Events. The default is 25. If you want to display more events, please increase it. |
 
-#### Configure Annotation
+## Query
 
-Add a new annotation, choose type as `Chaos Mesh`. Enter the required parameters below for what experiment you want to search.
+Mostly, there will be three options to be responsible for filtering events:
 
-![configure annotation](https://raw.githubusercontent.com/chaos-mesh/chaos-mesh-datasource/master/docs/assets/configure-annotation.png)
+- **Experiment** - Filter by the experiment name. Must be a full name.
+- **Namespace** - Filter by different namespaces
+- **Kind** - Filter by Chaos kinds
 
-#### View Results
+For real world usage, normally you will use these options in two situations:
 
-To view the annotations, you should have a panel. If the annotation is enabled and there are some Chaos events at the time range, you can see the annotations in your dashboard.
+- Specify all fields to locate an experiment more precisely.
+- Let **Experiment** be empty to reduce the constraints of events filtering.
+- Pass a variable like `$experiment` to query to control the events displaying.
 
-There is also a link `Event Details`, you can click this link and go to Chaos Dashboard UI to see the details of that event.
+## Annotations
 
-![example](https://raw.githubusercontent.com/chaos-mesh/chaos-mesh-datasource/master/docs/assets/example.png)
+Edit example:
 
-## Development
+![Data Source annotations](https://raw.githubusercontent.com/chaos-mesh/chaos-mesh-datasource/master/img/annotations.png)
 
-If you want to develop and contribute to this data source, please check [Tutorial](https://github.com/chaos-mesh/chaos-mesh-datasource/blob/master/docs/dev.md)
+For usage, you can refer to the content described by [Query](#query).
 
-## Learn More
-- [Chaos Mesh Repository](https://github.com/pingcap/chaos-mesh)
-- [Chaos Mesh Website](https://chaos-mesh.org/)
-- [Build a data source plugin tutorial](https://grafana.com/tutorials/build-a-data-source-plugin)
+## Variables
+
+If you choose the Variables type to query and select the data source to Chaos Mesh, You can get three different kind values.
+
+Specify by choosing different **metric**:
+
+- Experiment
+
+  After selection, a text input field will occur, fill in the value of the experiment name you want to settle. Usually, you will fill in the **partial** name of some experiments to get the related experiment names.
+
+  > For example, you have two experiments:
+  >
+  > random-pod-kill and random-pod-failure
+  >
+  > Then you can fill **random** in the text field to get these experiments.
+
+- Namespace
+
+  After selection, all available namespaces will show in **Preview of values** directly. Without other operations.
+
+- Kind
+
+  Same as **Namespace**.
+
+## How to contribute
+
+Pull a request or open an issue to describe your changes or problems.
+
+## License
+
+Same as Chaos Mesh. Under Apache-2.0 License.

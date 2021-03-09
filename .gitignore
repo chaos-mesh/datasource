@@ -20,6 +20,7 @@ lib-cov
 coverage
 
 # Compiled binary addons (https://nodejs.org/api/addons.html)
+dist/
 artifacts/
 work/
 ci/
@@ -28,3 +29,6 @@ e2e-results/
 # Editor
 .idea
 
+jest.config.js
+yeya24-chaosmesh-datasource
+*.zip

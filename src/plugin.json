@@ -2,39 +2,35 @@
   "type": "datasource",
   "name": "Chaos Mesh",
   "id": "yeya24-chaosmesh-datasource",
+  "category": "cloud",
   "metrics": true,
   "annotations": true,
-  "logs": false,
-  "streaming": false,
-  "tracing": false,
   "info": {
-    "description": "A Chaos Engineering Platform for Kubernetes",
+    "description": "Chaos Mesh (A Chaos Engineering Platform for Kubernetes) Datasource",
     "author": {
-      "name": "yeya24",
-      "url": "https://github.com/yeya24"
+      "name": "Yue Yang",
+      "email": "g1enyy0ung@gmail.com",
+      "url": "https://github.com/g1eny0ung"
     },
-    "keywords": [
-      "chaos"
-    ],
+    "keywords": ["Cloud", "Chaos Engineering", "Chaos Mesh"],
     "logos": {
       "small": "img/logo.svg",
       "large": "img/logo.svg"
     },
     "links": [
       {
-        "name": "Learn more",
-        "url": "https://chaos-mesh.org/"
-      },
-      {
-        "name": "Website",
+        "name": "GitHub",
         "url": "https://github.com/chaos-mesh/chaos-mesh-datasource"
       },
       {
         "name": "License",
         "url": "https://github.com/chaos-mesh/chaos-mesh-datasource/blob/master/LICENSE"
+      },
+      {
+        "name": "Chaos Mesh Website",
+        "url": "https://chaos-mesh.org/"
       }
     ],
-    "screenshots": [],
     "version": "0.1.2",
     "updated": "%TODAY%"
   },
