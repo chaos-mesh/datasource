@@ -1,10 +1,14 @@
 VERSION=$1
 
+rm -rf dist
+rm -rf yeya24-chaosmesh-datasource
+
 echo "Bundled Version: $VERSION"
 echo "Start to build..."
 echo
 
 yarn build
+npx @grafana/toolkit plugin:sign --rootUrls https://grafana.com
 
 echo "Bundling..."
 echo
