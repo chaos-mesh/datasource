@@ -17,6 +17,16 @@
       "small": "img/logo.svg",
       "large": "img/logo.svg"
     },
+    "screenshots": [
+      {
+        "name": "Datasource Setting",
+        "path": "img/settings.jpg"
+      },
+      {
+        "name": "Annotations",
+        "path": "img/annotations.png"
+      }
+    ],
     "links": [
       {
         "name": "GitHub",
@@ -31,7 +41,7 @@
         "url": "https://chaos-mesh.org/"
       }
     ],
-    "version": "0.2.0",
+    "version": "0.2.1",
     "updated": "%TODAY%"
   },
   "dependencies": {
