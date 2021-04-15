@@ -1,10 +1,8 @@
-import { InlineFormLabel, LegacyForms } from '@grafana/ui';
+import { InlineFormLabel, Input, Select } from '@grafana/ui';
 import React, { SyntheticEvent, useEffect, useState } from 'react';
 
 import { ChaosMeshVariableQuery } from './types';
 import { SelectableValue } from '@grafana/data';
-
-const { Input, Select } = LegacyForms;
 
 const metricOptions: Array<SelectableValue<string>> = [
   { label: 'Experiment', value: 'experiment' },
@@ -36,7 +34,7 @@ export const VariableQueryEditor: React.FC<VariableQueryProps> = ({ query, onCha
   }, [state.metric]);
 
   return (
-    <>
+    <div className="gf-form-group">
       <div className="gf-form">
         <InlineFormLabel tooltip="Specify the data metric.">Metric</InlineFormLabel>
         <Select
@@ -54,6 +52,6 @@ export const VariableQueryEditor: React.FC<VariableQueryProps> = ({ query, onCha
           <Input name="experimentName" value={state.experimentName} onChange={onInputChange} onBlur={onRunQuery} />
         </div>
       )}
-    </>
+    </div>
   );
 };
