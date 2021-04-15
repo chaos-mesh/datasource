@@ -8,9 +8,8 @@
   "info": {
     "description": "Chaos Mesh (A Chaos Engineering Platform for Kubernetes) Datasource",
     "author": {
-      "name": "Yue Yang",
-      "email": "g1enyy0ung@gmail.com",
-      "url": "https://github.com/g1eny0ung"
+      "name": "Chaos Mesh Project",
+      "url": "https://github.com/chaos-mesh"
     },
     "keywords": ["Cloud", "Chaos Engineering", "Chaos Mesh"],
     "logos": {
