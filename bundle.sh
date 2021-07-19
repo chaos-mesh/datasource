@@ -8,7 +8,7 @@ echo "Start to build..."
 echo
 
 yarn build
-npx @grafana/toolkit plugin:sign --rootUrls https://grafana.com
+yarn sign --rootUrls https://grafana.com
 
 echo "Bundling..."
 echo

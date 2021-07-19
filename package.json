@@ -10,25 +10,26 @@
     "test": "grafana-toolkit plugin:test",
     "dev": "grafana-toolkit plugin:dev",
     "watch": "grafana-toolkit plugin:dev --watch",
+    "sign": "grafana-toolkit plugin:sign",
     "lint-staged": "lint-staged"
   },
   "devDependencies": {
-    "@grafana/data": "^7.5.3",
-    "@grafana/runtime": "^7.5.3",
-    "@grafana/toolkit": "^7.5.3",
-    "@grafana/ui": "^7.5.3",
-    "@testing-library/jest-dom": "5.11.10",
-    "@testing-library/react": "^11.2.6",
-    "@types/lodash": "^4.14.168",
+    "@grafana/data": "^8.0.6",
+    "@grafana/runtime": "^8.0.6",
+    "@grafana/toolkit": "^8.0.6",
+    "@grafana/ui": "^8.0.6",
+    "@testing-library/jest-dom": "5.14.1",
+    "@testing-library/react": "^12.0.0",
+    "@types/lodash": "^4.14.171",
     "husky": "^6.0.0",
     "import-sort-style-eslint": "^6.0.0",
-    "lint-staged": "^10.5.4",
-    "prettier": "^2.2.1",
-    "prettier-plugin-import-sort": "^0.0.6",
-    "tslib": "^2.2.0"
+    "lint-staged": "^11.0.1",
+    "prettier": "^2.3.2",
+    "prettier-plugin-import-sort": "^0.0.7",
+    "tslib": "^2.3.0"
   },
   "engines": {
-    "node": ">=12"
+    "node": ">=14"
   },
   "lint-staged": {
     "*.(j|t)s?(x)": "prettier --write"
