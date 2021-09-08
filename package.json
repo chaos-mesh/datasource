@@ -1,41 +1,44 @@
 {
-  "name": "yeya24-chaosmesh-datasource",
-  "version": "0.2.2",
-  "description": "Chaos Mesh Datasource",
-  "author": "Yue Yang <g1enyy0ung@gmail.com> (https://g1eny0ung.site)",
-  "license": "Apache-2.0",
+  "name": "chaosmesh-datasource",
+  "version": "2.0.0",
+  "description": "Chaos Mesh (A Chaos Engineering Platform for Kubernetes) Datasource",
   "scripts": {
-    "prepare": "husky install",
     "build": "grafana-toolkit plugin:build",
     "test": "grafana-toolkit plugin:test",
     "dev": "grafana-toolkit plugin:dev",
     "watch": "grafana-toolkit plugin:dev --watch",
     "sign": "grafana-toolkit plugin:sign",
+    "start": "yarn watch",
+    "prepare": "husky install",
     "lint-staged": "lint-staged"
   },
+  "author": "Yue Yang <g1enyy0ung@gmail.com> (https://g1eny0ung.site)",
+  "license": "Apache-2.0",
   "devDependencies": {
-    "@grafana/data": "^8.0.6",
-    "@grafana/runtime": "^8.0.6",
-    "@grafana/toolkit": "^8.0.6",
-    "@grafana/ui": "^8.0.6",
-    "@testing-library/jest-dom": "5.14.1",
-    "@testing-library/react": "^12.0.0",
-    "@types/lodash": "^4.14.171",
-    "husky": "^6.0.0",
+    "@grafana/data": "latest",
+    "@grafana/runtime": "^8.1.2",
+    "@grafana/toolkit": "latest",
+    "@grafana/ui": "latest",
+    "@testing-library/jest-dom": "5.4.0",
+    "@testing-library/react": "^10.0.2",
+    "@types/lodash": "latest",
+    "husky": "^7.0.2",
     "import-sort-style-eslint": "^6.0.0",
-    "lint-staged": "^11.0.1",
+    "lint-staged": "^11.1.2",
     "prettier": "^2.3.2",
-    "prettier-plugin-import-sort": "^0.0.7",
-    "tslib": "^2.3.0"
+    "prettier-plugin-import-sort": "^0.0.7"
+  },
+  "resolutions": {
+    "node-sass": "6.0.1"
   },
   "engines": {
     "node": ">=14"
   },
   "lint-staged": {
-    "*.(j|t)s?(x)": "prettier --write"
+    "*.ts?(x)": "prettier --write"
   },
   "importSort": {
-    ".js, .ts, .tsx": {
+    ".ts, .tsx": {
       "style": "eslint",
       "parser": "typescript"
     }

@@ -1,22 +1,30 @@
 <div class="gf-form-group">
   <div class="gf-form">
-    <label class="gf-form-label width-10">Experiment</label>
-    <input type="text" class="gf-form-input max-width-12" ng-model="ctrl.annotation.experimentName" />
+    <label class="gf-form-label width-15">Object ID</label>
+    <input class="gf-form-input width-25" ng-model="ctrl.annotation.object_id" />
   </div>
 
   <div class="gf-form">
-    <label class="gf-form-label width-10">Namespace</label>
-    <input type="text" class="gf-form-input max-width-12" ng-model="ctrl.annotation.namespace" />
+    <label class="gf-form-label width-15">Namespace</label>
+    <input class="gf-form-input width-25" ng-model="ctrl.annotation.namespace" />
   </div>
 
   <div class="gf-form">
-    <label class="gf-form-label width-10">Kind</label>
-    <div class="gf-form-select-wrapper">
-      <select
-        class="gf-form-input width-12"
-        ng-model="ctrl.annotation.kind"
-        ng-options="f.value as f.label for f in ctrl.kindOptions"
-      ></select>
-    </div>
+    <label class="gf-form-label width-15">Name</label>
+    <input class="gf-form-input width-25" ng-model="ctrl.annotation.nname" />
+  </div>
+
+  <div class="gf-form">
+    <label class="gf-form-label width-15">Kind</label>
+    <select
+      class="gf-form-input width-25"
+      ng-model="ctrl.annotation.kind"
+      ng-options="kind for kind in ctrl.kinds"
+    ></select>
+  </div>
+
+  <div class="gf-form">
+    <label class="gf-form-label width-15">Limit</label>
+    <input type="number" class="gf-form-input width-25" ng-model="ctrl.annotation.limit" />
   </div>
 </div>

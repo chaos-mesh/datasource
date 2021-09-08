@@ -1,53 +1,54 @@
-import { DataQuery, DataSourceJsonData, SelectableValue } from '@grafana/data';
+import { DataQuery, DataSourceJsonData } from '@grafana/data';
 
-export type ExperimentKind =
-  | 'PodChaos'
-  | 'NetworkChaos'
-  | 'IoChaos'
-  | 'KernelChaos'
-  | 'TimeChaos'
-  | 'StressChaos'
-  | 'DNSChaos';
+export interface Event {
+  object_id: uuid;
+  created_at: string;
+  namespace: string;
+  name: string;
+  kind: string;
+  type: 'Normal' | 'Warning';
+  reason: string;
+  message: string;
+}
 
-export const kindOptions: Array<SelectableValue<ExperimentKind>> = [
-  { label: 'Pod Chaos', value: 'PodChaos' },
-  { label: 'Network Chaos', value: 'NetworkChaos' },
-  { label: 'IO Chaos', value: 'IoChaos' },
-  { label: 'Time Chaos', value: 'TimeChaos' },
-  { label: 'Kernel Chaos', value: 'KernelChaos' },
-  { label: 'Stress Chaos', value: 'StressChaos' },
-  { label: 'DNS Chaos', value: 'DNSChaos' },
-];
-
-export interface ChaosMeshQuery extends DataQuery {
-  experimentName?: string;
+export interface EventsQuery extends DataQuery {
+  object_id?: uuid;
+  start: string;
+  end: string;
   namespace?: string;
-  kind?: ExperimentKind;
-  startTime: string;
-  finishTime: string;
-  limit: number;
-}
-
-export const defaultQuery: Partial<ChaosMeshQuery> = {
-  namespace: 'default',
-  kind: 'PodChaos',
-};
-
-export interface ChaosMeshVariableQuery {
-  metric: 'experiment' | 'namespace' | 'kind';
-  experimentName?: string;
-}
-
-export interface ChaosMeshOptions extends DataSourceJsonData {
+  name?: string;
+  kind?: string;
   limit?: number;
 }
 
-export interface ChaosEvent {
-  id: number;
-  experiment: string;
-  namespace: string;
-  kind: ExperimentKind;
-  message: string;
-  start_time: string;
-  finish_time: string;
+export const defaultQuery: Partial<EventsQuery> = {
+  limit: 216,
+};
+
+export const kinds = [
+  'AWSChaos',
+  'DNSChaos',
+  'GCPChaos',
+  'HTTPChaos',
+  'IOChao',
+  'JVMChaos',
+  'KernelChaos',
+  'NetworkChaos',
+  'PodChaos',
+  'StressChaos',
+  'TimeChaos',
+];
+
+export interface VariableQuery {
+  metric: 'namespace' | 'kind' | 'experiment' | 'schedule';
 }
+
+/**
+ * These are options configured for each DataSource instance
+ */
+export interface ChaosMeshDataSourceOptions extends DataSourceJsonData {}
+
+/**
+ * Value that is used in the backend, but never sent over HTTP to the frontend
+ */
+export interface MySecureJsonData {}
