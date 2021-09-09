@@ -52,7 +52,7 @@ export class DataSource extends DataSourceApi<EventsQuery, ChaosMeshDataSourceOp
 
     // Return a constant for each query.
     const data = await Promise.all(
-      options.targets.map(async (target) => {
+      options.targets.map(async target => {
         const query = this.applyVariables(defaults(target, defaultQuery), scopedVars);
         query.start = from;
         query.end = to;
@@ -71,7 +71,7 @@ export class DataSource extends DataSourceApi<EventsQuery, ChaosMeshDataSourceOp
           ],
         });
 
-        (await this.fetchEvents(query)).forEach((d) => {
+        (await this.fetchEvents(query)).forEach(d => {
           frame.add(d);
         });
 
@@ -106,8 +106,6 @@ export class DataSource extends DataSourceApi<EventsQuery, ChaosMeshDataSourceOp
     const from = range.from.format(timeformat);
     const to = range.to.format(timeformat);
 
-    annotation.name = (annotation as any).nname;
-    delete (annotation as any).nname;
     const query = defaults(annotation, defaultQuery);
     const vars = getTemplateSrv()
       .getVariables()
@@ -120,18 +118,25 @@ export class DataSource extends DataSourceApi<EventsQuery, ChaosMeshDataSourceOp
         return { key, value };
       });
 
-    const keys = vars.map((d) => d.key);
+    const keys = vars.map(d => d.key);
     for (const q in query) {
-      if (query.hasOwnProperty(q) && q.startsWith('$') && keys.includes(q)) {
-        (query as any)[q] = vars.find((d) => d.key === q)?.value;
+      const variableValue = (query as any)[q];
+
+      if (
+        query.hasOwnProperty(q) &&
+        typeof variableValue === 'string' &&
+        variableValue.startsWith('$') &&
+        keys.includes(variableValue)
+      ) {
+        (query as any)[q] = vars.find(d => d.key === variableValue)?.value;
       }
     }
 
     query.start = from;
     query.end = to;
 
-    const data = await this.fetchEvents(query);
-    const grouped = groupBy(data, (d) => d.name);
+    const data = await this.fetchEvents({ ...query, name: (query as any).nname });
+    const grouped = groupBy(data, d => d.name);
 
     return Object.entries(grouped).map(([k, v]) => {
       const first = v[v.length - 1];
@@ -140,7 +145,7 @@ export class DataSource extends DataSourceApi<EventsQuery, ChaosMeshDataSourceOp
       return {
         title: k,
         text: v
-          .map((d) => d.message)
+          .map(d => d.message)
           .reverse()
           .join('\n'),
         tags: [`namespace:${first.namespace}`, `kind:${first.kind}`, `type:${first.type}`, `reason:${first.reason}`],
@@ -153,9 +158,9 @@ export class DataSource extends DataSourceApi<EventsQuery, ChaosMeshDataSourceOp
   async metricFindQuery(query: VariableQuery) {
     switch (query.metric) {
       case 'namespace':
-        return (await this.fetch<string[]>('/api/common/namespaces')).map((d) => ({ text: d }));
+        return (await this.fetch<string[]>('/api/common/namespaces')).map(d => ({ text: d }));
       case 'kind':
-        return kinds.map((d) => ({ text: d }));
+        return kinds.map(d => ({ text: d }));
       case 'experiment':
         return (await this.fetch<string[]>('/api/experiments')).map((d: any) => ({ text: d.name }));
       case 'schedule':

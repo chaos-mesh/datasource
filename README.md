@@ -1,4 +1,4 @@
-# Chaos Mesh Data Source
+# Data Source
 
 Grafana data source plugin for Chaos Mesh.
 
