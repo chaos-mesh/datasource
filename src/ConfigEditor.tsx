@@ -18,7 +18,7 @@ export class ConfigEditor extends PureComponent<Props, State> {
           defaultUrl="http://localhost:2333"
           dataSourceConfig={options}
           showAccessOptions={true}
-          onChange={onOptionsChange}
+          onChange={onOptionsChange as any}
         />
       </>
     );

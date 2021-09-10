@@ -1,4 +1,4 @@
-import { InlineLabel, Select } from '@grafana/ui';
+import { InlineFormLabel, Select } from '@grafana/ui';
 import React, { useEffect, useState } from 'react';
 
 import { SelectableValue } from '@grafana/data';
@@ -32,12 +32,12 @@ export const VariableQueryEditor: React.FC<VariableQueryProps> = ({ query, onCha
   return (
     <>
       <div className="gf-form">
-        <InlineLabel
-          width={20}
+        <InlineFormLabel
+          width={10}
           tooltip="Select different metric to generate different sets of variables. Each of these metrics is exactly what its name says"
         >
           Metric
-        </InlineLabel>
+        </InlineFormLabel>
         <Select width={25} options={metricOptions} value={state.metric} onChange={onMetricChange} />
       </div>
     </>
