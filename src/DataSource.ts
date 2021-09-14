@@ -47,8 +47,8 @@ export class DataSource extends DataSourceApi<EventsQuery, ChaosMeshDataSourceOp
   async query(options: DataQueryRequest<EventsQuery>): Promise<DataQueryResponse> {
     const { range, scopedVars } = options;
 
-    const from = range.from.format(timeformat);
-    const to = range.to.format(timeformat);
+    const from = range.from.utc().format(timeformat);
+    const to = range.to.utc().format(timeformat);
 
     // Return a constant for each query.
     const data = await Promise.all(
@@ -103,8 +103,8 @@ export class DataSource extends DataSourceApi<EventsQuery, ChaosMeshDataSourceOp
 
   async annotationQuery(options: AnnotationQueryRequest<EventsQuery>): Promise<AnnotationEvent[]> {
     const { range, annotation } = options;
-    const from = range.from.format(timeformat);
-    const to = range.to.format(timeformat);
+    const from = range.from.utc().format(timeformat);
+    const to = range.to.utc().format(timeformat);
 
     const query = defaults(annotation, defaultQuery);
     const vars = getTemplateSrv()
@@ -145,10 +145,10 @@ export class DataSource extends DataSourceApi<EventsQuery, ChaosMeshDataSourceOp
       return {
         title: k,
         text: v
-          .map(d => d.message)
+          .map(d => `${d.created_at}: ${d.message}`)
           .reverse()
           .join('\n'),
-        tags: [`namespace:${first.namespace}`, `kind:${first.kind}`, `type:${first.type}`, `reason:${first.reason}`],
+        tags: [`namespace:${first.namespace}`, `kind:${first.kind}`],
         time: Date.parse(first.created_at),
         timeEnd: Date.parse(last.created_at),
       };
