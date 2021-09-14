@@ -39,9 +39,13 @@ export class DataSource extends DataSourceApi<EventsQuery, ChaosMeshDataSourceOp
 
   private applyVariables(query: EventsQuery, scopedVars: ScopedVars) {
     const keys = Object.keys(query);
-    const values = getTemplateSrv().replace(Object.values(query).join('|'), scopedVars).split('|');
+    // prettier-ignore
+    const values = getTemplateSrv()
+      .replace(Object.values(query).join('|'), scopedVars)
+      .split('|');
 
-    return zipObject(keys, values) as unknown as EventsQuery;
+    // prettier-ignore
+    return (zipObject(keys, values) as unknown) as EventsQuery;
   }
 
   async query(options: DataQueryRequest<EventsQuery>): Promise<DataQueryResponse> {
