@@ -2,7 +2,7 @@
 
 Grafana data source plugin for Chaos Mesh.
 
-> Require: Chaos Mesh >= **2.0.0**, Grafana >= **7.3.0**
+> Require: Chaos Mesh >= **2.0.0**, Grafana >= **7.0.0**
 
 ## Features
 
