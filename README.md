@@ -2,7 +2,7 @@
 
 Grafana data source plugin for Chaos Mesh.
 
-> Require: Chaos Mesh >= **2.0.0**, Grafana >= **7.0.0**
+> Require: Chaos Mesh >= **2.1.0**, Grafana >= **7.0.0**
 
 ## Features
 
@@ -22,7 +22,7 @@ For more installation options, refer: <https://grafana.com/docs/grafana/latest/p
 
 After installed, you can add it in **Configuration -> Data sources**, then you will enter the settings page:
 
-![Settings](src/img/settings.png)
+![Settings](https://raw.githubusercontent.com/chaos-mesh/datasource/master/src/img/settings.png)
 
 Only the `URL` field needs to be filled in and the others can be ignored.
 
@@ -50,7 +50,7 @@ There will be several options to be responsible for filtering events:
 
 Edit example:
 
-![Annotations](src/img/annotations.png)
+![Annotations](https://raw.githubusercontent.com/chaos-mesh/datasource/master/src/img/annotations.png)
 
 For usage, you can refer to the content described by [Query](#query).
 
@@ -59,7 +59,7 @@ For usage, you can refer to the content described by [Query](#query).
 If you choose the type to `Query` and select the data source to `Chaos Mesh`, You can retrieve
 the variables by four different metrics:
 
-![Variables](src/img/variables.png)
+![Variables](https://raw.githubusercontent.com/chaos-mesh/datasource/master/src/img/variables.png)
 
 - Namespace
 

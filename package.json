@@ -1,6 +1,6 @@
 {
   "name": "chaosmesh-datasource",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Chaos Mesh (A Chaos Engineering Platform for Kubernetes) Datasource",
   "scripts": {
     "build": "grafana-toolkit plugin:build",

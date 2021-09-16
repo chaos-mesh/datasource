@@ -20,23 +20,36 @@
     "links": [
       {
         "name": "GitHub",
-        "url": "https://github.com/chaos-mesh/chaos-mesh-datasource"
+        "url": "https://github.com/chaos-mesh/datasource"
       },
       {
         "name": "License",
-        "url": "https://github.com/chaos-mesh/chaos-mesh-datasource/blob/master/LICENSE"
+        "url": "https://github.com/chaos-mesh/datasource/blob/master/LICENSE"
       },
       {
         "name": "Website",
         "url": "https://chaos-mesh.org"
       }
     ],
-    "screenshots": [],
-    "version": "2.0.0",
+    "screenshots": [
+      {
+        "name": "Settings",
+        "path": "img/settings.png"
+      },
+      {
+        "name": "Annotations",
+        "path": "img/annotations.png"
+      },
+      {
+        "name": "Variables",
+        "path": "img/variables.png"
+      }
+    ],
+    "version": "2.1.0",
     "updated": "%TODAY%"
   },
   "dependencies": {
-    "grafanaDependency": ">=7.3.0",
+    "grafanaDependency": ">=7.0.0",
     "plugins": []
   }
 }
