@@ -16,7 +16,7 @@ import defaults from 'lodash/defaults';
 import groupBy from 'lodash/groupBy';
 import zipObject from 'lodash/zipObject';
 
-const timeformat = 'YYYY-MM-DD HH:mm:ss';
+const timeformat = 'YYYY-MM-DDTHH:mm:ssZ';
 
 export class DataSource extends DataSourceApi<EventsQuery, ChaosMeshDataSourceOptions> {
   readonly url: string;
