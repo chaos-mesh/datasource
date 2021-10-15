@@ -125,26 +125,20 @@ jobs:
           plugincheck ${{ steps.metadata.outputs.archive }}
 
       - name: Add plugin to release
-        id: upload-plugin-asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        uses: svenstaro/upload-release-action@v2
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./${{ steps.metadata.outputs.archive }}
+          repo_token: ${{ secrets.GH_TOKEN }}
+          file: ./${{ steps.metadata.outputs.archive }}
           asset_name: ${{ steps.metadata.outputs.archive }}
-          asset_content_type: application/zip
+          tag: ${{ github.ref }}
 
       - name: Add checksum to release
-        id: upload-checksum-asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        uses: svenstaro/upload-release-action@v2
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./${{ steps.metadata.outputs.archive-checksum }}
+          repo_token: ${{ secrets.GH_TOKEN }}
+          file: ./${{ steps.metadata.outputs.archive-checksum }}
           asset_name: ${{ steps.metadata.outputs.archive-checksum }}
-          asset_content_type: text/plain
+          tag: ${{ github.ref }}
 
       - name: Publish to Grafana.com
         run: |
