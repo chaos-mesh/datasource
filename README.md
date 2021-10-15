@@ -1,6 +1,8 @@
-# Chaos Mesh Data Source
+# Data Source
 
 Grafana data source plugin for Chaos Mesh.
+
+> Require: Chaos Mesh >= **2.1.0**, Grafana >= **7.0.0**
 
 ## Features
 
@@ -14,11 +16,13 @@ Grafana data source plugin for Chaos Mesh.
 grafana-cli plugins install yeya24-chaosmesh-datasource
 ```
 
+For more installation options, refer: <https://grafana.com/docs/grafana/latest/plugins/installation>.
+
 ## Setup
 
-After installed, you can add this data source in **Configuration -> Data Sources**, then you will enter the settings page:
+After installed, you can add it in **Configuration -> Data sources**, then you will enter the settings page:
 
-![Data Source settings](https://raw.githubusercontent.com/chaos-mesh/chaos-mesh-datasource/master/src/img/settings.jpg)
+![Settings](https://raw.githubusercontent.com/chaos-mesh/datasource/master/src/img/settings.png)
 
 Only the `URL` field needs to be filled in and the others can be ignored.
 
@@ -32,51 +36,30 @@ kubectl port-forward -n chaos-testing svc/chaos-dashboard 2333:2333
 
 Finally, click **Save & Test** to test the connection. If it shows that the connection is successful, then the setup work has been completed.
 
-### Options
-
-Except for the `url`, this data source plugin has such options as below:
-
-| Name  | Description                                                                                                           |
-| ----- | --------------------------------------------------------------------------------------------------------------------- |
-| Limit | Limit the number of returned Chaos Events. The default is 25. If you want to display more events, please increase it. |
-
 ## Query
 
-Mostly, there will be three options to be responsible for filtering events:
+There will be several options to be responsible for filtering events:
 
-- **Experiment** - Filter by the experiment name. Must be a full name.
-- **Namespace** - Filter by different namespaces
-- **Kind** - Filter by Chaos kinds
-
-For real world usage, normally you will use these options in two situations:
-
-- Specify all fields to locate an experiment more precisely.
-- Let **Experiment** be empty to reduce the constraints of events filtering.
-- Pass a variable like `$experiment` to query to control the events displaying.
+- **Object ID** - Filter by object uuid
+- **Namespace** - Filter by different namespace
+- **Name** - Filter by object name
+- **Kind** - Filter by kind (PodChaos, Schedule...)
+- **Limit** - Limit the number of events
 
 ## Annotations
 
 Edit example:
 
-![Data Source annotations](https://raw.githubusercontent.com/chaos-mesh/chaos-mesh-datasource/master/src/img/annotations.png)
+![Annotations](https://raw.githubusercontent.com/chaos-mesh/datasource/master/src/img/annotations.png)
 
 For usage, you can refer to the content described by [Query](#query).
 
 ## Variables
 
-If you choose the Variables type to query and select the data source to Chaos Mesh, You can get three different kind values.
+If you choose the type to `Query` and select the data source to `Chaos Mesh`, You can retrieve
+the variables by four different metrics:
 
-Specify by choosing different **metric**:
-
-- Experiment
-
-  After selection, a text input field will occur, fill in the value of the experiment name you want to settle. Usually, you will fill in the **partial** name of some experiments to get the related experiment names.
-
-  > For example, you have two experiments:
-  >
-  > random-pod-kill and random-pod-failure
-  >
-  > Then you can fill **random** in the text field to get these experiments.
+![Variables](https://raw.githubusercontent.com/chaos-mesh/datasource/master/src/img/variables.png)
 
 - Namespace
 
@@ -84,7 +67,15 @@ Specify by choosing different **metric**:
 
 - Kind
 
-  Same as **Namespace**.
+  Same as **Namespace**. Get all kinds.
+
+- Experiment
+
+  Same as **Namespace**. Get the names of all experiments.
+
+- Schedule
+
+  Same as **Namespace**. Get the names of all schedules.
 
 ## How to contribute
 

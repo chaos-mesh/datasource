@@ -29,9 +29,9 @@ e2e-results/
 # Editor
 .idea
 
-# macOS
-.DS_Store
+# npm
+package-lock.json
 
-jest.config.js
+.DS_Store
 yeya24-chaosmesh-datasource
 *.zip

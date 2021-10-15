@@ -1,14 +1,15 @@
 {
+  "$schema": "https://raw.githubusercontent.com/grafana/grafana/master/docs/sources/developers/plugins/plugin.schema.json",
   "type": "datasource",
   "name": "Chaos Mesh",
   "id": "yeya24-chaosmesh-datasource",
   "category": "cloud",
-  "metrics": true,
   "annotations": true,
+  "metrics": true,
   "info": {
     "description": "Chaos Mesh (A Chaos Engineering Platform for Kubernetes) Datasource",
     "author": {
-      "name": "Chaos Mesh Project",
+      "name": "Chaos Mesh Project Team",
       "url": "https://github.com/chaos-mesh"
     },
     "keywords": ["Cloud", "Chaos Engineering", "Chaos Mesh"],
@@ -16,35 +17,39 @@
       "small": "img/logo.svg",
       "large": "img/logo.svg"
     },
+    "links": [
+      {
+        "name": "GitHub",
+        "url": "https://github.com/chaos-mesh/datasource"
+      },
+      {
+        "name": "License",
+        "url": "https://github.com/chaos-mesh/datasource/blob/master/LICENSE"
+      },
+      {
+        "name": "Website",
+        "url": "https://chaos-mesh.org"
+      }
+    ],
     "screenshots": [
       {
-        "name": "Datasource Setting",
-        "path": "img/settings.jpg"
+        "name": "Settings",
+        "path": "img/settings.png"
       },
       {
         "name": "Annotations",
         "path": "img/annotations.png"
-      }
-    ],
-    "links": [
-      {
-        "name": "GitHub",
-        "url": "https://github.com/chaos-mesh/chaos-mesh-datasource"
       },
       {
-        "name": "License",
-        "url": "https://github.com/chaos-mesh/chaos-mesh-datasource/blob/master/LICENSE"
-      },
-      {
-        "name": "Chaos Mesh Website",
-        "url": "https://chaos-mesh.org/"
+        "name": "Variables",
+        "path": "img/variables.png"
       }
     ],
-    "version": "0.2.2",
+    "version": "2.1.0",
     "updated": "%TODAY%"
   },
   "dependencies": {
-    "grafanaDependency": ">=6.5.0",
+    "grafanaDependency": ">=7.0.0",
     "plugins": []
   }
 }
