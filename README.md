@@ -13,7 +13,7 @@ Grafana data source plugin for Chaos Mesh.
 ## Installation
 
 ```sh
-grafana-cli plugins install yeya24-chaosmesh-datasource
+grafana-cli plugins install chaosmeshorg-datasource
 ```
 
 For more installation options, refer: <https://grafana.com/docs/grafana/latest/plugins/installation>.

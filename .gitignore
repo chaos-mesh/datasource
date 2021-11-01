@@ -33,5 +33,6 @@ e2e-results/
 package-lock.json
 
 .DS_Store
-yeya24-chaosmesh-datasource
+chaosmeshorg-datasource
 *.zip
+*.zip.md5

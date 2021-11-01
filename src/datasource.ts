@@ -27,13 +27,13 @@ export class DataSource extends DataSourceApi<EventsQuery, ChaosMeshDataSourceOp
     this.url = instanceSettings.url!;
   }
 
-  private async fetch<T>(url: string, query?: EventsQuery): Promise<T> {
+  private async fetch<T>(url: string, query?: Partial<EventsQuery>): Promise<T> {
     const data = await getBackendSrv().get(this.url + url, query);
 
     return data;
   }
 
-  private async fetchEvents(query: EventsQuery) {
+  private async fetchEvents(query: Partial<EventsQuery>) {
     return await this.fetch<Event[]>('/api/events', query);
   }
 

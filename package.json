@@ -1,5 +1,5 @@
 {
-  "name": "chaosmesh-datasource",
+  "name": "chaosmeshorg-datasource",
   "version": "2.1.0",
   "description": "Chaos Mesh (A Chaos Engineering Platform for Kubernetes) Datasource",
   "scripts": {
@@ -16,16 +16,16 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@grafana/data": "latest",
-    "@grafana/runtime": "^8.1.2",
+    "@grafana/runtime": "^8.2.2",
     "@grafana/toolkit": "latest",
     "@grafana/ui": "7.0.0",
     "@testing-library/jest-dom": "5.4.0",
     "@testing-library/react": "^10.0.2",
-    "@types/lodash": "latest",
-    "husky": "^7.0.2",
+    "@types/lodash": "^4.14.176",
+    "husky": "^7.0.4",
     "import-sort-style-eslint": "^6.0.0",
-    "lint-staged": "^11.1.2",
-    "prettier": "^2.3.2",
+    "lint-staged": "^11.2.4",
+    "prettier": "^2.4.1",
     "prettier-plugin-import-sort": "^0.0.7"
   },
   "resolutions": {
