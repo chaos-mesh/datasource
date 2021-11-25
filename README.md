@@ -55,7 +55,7 @@ Finally, restart Grafana to load the plugin.
 
 Once installed, go to **Configuration -> Data sources** and add Chaos Mesh, then go to the configuration page:
 
-![Configuration page](img/grafana/settings.png)
+![Settings](https://raw.githubusercontent.com/chaos-mesh/datasource/master/src/img/settings.png)
 
 Only the `URL` field needs to be filled in, the other fields can be ignored.
 
@@ -85,7 +85,7 @@ They will be passed as parameters to the `/api/events` API.
 
 You can integrate Chaos Mesh's events into the panel via Annotations, the following is a sample creation:
 
-! [Annotations](img/grafana/annotations.png)
+![Annotations](https://raw.githubusercontent.com/chaos-mesh/datasource/master/src/img/annotations.png)
 
 Please refer to the contents of [Query](#query) to fill in the corresponding fields.
 
