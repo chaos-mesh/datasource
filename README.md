@@ -16,13 +16,13 @@ Grafana data source plugin for Chaos Mesh.
 grafana-cli plugins install chaosmeshorg-datasource
 ``` -->
 
+## Install
+
 > **Note:**
 >
 > Because Grafana is not yet accepting the plugin submission for Chaos Mesh Data Source, it can't be installed using `grafana-cli` at this time.
 >
 > The following steps show how to install the Data Source plugin locally.
-
-## Install
 
 Download the plugin zip package with the following command or go to <https://github.com/chaos-mesh/datasource/releases> to download:
 
@@ -35,12 +35,6 @@ After downloading, unzip:
 ```shell
 unzip chaosmeshorg-datasource-2.1.0.zip -d YOUR_PLUGIN_DIR
 ```
-
-:::tip
-
-Refer to <https://grafana.com/docs/grafana/latest/plugins/installation/#install-a-packaged-plugin> to find the plugin dir.
-
-:::
 
 Then update and save the `grafana.ini` file:
 
