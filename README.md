@@ -10,35 +10,68 @@ Grafana data source plugin for Chaos Mesh.
 - Show Chaos Events on the graph with [Annotations](https://grafana.com/docs/grafana/latest/dashboards/annotations/)
 - Display different Chaos Events by [Variables](https://grafana.com/docs/grafana/latest/variables/)
 
-## Installation
+<!-- ## Install
 
 ```sh
 grafana-cli plugins install chaosmeshorg-datasource
+``` -->
+
+> **Note:**
+>
+> Because Grafana is not yet accepting the plugin submission for Chaos Mesh Data Source, it can't be installed using `grafana-cli` at this time.
+>
+> The following steps show how to install the Data Source plugin locally.
+
+## Install
+
+Download the plugin zip package with the following command or go to <https://github.com/chaos-mesh/datasource/releases> to download:
+
+```shell
+curl -LO https://github.com/chaos-mesh/datasource/releases/download/v2.1.0/chaosmeshorg-datasource-2.1.0.zip
 ```
 
-For more installation options, refer: <https://grafana.com/docs/grafana/latest/plugins/installation>.
+After downloading, unzip:
+
+```shell
+unzip chaosmeshorg-datasource-2.1.0.zip -d YOUR_PLUGIN_DIR
+```
+
+:::tip
+
+Refer to <https://grafana.com/docs/grafana/latest/plugins/installation/#install-a-packaged-plugin> to find the plugin dir.
+
+:::
+
+Then update and save the `grafana.ini` file:
+
+```ini
+[plugins]
+  allow_loading_unsigned_plugins = chaosmeshorg-datasource
+```
+
+Finally, restart Grafana to load the plugin.
 
 ## Setup
 
-After installed, you can add it in **Configuration -> Data sources**, then you will enter the settings page:
+Once installed, go to **Configuration -> Data sources** and add Chaos Mesh, then go to the configuration page:
 
-![Settings](https://raw.githubusercontent.com/chaos-mesh/datasource/master/src/img/settings.png)
+![Configuration page](img/grafana/settings.png)
 
-Only the `URL` field needs to be filled in and the others can be ignored.
+Only the `URL` field needs to be filled in, the other fields can be ignored.
 
-Assuming you have a local Chaos Mesh installed, the dashboard will default export its API in port `2333`. So, if you don't modify anything, you can simply fill `http://localhost:2333` into it.
+Assuming you have Chaos Mesh installed locally, Dashboard will export the API on port `2333` by default. So, if you haven't changed anything, you can just fill in `http://localhost:2333`.
 
-Then use **port-forward** to active:
+Then use the `port-forward` command to activate:
 
-```sh
+```shell
 kubectl port-forward -n chaos-testing svc/chaos-dashboard 2333:2333
 ```
 
-Finally, click **Save & Test** to test the connection. If it shows that the connection is successful, then the setup work has been completed.
+Finally, click **Save & Test** to test the connection. If it shows a successful notification, the setup is complete.
 
 ## Query
 
-There will be several options to be responsible for filtering events:
+The Data Source plugin looks at the Chaos Mesh through the lens of events, and the following options are responsible for filtering the different events:
 
 - **Object ID** - Filter by object uuid
 - **Namespace** - Filter by different namespace
@@ -46,18 +79,20 @@ There will be several options to be responsible for filtering events:
 - **Kind** - Filter by kind (PodChaos, Schedule...)
 - **Limit** - Limit the number of events
 
+They will be passed as parameters to the `/api/events` API.
+
 ## Annotations
 
-Edit example:
+You can integrate Chaos Mesh's events into the panel via Annotations, the following is a sample creation:
 
-![Annotations](https://raw.githubusercontent.com/chaos-mesh/datasource/master/src/img/annotations.png)
+! [Annotations](img/grafana/annotations.png)
 
-For usage, you can refer to the content described by [Query](#query).
+Please refer to the contents of [Query](#query) to fill in the corresponding fields.
 
 ## Variables
 
-If you choose the type to `Query` and select the data source to `Chaos Mesh`, You can retrieve
-the variables by four different metrics:
+If you choose the type to `Query` and select the data source to `Chaos Mesh`, you can retrieve
+the variables by different metrics:
 
 ![Variables](https://raw.githubusercontent.com/chaos-mesh/datasource/master/src/img/variables.png)
 
