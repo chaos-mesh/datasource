@@ -13,14 +13,12 @@ export class ConfigEditor extends PureComponent<Props, State> {
     const { options, onOptionsChange } = this.props;
 
     return (
-      <>
-        <DataSourceHttpSettings
-          defaultUrl="http://localhost:2333"
-          dataSourceConfig={options}
-          showAccessOptions={true}
-          onChange={onOptionsChange as any}
-        />
-      </>
+      <DataSourceHttpSettings
+        defaultUrl="http://localhost:2333"
+        dataSourceConfig={options}
+        showAccessOptions={true}
+        onChange={onOptionsChange as any}
+      />
     );
   }
 }
