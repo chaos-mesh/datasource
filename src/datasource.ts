@@ -1,3 +1,19 @@
+/*
+ * Copyright 2022 Chaos Mesh Authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 import {
   AnnotationEvent,
   AnnotationQueryRequest,
@@ -8,37 +24,37 @@ import {
   FieldType,
   MutableDataFrame,
   ScopedVars,
-} from '@grafana/data';
-import { ChaosMeshDataSourceOptions, Event, EventsQuery, VariableQuery, defaultQuery, kinds } from './types';
-import { getBackendSrv, getTemplateSrv } from '@grafana/runtime';
+} from '@grafana/data'
+import { getBackendSrv, getTemplateSrv } from '@grafana/runtime'
+import defaults from 'lodash/defaults'
+import groupBy from 'lodash/groupBy'
+import zipObject from 'lodash/zipObject'
 
-import defaults from 'lodash/defaults';
-import groupBy from 'lodash/groupBy';
-import zipObject from 'lodash/zipObject';
+import { ChaosMeshDataSourceOptions, Event, EventsQuery, VariableQuery, defaultQuery, kinds } from './types'
 
-const timeformat = 'YYYY-MM-DDTHH:mm:ssZ';
+const timeformat = 'YYYY-MM-DDTHH:mm:ssZ'
 
 export class DataSource extends DataSourceApi<EventsQuery, ChaosMeshDataSourceOptions> {
-  readonly url: string;
+  readonly url: string
 
   constructor(instanceSettings: DataSourceInstanceSettings<ChaosMeshDataSourceOptions>) {
-    super(instanceSettings);
+    super(instanceSettings)
 
-    this.url = instanceSettings.url!;
+    this.url = instanceSettings.url!
   }
 
   private async fetch<T>(url: string, query?: Partial<EventsQuery>): Promise<T> {
-    const data = await getBackendSrv().get(this.url + url, query);
+    const data = await getBackendSrv().get(this.url + url, query)
 
-    return data;
+    return data
   }
 
   private async fetchEvents(query: Partial<EventsQuery>) {
-    return await this.fetch<Event[]>('/api/events', query);
+    return await this.fetch<Event[]>('/api/events', query)
   }
 
   private applyVariables(query: EventsQuery, scopedVars: ScopedVars) {
-    const keys = Object.keys(query);
+    const keys = Object.keys(query)
     // prettier-ignore
     const values = getTemplateSrv()
       .replace(Object.values(query).join('|'), scopedVars)
@@ -49,17 +65,17 @@ export class DataSource extends DataSourceApi<EventsQuery, ChaosMeshDataSourceOp
   }
 
   async query(options: DataQueryRequest<EventsQuery>): Promise<DataQueryResponse> {
-    const { range, scopedVars } = options;
+    const { range, scopedVars } = options
 
-    const from = range.from.utc().format(timeformat);
-    const to = range.to.utc().format(timeformat);
+    const from = range.from.utc().format(timeformat)
+    const to = range.to.utc().format(timeformat)
 
     // Return a constant for each query.
     const data = await Promise.all(
       options.targets.map(async target => {
-        const query = this.applyVariables(defaults(target, defaultQuery), scopedVars);
-        query.start = from;
-        query.end = to;
+        const query = this.applyVariables(defaults(target, defaultQuery), scopedVars)
+        query.start = from
+        query.end = to
 
         const frame = new MutableDataFrame<Event>({
           refId: query.refId,
@@ -73,32 +89,32 @@ export class DataSource extends DataSourceApi<EventsQuery, ChaosMeshDataSourceOp
             { name: 'reason', type: FieldType.string },
             { name: 'message', type: FieldType.string },
           ],
-        });
+        })
 
-        (await this.fetchEvents(query)).forEach(d => {
-          frame.add(d);
-        });
+        ;(await this.fetchEvents(query)).forEach(d => {
+          frame.add(d)
+        })
 
-        return frame;
+        return frame
       })
-    );
+    )
 
-    return { data };
+    return { data }
   }
 
   async testDatasource() {
     try {
-      await getBackendSrv().get(this.url + '/api/common/config');
+      await getBackendSrv().get(this.url + '/api/common/config')
 
       return {
         status: 'success',
         message: 'Chaos Mesh API status is normal',
-      };
+      }
     } catch (error) {
       return {
         status: 'error',
         message: (error as any).message,
-      };
+      }
     }
   }
 
@@ -106,25 +122,25 @@ export class DataSource extends DataSourceApi<EventsQuery, ChaosMeshDataSourceOp
   // annotations = {};
 
   async annotationQuery(options: AnnotationQueryRequest<EventsQuery>): Promise<AnnotationEvent[]> {
-    const { range, annotation } = options;
-    const from = range.from.utc().format(timeformat);
-    const to = range.to.utc().format(timeformat);
+    const { range, annotation } = options
+    const from = range.from.utc().format(timeformat)
+    const to = range.to.utc().format(timeformat)
 
-    const query = defaults(annotation, defaultQuery);
+    const query = defaults(annotation, defaultQuery)
     const vars = getTemplateSrv()
       .getVariables()
       .map((d: any) => {
-        const { name, current } = d;
+        const { name, current } = d
 
-        const key = `$${name}`;
-        const value = current.value;
+        const key = `$${name}`
+        const value = current.value
 
-        return { key, value };
-      });
+        return { key, value }
+      })
 
-    const keys = vars.map(d => d.key);
+    const keys = vars.map(d => d.key)
     for (const q in query) {
-      const variableValue = (query as any)[q];
+      const variableValue = (query as any)[q]
 
       if (
         query.hasOwnProperty(q) &&
@@ -132,19 +148,19 @@ export class DataSource extends DataSourceApi<EventsQuery, ChaosMeshDataSourceOp
         variableValue.startsWith('$') &&
         keys.includes(variableValue)
       ) {
-        (query as any)[q] = vars.find(d => d.key === variableValue)?.value;
+        ;(query as any)[q] = vars.find(d => d.key === variableValue)?.value
       }
     }
 
-    query.start = from;
-    query.end = to;
+    query.start = from
+    query.end = to
 
-    const data = await this.fetchEvents({ ...query, name: (query as any).nname });
-    const grouped = groupBy(data, d => d.name);
+    const data = await this.fetchEvents({ ...query, name: (query as any).nname })
+    const grouped = groupBy(data, d => d.name)
 
     return Object.entries(grouped).map(([k, v]) => {
-      const first = v[v.length - 1];
-      const last = v[0];
+      const first = v[v.length - 1]
+      const last = v[0]
 
       return {
         title: k,
@@ -155,22 +171,22 @@ export class DataSource extends DataSourceApi<EventsQuery, ChaosMeshDataSourceOp
         tags: [`namespace:${first.namespace}`, `kind:${first.kind}`],
         time: Date.parse(first.created_at),
         timeEnd: Date.parse(last.created_at),
-      };
-    });
+      }
+    })
   }
 
   async metricFindQuery(query: VariableQuery) {
     switch (query.metric) {
       case 'namespace':
-        return (await this.fetch<string[]>('/api/common/namespaces')).map(d => ({ text: d }));
+        return (await this.fetch<string[]>('/api/common/namespaces')).map(d => ({ text: d }))
       case 'kind':
-        return kinds.map(d => ({ text: d }));
+        return kinds.map(d => ({ text: d }))
       case 'experiment':
-        return (await this.fetch<string[]>('/api/experiments')).map((d: any) => ({ text: d.name }));
+        return (await this.fetch<string[]>('/api/experiments')).map((d: any) => ({ text: d.name }))
       case 'schedule':
-        return (await this.fetch<string[]>('/api/schedules')).map((d: any) => ({ text: d.name }));
+        return (await this.fetch<string[]>('/api/schedules')).map((d: any) => ({ text: d.name }))
       default:
-        return [];
+        return []
     }
   }
 }

@@ -1,42 +1,58 @@
-import { ChaosMeshDataSourceOptions, EventsQuery, defaultQuery } from './types';
-import React, { ChangeEvent, PureComponent } from 'react';
+/*
+ * Copyright 2022 Chaos Mesh Authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+import { QueryEditorProps } from '@grafana/data'
+import { LegacyForms } from '@grafana/ui'
+import { DebouncedFunc } from 'lodash'
+import debounce from 'lodash/debounce'
+import defaults from 'lodash/defaults'
+import React, { ChangeEvent, PureComponent } from 'react'
 
-import { DataSource } from './datasource';
-import { DebouncedFunc } from 'lodash';
-import { LegacyForms } from '@grafana/ui';
-import { QueryEditorProps } from '@grafana/data';
-import debounce from 'lodash/debounce';
-import defaults from 'lodash/defaults';
+import { DataSource } from './datasource'
+import { ChaosMeshDataSourceOptions, EventsQuery, defaultQuery } from './types'
 
-const { FormField } = LegacyForms;
+const { FormField } = LegacyForms
 
-type Props = QueryEditorProps<DataSource, EventsQuery, ChaosMeshDataSourceOptions>;
+type Props = QueryEditorProps<DataSource, EventsQuery, ChaosMeshDataSourceOptions>
 
 export class QueryEditor extends PureComponent<Props> {
-  onRunQueryDebounced: DebouncedFunc<any>;
+  onRunQueryDebounced: DebouncedFunc<any>
 
   constructor(props: Props) {
-    super(props);
+    super(props)
 
-    this.onRunQueryDebounced = debounce(this.props.onRunQuery, 500);
+    this.onRunQueryDebounced = debounce(this.props.onRunQuery, 500)
   }
 
   onChange = (key: keyof EventsQuery) => (event: ChangeEvent<HTMLInputElement>) => {
-    const { onChange, query } = this.props;
+    const { onChange, query } = this.props
 
-    let value: string | number = event.target.value;
+    let value: string | number = event.target.value
     if (key === 'limit') {
-      value = parseInt(value, 10);
+      value = parseInt(value, 10)
     }
 
-    onChange({ ...query, [key]: value });
+    onChange({ ...query, [key]: value })
     // executes the query
-    this.onRunQueryDebounced();
-  };
+    this.onRunQueryDebounced()
+  }
 
   render() {
-    const query = defaults(this.props.query, defaultQuery);
-    const { object_id, namespace, name, kind, limit } = query;
+    const query = defaults(this.props.query, defaultQuery)
+    const { object_id, namespace, name, kind, limit } = query
 
     return (
       <div className="gf-form">
@@ -62,6 +78,6 @@ export class QueryEditor extends PureComponent<Props> {
           tooltip="Filter events by Limit"
         />
       </div>
-    );
+    )
   }
 }
