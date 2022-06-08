@@ -14,11 +14,11 @@
  * limitations under the License.
  *
  */
-import { DataSourcePluginOptionsEditorProps } from '@grafana/data'
-import { DataSourceHttpSettings } from '@grafana/ui'
-import React, { PureComponent } from 'react'
+import { DataSourcePluginOptionsEditorProps } from '@grafana/data';
+import { DataSourceHttpSettings } from '@grafana/ui';
+import React, { PureComponent } from 'react';
 
-import { ChaosMeshDataSourceOptions } from './types'
+import { ChaosMeshDataSourceOptions } from './types';
 
 interface Props extends DataSourcePluginOptionsEditorProps<ChaosMeshDataSourceOptions> {}
 
@@ -26,7 +26,7 @@ interface State {}
 
 export class ConfigEditor extends PureComponent<Props, State> {
   render() {
-    const { options, onOptionsChange } = this.props
+    const { options, onOptionsChange } = this.props;
 
     return (
       <DataSourceHttpSettings
@@ -35,6 +35,6 @@ export class ConfigEditor extends PureComponent<Props, State> {
         showAccessOptions={true}
         onChange={onOptionsChange as any}
       />
-    )
+    );
   }
 }

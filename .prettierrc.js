@@ -13,7 +13,4 @@ module.exports = {
   ],
   importOrderSeparation: true,
   importOrderSortSpecifiers: true,
-  semi: false,
-  singleQuote: true,
-  printWidth: 120,
-};
+}

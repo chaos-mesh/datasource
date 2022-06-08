@@ -14,32 +14,32 @@
  * limitations under the License.
  *
  */
-import { DataQuery, DataSourceJsonData } from '@grafana/data'
+import { DataQuery, DataSourceJsonData } from '@grafana/data';
 
 export interface Event {
-  object_id: uuid
-  created_at: string
-  namespace: string
-  name: string
-  kind: string
-  type: 'Normal' | 'Warning'
-  reason: string
-  message: string
+  object_id: uuid;
+  created_at: string;
+  namespace: string;
+  name: string;
+  kind: string;
+  type: 'Normal' | 'Warning';
+  reason: string;
+  message: string;
 }
 
 export interface EventsQuery extends DataQuery {
-  object_id?: uuid
-  start: string
-  end: string
-  namespace?: string
-  name?: string
-  kind?: string
-  limit?: number
+  object_id?: uuid;
+  start: string;
+  end: string;
+  namespace?: string;
+  name?: string;
+  kind?: string;
+  limit?: number;
 }
 
 export const defaultQuery: Partial<EventsQuery> = {
   limit: 216,
-}
+};
 
 export const kinds = [
   'AWSChaos',
@@ -53,10 +53,10 @@ export const kinds = [
   'PodChaos',
   'StressChaos',
   'TimeChaos',
-]
+];
 
 export interface VariableQuery {
-  metric: 'namespace' | 'kind' | 'experiment' | 'schedule'
+  metric: 'namespace' | 'kind' | 'experiment' | 'schedule';
 }
 
 /**

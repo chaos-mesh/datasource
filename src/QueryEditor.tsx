@@ -14,45 +14,45 @@
  * limitations under the License.
  *
  */
-import { QueryEditorProps } from '@grafana/data'
-import { LegacyForms } from '@grafana/ui'
-import { DebouncedFunc } from 'lodash'
-import debounce from 'lodash/debounce'
-import defaults from 'lodash/defaults'
-import React, { ChangeEvent, PureComponent } from 'react'
+import { QueryEditorProps } from '@grafana/data';
+import { LegacyForms } from '@grafana/ui';
+import { DebouncedFunc } from 'lodash';
+import debounce from 'lodash/debounce';
+import defaults from 'lodash/defaults';
+import React, { ChangeEvent, PureComponent } from 'react';
 
-import { DataSource } from './datasource'
-import { ChaosMeshDataSourceOptions, EventsQuery, defaultQuery } from './types'
+import { DataSource } from './datasource';
+import { ChaosMeshDataSourceOptions, EventsQuery, defaultQuery } from './types';
 
-const { FormField } = LegacyForms
+const { FormField } = LegacyForms;
 
-type Props = QueryEditorProps<DataSource, EventsQuery, ChaosMeshDataSourceOptions>
+type Props = QueryEditorProps<DataSource, EventsQuery, ChaosMeshDataSourceOptions>;
 
 export class QueryEditor extends PureComponent<Props> {
-  onRunQueryDebounced: DebouncedFunc<any>
+  onRunQueryDebounced: DebouncedFunc<any>;
 
   constructor(props: Props) {
-    super(props)
+    super(props);
 
-    this.onRunQueryDebounced = debounce(this.props.onRunQuery, 500)
+    this.onRunQueryDebounced = debounce(this.props.onRunQuery, 500);
   }
 
   onChange = (key: keyof EventsQuery) => (event: ChangeEvent<HTMLInputElement>) => {
-    const { onChange, query } = this.props
+    const { onChange, query } = this.props;
 
-    let value: string | number = event.target.value
+    let value: string | number = event.target.value;
     if (key === 'limit') {
-      value = parseInt(value, 10)
+      value = parseInt(value, 10);
     }
 
-    onChange({ ...query, [key]: value })
+    onChange({ ...query, [key]: value });
     // executes the query
-    this.onRunQueryDebounced()
-  }
+    this.onRunQueryDebounced();
+  };
 
   render() {
-    const query = defaults(this.props.query, defaultQuery)
-    const { object_id, namespace, name, kind, limit } = query
+    const query = defaults(this.props.query, defaultQuery);
+    const { object_id, namespace, name, kind, limit } = query;
 
     return (
       <div className="gf-form">
@@ -78,6 +78,6 @@ export class QueryEditor extends PureComponent<Props> {
           tooltip="Filter events by Limit"
         />
       </div>
-    )
+    );
   }
 }
