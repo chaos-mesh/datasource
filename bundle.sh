@@ -1,7 +1,7 @@
 VERSION=$1
+ID=chaosmeshorg-datasource
 
 rm -rf dist
-rm -rf chaosmeshorg-datasource
 
 echo "Bundled Version: $VERSION"
 echo "Start to build..."
@@ -11,8 +11,10 @@ yarn build
 # yarn sign
 
 echo "Bundling..."
-echo
 
-cp -r dist chaosmeshorg-datasource
-zip -r chaosmeshorg-datasource-$VERSION.zip chaosmeshorg-datasource -x "*.DS_Store*"
-md5sum chaosmeshorg-datasource-2.1.0.zip > chaosmeshorg-datasource-2.1.0.zip.md5
+cp -r dist $ID
+zip -r $ID-$VERSION.zip dist -x "*.DS_Store*"
+md5sum $ID-$VERSION.zip > $ID-$VERSION.zip.md5
+rm -rf $ID
+
+echo "Done."

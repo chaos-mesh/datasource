@@ -20,11 +20,9 @@ import React, { PureComponent } from 'react';
 
 import { ChaosMeshDataSourceOptions } from './types';
 
-interface Props extends DataSourcePluginOptionsEditorProps<ChaosMeshDataSourceOptions> {}
+type Props = DataSourcePluginOptionsEditorProps<ChaosMeshDataSourceOptions>;
 
-interface State {}
-
-export class ConfigEditor extends PureComponent<Props, State> {
+export class ConfigEditor extends PureComponent<Props> {
   render() {
     const { options, onOptionsChange } = this.props;
 
@@ -32,8 +30,7 @@ export class ConfigEditor extends PureComponent<Props, State> {
       <DataSourceHttpSettings
         defaultUrl="http://localhost:2333"
         dataSourceConfig={options}
-        showAccessOptions={true}
-        onChange={onOptionsChange as any}
+        onChange={onOptionsChange}
       />
     );
   }

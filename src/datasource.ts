@@ -26,21 +26,19 @@ import {
   ScopedVars,
 } from '@grafana/data';
 import { getBackendSrv, getTemplateSrv } from '@grafana/runtime';
-import defaults from 'lodash/defaults';
-import groupBy from 'lodash/groupBy';
-import zipObject from 'lodash/zipObject';
+import _ from 'lodash';
 
 import { ChaosMeshDataSourceOptions, Event, EventsQuery, VariableQuery, defaultQuery, kinds } from './types';
 
 const timeformat = 'YYYY-MM-DDTHH:mm:ssZ';
 
 export class DataSource extends DataSourceApi<EventsQuery, ChaosMeshDataSourceOptions> {
-  readonly url: string;
+  readonly url?: string;
 
   constructor(instanceSettings: DataSourceInstanceSettings<ChaosMeshDataSourceOptions>) {
     super(instanceSettings);
 
-    this.url = instanceSettings.url!;
+    this.url = instanceSettings.url;
   }
 
   private async fetch<T>(url: string, query?: Partial<EventsQuery>): Promise<T> {
@@ -61,7 +59,7 @@ export class DataSource extends DataSourceApi<EventsQuery, ChaosMeshDataSourceOp
       .split('|');
 
     // prettier-ignore
-    return (zipObject(keys, values) as unknown) as EventsQuery;
+    return (_.zipObject(keys, values) as unknown) as EventsQuery;
   }
 
   async query(options: DataQueryRequest<EventsQuery>): Promise<DataQueryResponse> {
@@ -73,7 +71,7 @@ export class DataSource extends DataSourceApi<EventsQuery, ChaosMeshDataSourceOp
     // Return a constant for each query.
     const data = await Promise.all(
       options.targets.map(async target => {
-        const query = this.applyVariables(defaults(target, defaultQuery), scopedVars);
+        const query = this.applyVariables(_.defaults(target, defaultQuery), scopedVars);
         query.start = from;
         query.end = to;
 
@@ -119,14 +117,15 @@ export class DataSource extends DataSourceApi<EventsQuery, ChaosMeshDataSourceOp
   }
 
   // https://grafana.com/docs/grafana/latest/developers/plugins/add-support-for-annotations/
-  // annotations = {};
+  // This will support annotation queries for 7.2+
+  annotations = {};
 
   async annotationQuery(options: AnnotationQueryRequest<EventsQuery>): Promise<AnnotationEvent[]> {
     const { range, annotation } = options;
     const from = range.from.utc().format(timeformat);
     const to = range.to.utc().format(timeformat);
 
-    const query = defaults(annotation, defaultQuery);
+    const query = _.defaults(annotation, defaultQuery);
     const vars = getTemplateSrv()
       .getVariables()
       .map((d: any) => {
@@ -156,7 +155,7 @@ export class DataSource extends DataSourceApi<EventsQuery, ChaosMeshDataSourceOp
     query.end = to;
 
     const data = await this.fetchEvents({ ...query, name: (query as any).nname });
-    const grouped = groupBy(data, d => d.name);
+    const grouped = _.groupBy(data, d => d.name);
 
     return Object.entries(grouped).map(([k, v]) => {
       const first = v[v.length - 1];
