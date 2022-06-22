@@ -54,6 +54,7 @@ export const ChaosMeshSettings = (props: Props) => {
   );
 };
 
+// https://github.com/grafana/grafana/blob/v9.0.1/public/app/plugins/datasource/prometheus/configuration/PromSettings.tsx#L152
 export const getValueFromEvent = (e: SyntheticEvent<HTMLInputElement> | SelectableValue<string>) => {
   if (!e) {
     return '';
