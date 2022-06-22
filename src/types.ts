@@ -38,21 +38,24 @@ export interface EventsQuery extends DataQuery {
 }
 
 export const defaultQuery: Partial<EventsQuery> = {
-  limit: 216,
+  limit: 300,
 };
 
 export const kinds = [
   'AWSChaos',
+  'AzureChaos',
+  'BlockChaos',
   'DNSChaos',
   'GCPChaos',
   'HTTPChaos',
-  'IOChao',
+  'IOChaos',
   'JVMChaos',
   'KernelChaos',
   'NetworkChaos',
   'PodChaos',
   'StressChaos',
   'TimeChaos',
+  'PhysicalMachineChaos',
 ];
 
 export interface VariableQuery {
@@ -62,7 +65,9 @@ export interface VariableQuery {
 /**
  * These are options configured for each DataSource instance
  */
-export interface ChaosMeshDataSourceOptions extends DataSourceJsonData {}
+export interface ChaosMeshOptions extends DataSourceJsonData {
+  limit?: number;
+}
 
 /**
  * Value that is used in the backend, but never sent over HTTP to the frontend

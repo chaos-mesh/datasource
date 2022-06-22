@@ -21,9 +21,9 @@ import { ConfigEditor } from './ConfigEditor';
 import { QueryEditor } from './QueryEditor';
 import { VariableQueryEditor } from './VariableQueryEditor';
 import { DataSource } from './datasource';
-import { ChaosMeshDataSourceOptions, EventsQuery } from './types';
+import { ChaosMeshOptions, EventsQuery } from './types';
 
-export const plugin = new DataSourcePlugin<DataSource, EventsQuery, ChaosMeshDataSourceOptions>(DataSource)
+export const plugin = new DataSourcePlugin<DataSource, EventsQuery, ChaosMeshOptions>(DataSource)
   .setConfigEditor(ConfigEditor)
   .setQueryEditor(QueryEditor)
   .setVariableQueryEditor(VariableQueryEditor)

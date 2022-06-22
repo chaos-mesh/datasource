@@ -16,22 +16,26 @@
  */
 import { DataSourcePluginOptionsEditorProps } from '@grafana/data';
 import { DataSourceHttpSettings } from '@grafana/ui';
+import { ChaosMeshSettings } from 'ChaosMeshSettings';
 import React, { PureComponent } from 'react';
 
-import { ChaosMeshDataSourceOptions } from './types';
+import { ChaosMeshOptions } from './types';
 
-type Props = DataSourcePluginOptionsEditorProps<ChaosMeshDataSourceOptions>;
+type Props = DataSourcePluginOptionsEditorProps<ChaosMeshOptions>;
 
 export class ConfigEditor extends PureComponent<Props> {
   render() {
     const { options, onOptionsChange } = this.props;
 
     return (
-      <DataSourceHttpSettings
-        defaultUrl="http://localhost:2333"
-        dataSourceConfig={options}
-        onChange={onOptionsChange}
-      />
+      <>
+        <DataSourceHttpSettings
+          defaultUrl="http://localhost:2333"
+          dataSourceConfig={options}
+          onChange={onOptionsChange}
+        />
+        <ChaosMeshSettings options={options} onOptionsChange={onOptionsChange} />
+      </>
     );
   }
 }

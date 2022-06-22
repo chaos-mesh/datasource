@@ -22,11 +22,11 @@ import defaults from 'lodash/defaults';
 import React, { ChangeEvent, PureComponent } from 'react';
 
 import { DataSource } from './datasource';
-import { ChaosMeshDataSourceOptions, EventsQuery, defaultQuery } from './types';
+import { ChaosMeshOptions, EventsQuery, defaultQuery } from './types';
 
 const { FormField } = LegacyForms;
 
-type Props = QueryEditorProps<DataSource, EventsQuery, ChaosMeshDataSourceOptions>;
+type Props = QueryEditorProps<DataSource, EventsQuery, ChaosMeshOptions>;
 
 export class QueryEditor extends PureComponent<Props> {
   onRunQueryDebounced: DebouncedFunc<any>;

@@ -28,14 +28,14 @@ import {
 import { getBackendSrv, getTemplateSrv } from '@grafana/runtime';
 import _ from 'lodash';
 
-import { ChaosMeshDataSourceOptions, Event, EventsQuery, VariableQuery, defaultQuery, kinds } from './types';
+import { ChaosMeshOptions, Event, EventsQuery, VariableQuery, defaultQuery, kinds } from './types';
 
 const timeformat = 'YYYY-MM-DDTHH:mm:ssZ';
 
-export class DataSource extends DataSourceApi<EventsQuery, ChaosMeshDataSourceOptions> {
+export class DataSource extends DataSourceApi<EventsQuery, ChaosMeshOptions> {
   readonly url?: string;
 
-  constructor(instanceSettings: DataSourceInstanceSettings<ChaosMeshDataSourceOptions>) {
+  constructor(instanceSettings: DataSourceInstanceSettings<ChaosMeshOptions>) {
     super(instanceSettings);
 
     this.url = instanceSettings.url;
