@@ -1,7 +1,7 @@
 {
   "name": "chaosmeshorg-datasource",
   "version": "2.1.0",
-  "description": "Chaos Mesh (A Chaos Engineering Platform for Kubernetes) Datasource",
+  "description": "Chaos Mesh (A Chaos Engineering Platform for Kubernetes) Data source",
   "scripts": {
     "build": "grafana-toolkit plugin:build",
     "test": "grafana-toolkit plugin:test",
@@ -25,9 +25,6 @@
     "husky": "^7.0.4",
     "lint-staged": "^11.2.4",
     "prettier": "^2.4.1"
-  },
-  "resolutions": {
-    "node-sass": "6.0.1"
   },
   "engines": {
     "node": ">=14"
