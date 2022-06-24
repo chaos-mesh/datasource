@@ -51,8 +51,6 @@ Once installed, go to **Configuration -> Data sources** and add Chaos Mesh, then
 
 ![Settings](https://raw.githubusercontent.com/chaos-mesh/datasource/master/src/img/settings.png)
 
-Only the `URL` field needs to be filled in, the other fields can be ignored.
-
 Assuming you have Chaos Mesh installed locally, Dashboard will export the API on port `2333` by default. So, if you haven't changed anything, you can just fill in `http://localhost:2333`.
 
 Then use the `port-forward` command to activate:
@@ -67,11 +65,25 @@ Finally, click **Save & Test** to test the connection. If it shows a successful 
 
 The Data Source plugin looks at the Chaos Mesh through the lens of events, and the following options are responsible for filtering the different events:
 
-- **Object ID** - Filter by object uuid
-- **Namespace** - Filter by different namespace
-- **Name** - Filter by object name
-- **Kind** - Filter by kind (PodChaos, Schedule...)
-- **Limit** - Limit the number of events
+- **Object ID**
+
+  > Filter by object uuid.
+
+- **Namespace**
+
+  > Filter by different namespace.
+
+- **Name**
+
+  > Filter by object name.
+
+- **Kind**
+
+  > Filter by kind (PodChaos, Schedule...).
+
+- **Limit**
+
+  > Limit the number of events.
 
 They will be passed as parameters to the `/api/events` API.
 
@@ -92,19 +104,23 @@ the variables by different metrics:
 
 - Namespace
 
-  After selection, all available namespaces will show in **Preview of values** directly. Without other operations.
+  > After selection, all available namespaces will show in **Preview of values** directly. Without other operations.
 
 - Kind
 
-  Same as **Namespace**. Get all kinds.
+  > Same as **Namespace**. Retrieve all kinds.
 
 - Experiment
 
-  Same as **Namespace**. Get the names of all experiments.
+  > Same as **Namespace**. Retrieve current all experiments.
 
 - Schedule
 
-  Same as **Namespace**. Get the names of all schedules.
+  > Same as **Namespace**. Retrieve current all schedules.
+
+- Workflow
+
+  > Same as **Namespace**. Retrieve current all workflows.
 
 ## How to contribute
 
