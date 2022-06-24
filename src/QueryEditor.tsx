@@ -16,8 +16,7 @@
  */
 import { QueryEditorProps } from '@grafana/data';
 import { LegacyForms } from '@grafana/ui';
-import { DebouncedFunc } from 'lodash';
-import _ from 'lodash';
+import _, { DebouncedFunc } from 'lodash';
 import React, { ChangeEvent, PureComponent } from 'react';
 
 import { DataSource } from './datasource';
