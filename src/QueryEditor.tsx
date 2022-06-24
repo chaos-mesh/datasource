@@ -17,8 +17,7 @@
 import { QueryEditorProps } from '@grafana/data';
 import { LegacyForms } from '@grafana/ui';
 import { DebouncedFunc } from 'lodash';
-import debounce from 'lodash/debounce';
-import defaults from 'lodash/defaults';
+import _ from 'lodash';
 import React, { ChangeEvent, PureComponent } from 'react';
 
 import { DataSource } from './datasource';
@@ -34,7 +33,7 @@ export class QueryEditor extends PureComponent<Props> {
   constructor(props: Props) {
     super(props);
 
-    this.onRunQueryDebounced = debounce(this.props.onRunQuery, 500);
+    this.onRunQueryDebounced = _.debounce(this.props.onRunQuery, 500);
   }
 
   onChange = (key: keyof EventsQuery) => (event: ChangeEvent<HTMLInputElement>) => {
@@ -51,7 +50,7 @@ export class QueryEditor extends PureComponent<Props> {
   };
 
   render() {
-    const query = defaults(this.props.query, defaultQuery);
+    const query = _.defaults(this.props.query, defaultQuery);
     const { object_id, namespace, name, kind, limit } = query;
 
     return (
@@ -60,22 +59,22 @@ export class QueryEditor extends PureComponent<Props> {
           value={object_id || ''}
           onChange={this.onChange('object_id')}
           label="Object ID"
-          tooltip="Filter events by Object ID"
+          tooltip="Filter events by Object ID."
         />
         <FormField
           value={namespace || ''}
           onChange={this.onChange('namespace')}
           label="Namespace"
-          tooltip="Filter events by Namespace"
+          tooltip="Filter events by Namespace."
         />
-        <FormField value={name || ''} onChange={this.onChange('name')} label="Name" tooltip="Filter events by Name" />
-        <FormField value={kind || ''} onChange={this.onChange('kind')} label="Kind" tooltip="Filter events by Kind" />
+        <FormField value={name || ''} onChange={this.onChange('name')} label="Name" tooltip="Filter events by Name." />
+        <FormField value={kind || ''} onChange={this.onChange('kind')} label="Kind" tooltip="Filter events by Kind." />
         <FormField
           type="number"
           value={limit}
           onChange={this.onChange('limit')}
           label="Limit"
-          tooltip="Filter events by Limit"
+          tooltip="Limit the number of events to be fetched from the Chaos Mesh server."
         />
       </div>
     );
