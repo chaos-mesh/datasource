@@ -192,7 +192,7 @@ export class DataSource extends DataSourceApi<EventsQuery, ChaosMeshOptions> {
       case 'schedule':
       case 'workflow':
         return lastValueFrom(
-          this.fetch<Array<{ name: string }>>(`/${query.metric}s`).pipe(
+          this.fetch<Array<{ name: string }>>(`/${query.metric}s${query.queryString || ''}`).pipe(
             map(({ data }) => {
               return data.map(d => ({ text: d.name }));
             })

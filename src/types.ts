@@ -59,6 +59,7 @@ export const kinds = [
 
 export interface VariableQuery {
   metric: 'namespace' | 'kind' | 'experiment' | 'schedule' | 'workflow';
+  queryString?: string;
 }
 
 /**
