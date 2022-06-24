@@ -28,7 +28,6 @@ import {
 import { getBackendSrv, getTemplateSrv } from '@grafana/runtime';
 import _ from 'lodash';
 import { lastValueFrom } from 'rxjs';
-import { map } from 'rxjs/operators';
 
 import { ChaosMeshOptions, Event, EventsQuery, VariableQuery, defaultQuery, kinds } from './types';
 
@@ -37,6 +36,7 @@ const timeformat = 'YYYY-MM-DDTHH:mm:ssZ';
 export class DataSource extends DataSourceApi<EventsQuery, ChaosMeshOptions> {
   readonly url?: string;
   readonly defaultQuery = defaultQuery;
+  readonly legacyFetch: boolean = false;
 
   constructor(instanceSettings: DataSourceInstanceSettings<ChaosMeshOptions>) {
     super(instanceSettings);
@@ -46,14 +46,24 @@ export class DataSource extends DataSourceApi<EventsQuery, ChaosMeshOptions> {
     if (instanceSettings.jsonData.limit) {
       this.defaultQuery.limit = instanceSettings.jsonData.limit;
     }
+
+    if (typeof getBackendSrv().fetch !== 'function') {
+      this.legacyFetch = true;
+    }
   }
 
   private fetch<T>(url: string, query?: Partial<EventsQuery>) {
-    return getBackendSrv().fetch<T>({
+    const options = {
       method: 'GET',
       url: this.url + url,
       params: _.defaults(query, this.defaultQuery),
-    });
+    };
+
+    return (
+      !this.legacyFetch
+        ? lastValueFrom(getBackendSrv().fetch<T>(options))
+        : getBackendSrv().datasourceRequest<T>(options)
+    ).then(({ data }) => data);
   }
 
   private fetchEvents(query: Partial<EventsQuery>) {
@@ -101,7 +111,7 @@ export class DataSource extends DataSourceApi<EventsQuery, ChaosMeshOptions> {
           ],
         });
 
-        (await lastValueFrom(this.fetchEvents(this.applyVariables(query, scopedVars)))).data.forEach(d => frame.add(d));
+        (await this.fetchEvents(this.applyVariables(query, scopedVars))).forEach(d => frame.add(d));
 
         return frame;
       })
@@ -117,10 +127,12 @@ export class DataSource extends DataSourceApi<EventsQuery, ChaosMeshOptions> {
           message: 'Chaos Mesh API status is normal.',
         };
       })
-      .catch(({ data }) => {
+      .catch(error => {
+        const { data } = error;
+
         return {
           status: 'error',
-          message: data.message,
+          message: data ? data.message : error.statusText ? error.statusText : 'Chaos Mesh API is not available.',
         };
       });
   }
@@ -151,52 +163,38 @@ export class DataSource extends DataSourceApi<EventsQuery, ChaosMeshOptions> {
     query.start = from;
     query.end = to;
 
-    return await lastValueFrom(
-      this.fetchEvents({ ...query, name: (query as any).eventName }).pipe(
-        map(({ data }) => {
-          const grouped = _.groupBy(data, d => d.name);
+    return this.fetchEvents({ ...query, name: (query as any).eventName }).then(data => {
+      const grouped = _.groupBy(data, 'name');
 
-          return _.entries(grouped).map(([k, v]) => {
-            const first = v[v.length - 1];
-            const last = v[0];
+      return _.entries(grouped).map(([k, v]) => {
+        const first = v[v.length - 1];
+        const last = v[0];
 
-            return {
-              title: `<h6>${k}</h6>`,
-              text: v
-                .map(d => `<div>${new Date(d.created_at).toLocaleString()}: ${d.message}</div>`)
-                .reverse()
-                .join('\n'),
-              tags: [`namespace:${first.namespace}`, `kind:${first.kind}`],
-              time: Date.parse(first.created_at),
-              timeEnd: Date.parse(last.created_at),
-            };
-          });
-        })
-      )
-    );
+        return {
+          title: `<h6>${k}</h6>`,
+          text: v
+            .map(d => `<div>${new Date(d.created_at).toLocaleString()}: ${d.message}</div>`)
+            .reverse()
+            .join('\n'),
+          tags: [`namespace:${first.namespace}`, `kind:${first.kind}`],
+          time: Date.parse(first.created_at),
+          timeEnd: Date.parse(last.created_at),
+        };
+      });
+    });
   }
 
   async metricFindQuery(query: VariableQuery) {
     switch (query.metric) {
       case 'namespace':
-        return lastValueFrom(
-          this.fetch<string[]>('/common/namespaces').pipe(
-            map(({ data }) => {
-              return data.map(d => ({ text: d }));
-            })
-          )
-        );
+        return this.fetch<string[]>('/common/namespaces').then(data => data.map(d => ({ text: d })));
       case 'kind':
         return kinds.map(d => ({ text: d }));
       case 'experiment':
       case 'schedule':
       case 'workflow':
-        return lastValueFrom(
-          this.fetch<Array<{ name: string }>>(`/${query.metric}s${query.queryString || ''}`).pipe(
-            map(({ data }) => {
-              return data.map(d => ({ text: d.name }));
-            })
-          )
+        return this.fetch<Array<{ name: string }>>(`/${query.metric}s${query.queryString || ''}`).then(data =>
+          data.map(d => ({ text: d.name }))
         );
       default:
         return [];
