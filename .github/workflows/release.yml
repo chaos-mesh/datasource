@@ -119,26 +119,43 @@ jobs:
       - name: Lint plugin
         run: |
           git clone https://github.com/grafana/plugin-validator
-          pushd ./plugin-validator/pkg/cmd/plugincheck
+          pushd ./plugin-validator/cmd/plugincheck
           go install
           popd
           plugincheck ${{ steps.metadata.outputs.archive }}
 
-      - name: Add plugin to release
-        uses: svenstaro/upload-release-action@v2
+      - name: Create release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          repo_token: ${{ secrets.GH_TOKEN }}
-          file: ./${{ steps.metadata.outputs.archive }}
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body_path: ${{ steps.changelog.outputs.path }}
+          draft: true
+
+      - name: Add plugin to release
+        id: upload-plugin-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./${{ steps.metadata.outputs.archive }}
           asset_name: ${{ steps.metadata.outputs.archive }}
-          tag: ${{ github.ref }}
+          asset_content_type: application/zip
 
       - name: Add checksum to release
-        uses: svenstaro/upload-release-action@v2
+        id: upload-checksum-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          repo_token: ${{ secrets.GH_TOKEN }}
-          file: ./${{ steps.metadata.outputs.archive-checksum }}
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./${{ steps.metadata.outputs.archive-checksum }}
           asset_name: ${{ steps.metadata.outputs.archive-checksum }}
-          tag: ${{ github.ref }}
+          asset_content_type: text/plain
 
       - name: Publish to Grafana.com
         run: |
