@@ -16,24 +16,23 @@
  */
 import { DataQuery, DataSourceJsonData } from '@grafana/data';
 
-export interface Event {
+interface EventBase {
   object_id: uuid;
-  created_at: string;
   namespace: string;
   name: string;
   kind: string;
+}
+
+export interface Event extends EventBase {
+  created_at: string;
   type: 'Normal' | 'Warning';
   reason: string;
   message: string;
 }
 
-export interface EventsQuery extends DataQuery {
-  object_id?: uuid;
+export interface EventsQuery extends DataQuery, EventBase {
   start: string;
   end: string;
-  namespace?: string;
-  name?: string;
-  kind?: string;
   limit?: number;
 }
 
@@ -59,7 +58,7 @@ export const kinds = [
 ];
 
 export interface VariableQuery {
-  metric: 'namespace' | 'kind' | 'experiment' | 'schedule';
+  metric: 'namespace' | 'kind' | 'experiment' | 'schedule' | 'workflow';
 }
 
 /**
@@ -68,8 +67,3 @@ export interface VariableQuery {
 export interface ChaosMeshOptions extends DataSourceJsonData {
   limit?: number;
 }
-
-/**
- * Value that is used in the backend, but never sent over HTTP to the frontend
- */
-export interface MySecureJsonData {}

@@ -27,6 +27,8 @@ import {
 } from '@grafana/data';
 import { getBackendSrv, getTemplateSrv } from '@grafana/runtime';
 import _ from 'lodash';
+import { lastValueFrom } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 import { ChaosMeshOptions, Event, EventsQuery, VariableQuery, defaultQuery, kinds } from './types';
 
@@ -34,32 +36,44 @@ const timeformat = 'YYYY-MM-DDTHH:mm:ssZ';
 
 export class DataSource extends DataSourceApi<EventsQuery, ChaosMeshOptions> {
   readonly url?: string;
+  readonly defaultQuery = defaultQuery;
 
   constructor(instanceSettings: DataSourceInstanceSettings<ChaosMeshOptions>) {
     super(instanceSettings);
 
-    this.url = instanceSettings.url;
+    this.url = instanceSettings.url + '/api';
+
+    if (instanceSettings.jsonData.limit) {
+      this.defaultQuery.limit = instanceSettings.jsonData.limit;
+    }
   }
 
-  private async fetch<T>(url: string, query?: Partial<EventsQuery>): Promise<T> {
-    const data = await getBackendSrv().get(this.url + url, query);
-
-    return data;
+  private fetch<T>(url: string, query?: Partial<EventsQuery>) {
+    return getBackendSrv().fetch<T>({
+      method: 'GET',
+      url: this.url + url,
+      params: _.defaults(query, this.defaultQuery),
+    });
   }
 
-  private async fetchEvents(query: Partial<EventsQuery>) {
-    return await this.fetch<Event[]>('/api/events', query);
+  private fetchEvents(query: Partial<EventsQuery>) {
+    return this.fetch<Event[]>('/events', query);
   }
 
+  /**
+   * This function use a tricky way to apply all the variables to the query.
+   *
+   * It firstly joins all values to a string and then replace by scoped vars, then zip the result to a object.
+   *
+   * @param query
+   * @param scopedVars
+   * @returns
+   */
   private applyVariables(query: EventsQuery, scopedVars: ScopedVars) {
-    const keys = Object.keys(query);
-    // prettier-ignore
-    const values = getTemplateSrv()
-      .replace(Object.values(query).join('|'), scopedVars)
-      .split('|');
+    const keys = _.keys(query);
+    const values = getTemplateSrv().replace(_.values(query).join('|'), scopedVars).split('|');
 
-    // prettier-ignore
-    return (_.zipObject(keys, values) as unknown) as EventsQuery;
+    return _.zipObject(keys, values) as unknown as EventsQuery;
   }
 
   async query(options: DataQueryRequest<EventsQuery>): Promise<DataQueryResponse> {
@@ -68,10 +82,8 @@ export class DataSource extends DataSourceApi<EventsQuery, ChaosMeshOptions> {
     const from = range.from.utc().format(timeformat);
     const to = range.to.utc().format(timeformat);
 
-    // Return a constant for each query.
-    const data = await Promise.all(
-      options.targets.map(async target => {
-        const query = this.applyVariables(_.defaults(target, defaultQuery), scopedVars);
+    return Promise.all(
+      options.targets.map(async query => {
         query.start = from;
         query.end = to;
 
@@ -79,111 +91,113 @@ export class DataSource extends DataSourceApi<EventsQuery, ChaosMeshOptions> {
           refId: query.refId,
           fields: [
             { name: 'object_id', type: FieldType.string },
-            { name: 'created_at', type: FieldType.time },
             { name: 'namespace', type: FieldType.string },
             { name: 'name', type: FieldType.string },
             { name: 'kind', type: FieldType.string },
+            { name: 'created_at', type: FieldType.time },
             { name: 'type', type: FieldType.string },
             { name: 'reason', type: FieldType.string },
             { name: 'message', type: FieldType.string },
           ],
         });
 
-        (await this.fetchEvents(query)).forEach(d => {
-          frame.add(d);
-        });
+        (await lastValueFrom(this.fetchEvents(this.applyVariables(query, scopedVars)))).data.forEach(d => frame.add(d));
 
         return frame;
       })
-    );
-
-    return { data };
+    ).then(data => ({ data }));
   }
 
   async testDatasource() {
-    try {
-      await getBackendSrv().get(this.url + '/api/common/config');
-
-      return {
-        status: 'success',
-        message: 'Chaos Mesh API status is normal',
-      };
-    } catch (error) {
-      return {
-        status: 'error',
-        message: (error as any).message,
-      };
-    }
+    return getBackendSrv()
+      .get(this.url + '/common/config')
+      .then(() => {
+        return {
+          status: 'success',
+          message: 'Chaos Mesh API status is normal.',
+        };
+      })
+      .catch(({ data }) => {
+        return {
+          status: 'error',
+          message: data.message,
+        };
+      });
   }
 
-  // https://grafana.com/docs/grafana/latest/developers/plugins/add-support-for-annotations/
-  // This will support annotation queries for 7.2+
-  annotations = {};
-
   async annotationQuery(options: AnnotationQueryRequest<EventsQuery>): Promise<AnnotationEvent[]> {
-    const { range, annotation } = options;
+    const { range, annotation: query } = options;
+
     const from = range.from.utc().format(timeformat);
     const to = range.to.utc().format(timeformat);
 
-    const query = _.defaults(annotation, defaultQuery);
-    const vars = getTemplateSrv()
-      .getVariables()
-      .map((d: any) => {
-        const { name, current } = d;
+    const vars = _.mapValues(
+      _.keyBy(getTemplateSrv().getVariables(), d => '$' + d.name),
+      'current.value'
+    );
 
-        const key = `$${name}`;
-        const value = current.value;
-
-        return { key, value };
-      });
-
-    const keys = vars.map(d => d.key);
     for (const q in query) {
-      const variableValue = (query as any)[q];
+      if (!query.hasOwnProperty(q)) {
+        continue;
+      }
 
-      if (
-        query.hasOwnProperty(q) &&
-        typeof variableValue === 'string' &&
-        variableValue.startsWith('$') &&
-        keys.includes(variableValue)
-      ) {
-        (query as any)[q] = vars.find(d => d.key === variableValue)?.value;
+      const val = (query as any)[q];
+
+      if (typeof val === 'string' && val.startsWith('$') && vars[val]) {
+        (query as any)[q] = vars[val];
       }
     }
 
     query.start = from;
     query.end = to;
 
-    const data = await this.fetchEvents({ ...query, name: (query as any).nname });
-    const grouped = _.groupBy(data, d => d.name);
+    return await lastValueFrom(
+      this.fetchEvents({ ...query, name: (query as any).eventName }).pipe(
+        map(({ data }) => {
+          const grouped = _.groupBy(data, d => d.name);
 
-    return Object.entries(grouped).map(([k, v]) => {
-      const first = v[v.length - 1];
-      const last = v[0];
+          return _.entries(grouped).map(([k, v]) => {
+            const first = v[v.length - 1];
+            const last = v[0];
 
-      return {
-        title: k,
-        text: v
-          .map(d => `${d.created_at}: ${d.message}`)
-          .reverse()
-          .join('\n'),
-        tags: [`namespace:${first.namespace}`, `kind:${first.kind}`],
-        time: Date.parse(first.created_at),
-        timeEnd: Date.parse(last.created_at),
-      };
-    });
+            return {
+              title: `<h6>${k}</h6>`,
+              text: v
+                .map(d => `<div>${new Date(d.created_at).toLocaleString()}: ${d.message}</div>`)
+                .reverse()
+                .join('\n'),
+              tags: [`namespace:${first.namespace}`, `kind:${first.kind}`],
+              time: Date.parse(first.created_at),
+              timeEnd: Date.parse(last.created_at),
+            };
+          });
+        })
+      )
+    );
   }
 
   async metricFindQuery(query: VariableQuery) {
     switch (query.metric) {
       case 'namespace':
-        return (await this.fetch<string[]>('/api/common/namespaces')).map(d => ({ text: d }));
+        return lastValueFrom(
+          this.fetch<string[]>('/common/namespaces').pipe(
+            map(({ data }) => {
+              return data.map(d => ({ text: d }));
+            })
+          )
+        );
       case 'kind':
         return kinds.map(d => ({ text: d }));
       case 'experiment':
-        return (await this.fetch<string[]>('/api/experiments')).map((d: any) => ({ text: d.name }));
       case 'schedule':
-        return (await this.fetch<string[]>('/api/schedules')).map((d: any) => ({ text: d.name }));
+      case 'workflow':
+        return lastValueFrom(
+          this.fetch<Array<{ name: string }>>(`/${query.metric}s`).pipe(
+            map(({ data }) => {
+              return data.map(d => ({ text: d.name }));
+            })
+          )
+        );
       default:
         return [];
     }
