@@ -14,19 +14,18 @@
  * limitations under the License.
  *
  */
-import { defaultQuery, kinds } from './types';
+import { defaultQuery } from './types';
 
 export class AnnotationQueryEditor {
   static templateUrl = 'partials/annotations.editor.html';
 
   annotation: any;
-  kinds = kinds;
 
   constructor() {
     this.annotation.object_id = this.annotation.object_id || '';
     this.annotation.namespace = this.annotation.namespace || '';
     this.annotation.eventName = this.annotation.eventName || ''; // There is a conflict with annotation name, so rename it to eventName.
-    this.annotation.kind = this.annotation.kind || kinds[0];
+    this.annotation.kind = this.annotation.kind || '';
     this.annotation.limit = this.annotation.limit || defaultQuery.limit;
   }
 }

@@ -156,6 +156,7 @@ export class DataSource extends DataSourceApi<EventsQuery, ChaosMeshOptions> {
 
       const val = (queryCloned as any)[q];
 
+      // Handle variables.
       if (typeof val === 'string' && val.startsWith('$') && vars[val]) {
         (queryCloned as any)[q] = vars[val];
       }
