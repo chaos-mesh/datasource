@@ -148,22 +148,23 @@ export class DataSource extends DataSourceApi<EventsQuery, ChaosMeshOptions> {
       'current.value'
     );
 
-    for (const q in query) {
-      if (!query.hasOwnProperty(q)) {
+    const queryCloned = _.merge({}, query); // Clone query to avoid mutating it.
+    for (const q in queryCloned) {
+      if (!queryCloned.hasOwnProperty(q)) {
         continue;
       }
 
-      const val = (query as any)[q];
+      const val = (queryCloned as any)[q];
 
       if (typeof val === 'string' && val.startsWith('$') && vars[val]) {
-        (query as any)[q] = vars[val];
+        (queryCloned as any)[q] = vars[val];
       }
     }
 
-    query.start = from;
-    query.end = to;
+    queryCloned.start = from;
+    queryCloned.end = to;
 
-    return this.fetchEvents({ ...query, name: (query as any).eventName }).then(data => {
+    return this.fetchEvents({ ...queryCloned, name: (queryCloned as any).eventName }).then(data => {
       const grouped = _.groupBy(data, 'name');
 
       return _.entries(grouped).map(([k, v]) => {
