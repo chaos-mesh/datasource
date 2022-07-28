@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.1] - 2022-07-28
+
+### Fixed
+
+- Clone the annotation query before using it, which prevents mutating the original value if you use a variable in annotations.
+- Reset the `kind` field to `input` in annotations, which allows you to use variables in the kind field, such as `$kind`.
+
 ## [2.2.0] - 2022-06-24
 
 ### Added
