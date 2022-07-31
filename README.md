@@ -10,19 +10,13 @@ Grafana data source plugin for Chaos Mesh.
 - Show Chaos Events on the graph with [Annotations](https://grafana.com/docs/grafana/latest/dashboards/annotations/)
 - Display different Chaos Events by [Variables](https://grafana.com/docs/grafana/latest/variables/)
 
-<!-- ## Install
+## Install
 
 ```sh
 grafana-cli plugins install chaosmeshorg-datasource
-``` -->
+```
 
-## Install
-
-> **Note:**
->
-> Because Grafana is not yet accepting the plugin submission for Chaos Mesh Data Source, it can't be installed using `grafana-cli` at this time.
->
-> The following steps show how to install the Data Source plugin locally.
+## Manual installation
 
 Download the plugin zip package with the following command or go to <https://github.com/chaos-mesh/datasource/releases> to download:
 
