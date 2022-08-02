@@ -8,7 +8,7 @@ echo "Start to build..."
 echo
 
 yarn build
-# yarn sign
+yarn sign
 
 echo "Bundling..."
 
