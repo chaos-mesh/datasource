@@ -12,9 +12,7 @@ yarn sign
 
 echo "Bundling..."
 
-cp -r dist $ID
 zip -r $ID-$VERSION.zip dist -x "*.DS_Store*"
 md5sum $ID-$VERSION.zip > $ID-$VERSION.zip.md5
-rm -rf $ID
 
 echo "Done."
