@@ -6,7 +6,7 @@
   "metrics": true,
   "annotations": true,
   "info": {
-    "description": "Chaos Mesh (A Chaos Engineering Platform for Kubernetes) Datasource",
+    "description": "Chaos Mesh (A Chaos Engineering Platform for Kubernetes) Data Source",
     "author": {
       "name": "Chaos Mesh Project",
       "url": "https://github.com/chaos-mesh"
@@ -18,7 +18,7 @@
     },
     "screenshots": [
       {
-        "name": "Datasource Setting",
+        "name": "Settings",
         "path": "img/settings.jpg"
       },
       {
@@ -36,11 +36,11 @@
         "url": "https://github.com/chaos-mesh/chaos-mesh-datasource/blob/master/LICENSE"
       },
       {
-        "name": "Chaos Mesh Website",
+        "name": "Website",
         "url": "https://chaos-mesh.org/"
       }
     ],
-    "version": "0.2.2",
+    "version": "0.2.3",
     "updated": "%TODAY%"
   },
   "dependencies": {

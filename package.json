@@ -1,7 +1,7 @@
 {
   "name": "yeya24-chaosmesh-datasource",
-  "version": "0.2.2",
-  "description": "Chaos Mesh Datasource",
+  "version": "0.2.3",
+  "description": "Chaos Mesh Data Source",
   "author": "Yue Yang <g1enyy0ung@gmail.com> (https://g1eny0ung.site)",
   "license": "Apache-2.0",
   "scripts": {
@@ -10,6 +10,7 @@
     "test": "grafana-toolkit plugin:test",
     "dev": "grafana-toolkit plugin:dev",
     "watch": "grafana-toolkit plugin:dev --watch",
+    "sign": "grafana-toolkit plugin:sign",
     "lint-staged": "lint-staged"
   },
   "devDependencies": {

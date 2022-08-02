@@ -1,5 +1,7 @@
 # Chaos Mesh Data Source
 
+> **This plugin is deprecated, please use <https://grafana.com/grafana/plugins/chaosmeshorg-datasource/>.**
+
 Grafana data source plugin for Chaos Mesh.
 
 ## Features
@@ -18,7 +20,7 @@ grafana-cli plugins install yeya24-chaosmesh-datasource
 
 After installed, you can add this data source in **Configuration -> Data Sources**, then you will enter the settings page:
 
-![Data Source settings](https://raw.githubusercontent.com/chaos-mesh/chaos-mesh-datasource/master/src/img/settings.jpg)
+![Settings](https://raw.githubusercontent.com/chaos-mesh/datasource/5d3d1eab6d91dc32e2a3f42cf40483d67ef07d90/src/img/settings.jpg)
 
 Only the `URL` field needs to be filled in and the others can be ignored.
 
@@ -58,7 +60,7 @@ For real world usage, normally you will use these options in two situations:
 
 Edit example:
 
-![Data Source annotations](https://raw.githubusercontent.com/chaos-mesh/chaos-mesh-datasource/master/src/img/annotations.png)
+![Annotations](https://raw.githubusercontent.com/chaos-mesh/datasource/5d3d1eab6d91dc32e2a3f42cf40483d67ef07d90/src/img/annotations.png)
 
 For usage, you can refer to the content described by [Query](#query).
 

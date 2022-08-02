@@ -33,5 +33,5 @@ e2e-results/
 .DS_Store
 
 jest.config.js
-yeya24-chaosmesh-datasource
 *.zip
+*.md5

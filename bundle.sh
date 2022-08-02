@@ -1,17 +1,19 @@
 VERSION=$1
+ID=yeya24-chaosmesh-datasource
 
 rm -rf dist
-rm -rf yeya24-chaosmesh-datasource
 
 echo "Bundled Version: $VERSION"
 echo "Start to build..."
 echo
 
 yarn build
-npx @grafana/toolkit plugin:sign --rootUrls https://grafana.com
+# yarn sign
 
 echo "Bundling..."
 echo
 
-cp -r dist yeya24-chaosmesh-datasource
-zip -r yeya24-chaosmesh-datasource-$VERSION.zip yeya24-chaosmesh-datasource -x "*.DS_Store*"
+zip -r $ID-$VERSION.zip dist -x "*.DS_Store*"
+md5sum $ID-$VERSION.zip > $ID-$VERSION.zip.md5
+
+echo "Done."
