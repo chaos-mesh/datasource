@@ -21,13 +21,13 @@ grafana-cli plugins install chaosmeshorg-datasource
 Download the plugin zip package with the following command or go to <https://github.com/chaos-mesh/datasource/releases> to download:
 
 ```shell
-curl -LO https://github.com/chaos-mesh/datasource/releases/download/v2.2.2/chaosmeshorg-datasource-2.2.2.zip
+curl -LO https://github.com/chaos-mesh/datasource/releases/download/v2.2.3/chaosmeshorg-datasource-2.2.3.zip
 ```
 
 After downloading, unzip:
 
 ```shell
-unzip chaosmeshorg-datasource-2.2.2.zip -d YOUR_PLUGIN_DIR
+unzip chaosmeshorg-datasource-2.2.3.zip -d YOUR_PLUGIN_DIR
 ```
 
 Then update and save the `grafana.ini` file:
