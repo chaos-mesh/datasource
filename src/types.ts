@@ -54,6 +54,8 @@ export const kinds = [
   'PhysicalMachineChaos',
 ];
 
+export const kindOptions = kinds.map((kind) => ({ label: kind, value: kind }));
+
 export interface VariableQuery {
   metric: 'namespace' | 'kind' | 'experiment' | 'schedule' | 'workflow';
   queryString?: string;

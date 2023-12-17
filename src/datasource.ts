@@ -21,37 +21,89 @@ import {
   DataSourceInstanceSettings,
   FieldType,
   MutableDataFrame,
-  ScopedVars,
 } from '@grafana/data';
-import { getBackendSrv, getTemplateSrv } from '@grafana/runtime';
+import {
+  BackendSrvRequest,
+  getBackendSrv,
+  isFetchError,
+} from '@grafana/runtime';
 import _ from 'lodash';
 import { lastValueFrom } from 'rxjs';
 
 import { ChaosMeshOptions, Event, EventsQuery } from './types';
 
-const timeformat = 'YYYY-MM-DDTHH:mm:ssZ';
-
 export class DataSource extends DataSourceApi<EventsQuery, ChaosMeshOptions> {
-  readonly endpoint: string;
+  readonly baseUrl: string;
+  readonly fields = [
+    {
+      name: 'object_id',
+      type: FieldType.string,
+      config: { displayName: 'Object ID' },
+    },
+    {
+      name: 'namespace',
+      type: FieldType.string,
+      config: { displayName: 'Namespace' },
+    },
+    {
+      name: 'name',
+      type: FieldType.string,
+      config: { displayName: 'Name' },
+    },
+    {
+      name: 'kind',
+      type: FieldType.string,
+      config: { displayName: 'Kind' },
+    },
+    {
+      name: 'created_at',
+      type: FieldType.time,
+      config: { displayName: 'Time' },
+    },
+    {
+      name: 'type',
+      type: FieldType.string,
+      config: { displayName: 'Type' },
+    },
+    {
+      name: 'reason',
+      type: FieldType.string,
+      config: { displayName: 'Reason' },
+    },
+    {
+      name: 'message',
+      type: FieldType.string,
+      config: { displayName: 'Message' },
+    },
+  ];
 
   constructor(instanceSettings: DataSourceInstanceSettings<ChaosMeshOptions>) {
     super(instanceSettings);
 
-    this.endpoint = instanceSettings.url + '/api';
+    this.baseUrl = instanceSettings.url + '/api';
   }
 
-  private fetch<T>(url: string, params?: Partial<EventsQuery>) {
-    const resp = getBackendSrv().fetch<T>({
-      method: 'GET',
-      url: this.endpoint + url,
-      params,
-    });
+  private fetch<T>(options: BackendSrvRequest) {
+    const _options = _.defaults(
+      {
+        url: this.baseUrl + options.url,
+      },
+      options,
+      {
+        method: 'GET',
+      }
+    );
 
-    return lastValueFrom(resp).then(({ data }) => data);
+    const resp = getBackendSrv().fetch<T>(_options);
+
+    return lastValueFrom(resp);
   }
 
   private fetchEvents(query: Partial<EventsQuery>) {
-    return this.fetch<Event[]>('/events', query);
+    return this.fetch<Event[]>({
+      url: '/events',
+      params: query,
+    });
   }
 
   /**
@@ -63,22 +115,22 @@ export class DataSource extends DataSourceApi<EventsQuery, ChaosMeshOptions> {
    * @param scopedVars
    * @returns
    */
-  private applyVariables(query: EventsQuery, scopedVars: ScopedVars) {
-    const keys = _.keys(query);
-    const values = getTemplateSrv()
-      .replace(_.values(query).join('|'), scopedVars)
-      .split('|');
+  // private applyVariables(query: EventsQuery, scopedVars: ScopedVars) {
+  //   const keys = _.keys(query);
+  //   const values = getTemplateSrv()
+  //     .replace(_.values(query).join('|'), scopedVars)
+  //     .split('|');
 
-    return _.zipObject(keys, values) as unknown as EventsQuery;
-  }
+  //   return _.zipObject(keys, values) as unknown as EventsQuery;
+  // }
 
   async query(
     options: DataQueryRequest<EventsQuery>
   ): Promise<DataQueryResponse> {
-    const { range, scopedVars } = options;
+    const { range } = options;
 
-    const from = range.from.utc().format(timeformat);
-    const to = range.to.utc().format(timeformat);
+    const from = range.from.toISOString();
+    const to = range.to.toISOString();
 
     return Promise.all(
       options.targets.map(async (query) => {
@@ -87,21 +139,10 @@ export class DataSource extends DataSourceApi<EventsQuery, ChaosMeshOptions> {
 
         const frame = new MutableDataFrame<Event>({
           refId: query.refId,
-          fields: [
-            { name: 'object_id', type: FieldType.string },
-            { name: 'namespace', type: FieldType.string },
-            { name: 'name', type: FieldType.string },
-            { name: 'kind', type: FieldType.string },
-            { name: 'created_at', type: FieldType.time },
-            { name: 'type', type: FieldType.string },
-            { name: 'reason', type: FieldType.string },
-            { name: 'message', type: FieldType.string },
-          ],
+          fields: this.fields,
         });
 
-        (
-          await this.fetchEvents(this.applyVariables(query, scopedVars))
-        ).forEach((d) => frame.add(d));
+        (await this.fetchEvents(query)).data.forEach((d) => frame.add(d));
 
         return frame;
       })
@@ -109,26 +150,43 @@ export class DataSource extends DataSourceApi<EventsQuery, ChaosMeshOptions> {
   }
 
   async testDatasource() {
-    return getBackendSrv()
-      .get(this.endpoint + '/common/config')
-      .then(() => {
+    const defaultErrorMessage = 'Cannot connect to API';
+
+    try {
+      const resp = await this.fetch({
+        url: '/common/config',
+      });
+
+      if (resp.status === 200) {
         return {
           status: 'success',
-          message: 'Chaos Mesh API status is normal.',
+          message: 'Chaos Mesh API is available',
         };
-      })
-      .catch((error) => {
-        const { data } = error;
-
+      } else {
         return {
           status: 'error',
-          message: data
-            ? data.message
-            : error.statusText
-            ? error.statusText
-            : 'Chaos Mesh API is not available.',
+          message:
+            `Status code: ${resp.status}.` +
+            ' Chaos Mesh API is not available.',
         };
-      });
+      }
+    } catch (err) {
+      let message = '';
+      if (_.isString(err)) {
+        message = err;
+      } else if (isFetchError(err)) {
+        message =
+          'Fetch error: ' +
+          (err.statusText ? err.statusText : defaultErrorMessage);
+        if (err.data && err.data.error && err.data.error.code) {
+          message += ': ' + err.data.error.code + '. ' + err.data.error.message;
+        }
+      }
+      return {
+        status: 'error',
+        message,
+      };
+    }
   }
 
   // async annotationQuery(options: AnnotationQueryRequest<EventsQuery>): Promise<AnnotationEvent[]> {

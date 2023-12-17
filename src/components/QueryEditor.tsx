@@ -14,36 +14,61 @@
  * limitations under the License.
  *
  */
-import { QueryEditorProps } from '@grafana/data';
-import { InlineField, Input } from '@grafana/ui';
+import { QueryEditorProps, SelectableValue } from '@grafana/data';
+import { InlineField, Input, Select } from '@grafana/ui';
 import React, { ChangeEvent } from 'react';
 
 import { DataSource } from '../datasource';
-import { ChaosMeshOptions, EventsQuery } from '../types';
+import { ChaosMeshOptions, EventsQuery, kindOptions } from '../types';
 
 type Props = QueryEditorProps<DataSource, EventsQuery, ChaosMeshOptions>;
 
 export function QueryEditor({ query, onChange, onRunQuery }: Props) {
-  const _onChange =
+  const onInputChange =
     (key: keyof EventsQuery) => (event: ChangeEvent<HTMLInputElement>) => {
-      let value = event.target.value;
-      let usedValue;
+      let value: any = event.target.value;
 
       if (key === 'limit') {
-        usedValue = parseInt(value, 10);
+        value = parseInt(value, 10);
       }
 
-      onChange({ ...query, [key]: usedValue });
+      onChange({ ...query, [key]: value });
       // executes the query
       onRunQuery();
     };
 
-  const { object_id } = query;
+  const onSelectChange =
+    (key: keyof EventsQuery) => (val: SelectableValue<string>) => {
+      onChange({ ...query, [key]: val.value });
+      // executes the query
+      onRunQuery();
+    };
+
+  const { object_id, namespace, name, kind, limit } = query;
 
   return (
     <div className="gf-form">
-      <InlineField label="Object ID" tooltip="Filter events by Object ID">
-        <Input onChange={_onChange('object_id')} value={object_id} />
+      <InlineField label="Object ID" tooltip="Filter events by object ID">
+        <Input value={object_id} onChange={onInputChange('object_id')} />
+      </InlineField>
+      <InlineField label="Namespace" tooltip="Filter events by namespace">
+        <Input value={namespace} onChange={onInputChange('namespace')} />
+      </InlineField>
+      <InlineField label="Name" tooltip="Filter events by name">
+        <Input value={name} onChange={onInputChange('name')} />
+      </InlineField>
+      <InlineField label="Kind" tooltip="Filter events by kind">
+        <Select
+          value={kind}
+          options={kindOptions}
+          onChange={onSelectChange('kind')}
+        />
+      </InlineField>
+      <InlineField
+        label="Limit"
+        tooltip="Limit the number of events to be fetched from the server"
+      >
+        <Input type="number" value={limit} onChange={onInputChange('limit')} />
       </InlineField>
     </div>
   );
