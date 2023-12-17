@@ -38,8 +38,8 @@ export function QueryEditor({ query, onChange, onRunQuery }: Props) {
     };
 
   const onSelectChange =
-    (key: keyof EventsQuery) => (val: SelectableValue<string>) => {
-      onChange({ ...query, [key]: val.value });
+    (key: keyof EventsQuery) => (val: SelectableValue<string> | null) => {
+      onChange({ ...query, [key]: val ? val.value : undefined });
       // executes the query
       onRunQuery();
     };
@@ -62,6 +62,8 @@ export function QueryEditor({ query, onChange, onRunQuery }: Props) {
           value={kind}
           options={kindOptions}
           onChange={onSelectChange('kind')}
+          isClearable
+          allowCustomValue
         />
       </InlineField>
       <InlineField

@@ -26,7 +26,7 @@ interface EventBase {
 
 export interface Event extends EventBase {
   created_at: string;
-  type: 'Normal' | 'Warning';
+  type: string;
   reason: string;
   message: string;
 }
