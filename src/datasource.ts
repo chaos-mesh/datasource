@@ -15,6 +15,7 @@
  *
  */
 import {
+  AnnotationSupport,
   DataQueryRequest,
   DataQueryResponse,
   DataSourceApi,
@@ -182,6 +183,8 @@ export class DataSource extends DataSourceApi<EventsQuery, ChaosMeshOptions> {
       }
     }
   }
+
+  annotations: AnnotationSupport<EventsQuery> = {}
 
   // async annotationQuery(options: AnnotationQueryRequest<EventsQuery>): Promise<AnnotationEvent[]> {
   //   const { range, annotation: query } = options;

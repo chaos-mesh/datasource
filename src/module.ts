@@ -30,4 +30,3 @@ export const plugin = new DataSourcePlugin<
   .setConfigEditor(ConfigEditor)
   .setQueryEditor(QueryEditor)
   .setVariableQueryEditor(VariableQueryEditor)
-// .setAnnotationQueryCtrl(AnnotationQueryEditor);

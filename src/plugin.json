@@ -7,7 +7,7 @@
   "annotations": true,
   "metrics": true,
   "info": {
-    "description": "Data source for Chaos Mesh (A Chaos Engineering Platform for Kubernetes)",
+    "description": "Grafana data source plugin for Chaos Mesh (A Chaos Engineering Platform for Kubernetes)",
     "author": {
       "name": "Chaos Mesh Project Team",
       "url": "https://github.com/chaos-mesh"
