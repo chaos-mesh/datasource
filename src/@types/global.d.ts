@@ -1,1 +1,1 @@
-type uuid = string;
+type uuid = string

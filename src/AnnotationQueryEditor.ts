@@ -15,14 +15,14 @@
  *
  */
 export class AnnotationQueryEditor {
-  static templateUrl = 'partials/annotations.editor.html';
+  static templateUrl = 'partials/annotations.editor.html'
 
-  annotation: any;
+  annotation: any
 
   constructor() {
-    this.annotation.object_id = this.annotation.object_id || '';
-    this.annotation.namespace = this.annotation.namespace || '';
-    this.annotation.eventName = this.annotation.eventName || ''; // There is a conflict with annotation name, so rename it to eventName.
-    this.annotation.kind = this.annotation.kind || '';
+    this.annotation.object_id = this.annotation.object_id || ''
+    this.annotation.namespace = this.annotation.namespace || ''
+    this.annotation.eventName = this.annotation.eventName || '' // There is a conflict with annotation name, so rename it to eventName.
+    this.annotation.kind = this.annotation.kind || ''
   }
 }

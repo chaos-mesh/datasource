@@ -14,14 +14,14 @@
  * limitations under the License.
  *
  */
-import { SelectableValue } from '@grafana/data';
-import { InlineField, Input, Select } from '@grafana/ui';
-import _ from 'lodash';
-import React, { ChangeEvent, useEffect, useMemo, useState } from 'react';
+import { SelectableValue } from '@grafana/data'
+import { InlineField, Input, Select } from '@grafana/ui'
+import _ from 'lodash'
+import React, { ChangeEvent, useEffect, useMemo, useState } from 'react'
 
-import { ChaosMeshVariableQuery } from '../types';
+import { ChaosMeshVariableQuery } from '../types'
 
-type Option = SelectableValue<ChaosMeshVariableQuery['metric']>;
+type Option = SelectableValue<ChaosMeshVariableQuery['metric']>
 
 const metricOptions: Option[] = [
   {
@@ -45,36 +45,33 @@ const metricOptions: Option[] = [
     value: 'workflow',
     description: 'Retrieve workflows',
   },
-];
+]
 
 interface VariableQueryProps {
-  query: ChaosMeshVariableQuery;
-  onChange: (query: ChaosMeshVariableQuery, definition: string) => void;
+  query: ChaosMeshVariableQuery
+  onChange: (query: ChaosMeshVariableQuery, definition: string) => void
 }
 
 export const VariableQueryEditor = ({
   onChange,
   query,
 }: VariableQueryProps) => {
-  const debouncedOnChange = useMemo(
-    () => _.debounce(onChange, 300),
-    [onChange]
-  );
-  const [state, setState] = useState(query);
+  const debouncedOnChange = useMemo(() => _.debounce(onChange, 300), [onChange])
+  const [state, setState] = useState(query)
 
   useEffect(() => {
-    debouncedOnChange(state, `metric: ${state.metric}`);
-  }, [debouncedOnChange, state]);
+    debouncedOnChange(state, `metric: ${state.metric}`)
+  }, [debouncedOnChange, state])
 
   const onMetricChange = (
     option: SelectableValue<ChaosMeshVariableQuery['metric']>
   ) => {
-    setState({ ...state, metric: option.value! });
-  };
+    setState({ ...state, metric: option.value! })
+  }
 
   const onQueryChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setState({ ...state, queryString: e.target.value });
-  };
+    setState({ ...state, queryString: e.target.value })
+  }
 
   return (
     <div className="gf-form">
@@ -104,5 +101,5 @@ export const VariableQueryEditor = ({
         </InlineField>
       )}
     </div>
-  );
-};
+  )
+}

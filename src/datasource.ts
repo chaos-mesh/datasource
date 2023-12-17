@@ -21,15 +21,15 @@ import {
   DataSourceInstanceSettings,
   FieldType,
   MutableDataFrame,
-} from '@grafana/data';
+} from '@grafana/data'
 import {
   BackendSrvRequest,
   getBackendSrv,
   getTemplateSrv,
   isFetchError,
-} from '@grafana/runtime';
-import _ from 'lodash';
-import { lastValueFrom } from 'rxjs';
+} from '@grafana/runtime'
+import _ from 'lodash'
+import { lastValueFrom } from 'rxjs'
 
 import {
   ChaosMeshOptions,
@@ -37,10 +37,10 @@ import {
   Event,
   EventsQuery,
   kinds,
-} from './types';
+} from './types'
 
 export class DataSource extends DataSourceApi<EventsQuery, ChaosMeshOptions> {
-  readonly baseUrl: string;
+  readonly baseUrl: string
   readonly fields = [
     {
       name: 'object_id',
@@ -82,12 +82,12 @@ export class DataSource extends DataSourceApi<EventsQuery, ChaosMeshOptions> {
       type: FieldType.string,
       config: { displayName: 'Message' },
     },
-  ];
+  ]
 
   constructor(instanceSettings: DataSourceInstanceSettings<ChaosMeshOptions>) {
-    super(instanceSettings);
+    super(instanceSettings)
 
-    this.baseUrl = instanceSettings.url + '/api';
+    this.baseUrl = instanceSettings.url + '/api'
   }
 
   private fetch<T>(options: BackendSrvRequest) {
@@ -99,87 +99,87 @@ export class DataSource extends DataSourceApi<EventsQuery, ChaosMeshOptions> {
       {
         method: 'GET',
       }
-    );
+    )
 
-    const resp = getBackendSrv().fetch<T>(_options);
+    const resp = getBackendSrv().fetch<T>(_options)
 
-    return lastValueFrom(resp);
+    return lastValueFrom(resp)
   }
 
   private fetchEvents(query: Partial<EventsQuery>) {
     return this.fetch<Event[]>({
       url: '/events',
       params: query,
-    });
+    })
   }
 
   async query(
     options: DataQueryRequest<EventsQuery>
   ): Promise<DataQueryResponse> {
-    const { range, scopedVars } = options;
-    const from = range.from.toISOString();
-    const to = range.to.toISOString();
+    const { range, scopedVars } = options
+    const from = range.from.toISOString()
+    const to = range.to.toISOString()
 
     return Promise.all(
       options.targets.map(async (query) => {
         for (const [key, value] of Object.entries(query)) {
           if (typeof value === 'string' && value.startsWith('$')) {
-            query[key] = getTemplateSrv().replace(query[key], scopedVars);
+            query[key] = getTemplateSrv().replace(query[key], scopedVars)
           }
         }
 
-        query.start = from;
-        query.end = to;
+        query.start = from
+        query.end = to
 
         const frame = new MutableDataFrame<Event>({
           refId: query.refId,
           fields: this.fields,
-        });
+        })
 
-        (await this.fetchEvents(query)).data.forEach((d) => frame.add(d));
+        ;(await this.fetchEvents(query)).data.forEach((d) => frame.add(d))
 
-        return frame;
+        return frame
       })
-    ).then((data) => ({ data }));
+    ).then((data) => ({ data }))
   }
 
   async testDatasource() {
-    const defaultErrorMessage = 'Cannot connect to API';
+    const defaultErrorMessage = 'Cannot connect to API'
 
     try {
       const resp = await this.fetch({
         url: '/common/config',
-      });
+      })
 
       if (resp.status === 200) {
         return {
           status: 'success',
           message: 'Chaos Mesh API is available',
-        };
+        }
       } else {
         return {
           status: 'error',
           message:
             `Status code: ${resp.status}.` +
             ' Chaos Mesh API is not available.',
-        };
+        }
       }
     } catch (err) {
-      let message = '';
+      let message = ''
       if (_.isString(err)) {
-        message = err;
+        message = err
       } else if (isFetchError(err)) {
         message =
           'Fetch error: ' +
-          (err.statusText ? err.statusText : defaultErrorMessage);
+          (err.statusText ? err.statusText : defaultErrorMessage)
         if (err.data && err.data.error && err.data.error.code) {
-          message += ': ' + err.data.error.code + '. ' + err.data.error.message;
+          message += ': ' + err.data.error.code + '. ' + err.data.error.message
         }
       }
       return {
         status: 'error',
         message,
-      };
+      }
     }
   }
 
@@ -237,17 +237,17 @@ export class DataSource extends DataSourceApi<EventsQuery, ChaosMeshOptions> {
       case 'namespace':
         return this.fetch<string[]>({
           url: '/common/chaos-available-namespaces',
-        }).then(({ data }) => data.map((d) => ({ text: d })));
+        }).then(({ data }) => data.map((d) => ({ text: d })))
       case 'kind':
-        return kinds.map((d) => ({ text: d }));
+        return kinds.map((d) => ({ text: d }))
       case 'experiment':
       case 'schedule':
       case 'workflow':
         return this.fetch<Array<{ name: string }>>({
           url: `/${query.metric}s${query.queryString || ''}`,
-        }).then(({ data }) => data.map((d) => ({ text: d.name })));
+        }).then(({ data }) => data.map((d) => ({ text: d.name })))
       default:
-        return [];
+        return []
     }
   }
 }

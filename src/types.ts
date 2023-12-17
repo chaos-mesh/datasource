@@ -14,28 +14,28 @@
  * limitations under the License.
  *
  */
-import { DataSourceJsonData } from '@grafana/data';
-import { DataQuery } from '@grafana/schema';
+import { DataSourceJsonData } from '@grafana/data'
+import { DataQuery } from '@grafana/schema'
 
 interface EventBase {
-  object_id: uuid;
-  namespace: string;
-  name: string;
-  kind: string;
+  object_id: uuid
+  namespace: string
+  name: string
+  kind: string
 }
 
 export interface Event extends EventBase {
-  created_at: string;
-  type: string;
-  reason: string;
-  message: string;
+  created_at: string
+  type: string
+  reason: string
+  message: string
 }
 
 export interface EventsQuery extends DataQuery, EventBase {
-  start: string;
-  end: string;
-  limit?: number;
-  [key: string]: any;
+  start: string
+  end: string
+  limit?: number
+  [key: string]: any
 }
 
 export const kinds = [
@@ -53,13 +53,13 @@ export const kinds = [
   'StressChaos',
   'TimeChaos',
   'PhysicalMachineChaos',
-];
+]
 
-export const kindOptions = kinds.map((kind) => ({ label: kind, value: kind }));
+export const kindOptions = kinds.map((kind) => ({ label: kind, value: kind }))
 
 export interface ChaosMeshVariableQuery {
-  metric: 'namespace' | 'kind' | 'experiment' | 'schedule' | 'workflow';
-  queryString?: string;
+  metric: 'namespace' | 'kind' | 'experiment' | 'schedule' | 'workflow'
+  queryString?: string
 }
 
 /**

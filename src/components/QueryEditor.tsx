@@ -14,37 +14,37 @@
  * limitations under the License.
  *
  */
-import { QueryEditorProps, SelectableValue } from '@grafana/data';
-import { InlineField, Input, Select } from '@grafana/ui';
-import React, { ChangeEvent } from 'react';
+import { QueryEditorProps, SelectableValue } from '@grafana/data'
+import { InlineField, Input, Select } from '@grafana/ui'
+import React, { ChangeEvent } from 'react'
 
-import { DataSource } from '../datasource';
-import { ChaosMeshOptions, EventsQuery, kindOptions } from '../types';
+import { DataSource } from '../datasource'
+import { ChaosMeshOptions, EventsQuery, kindOptions } from '../types'
 
-type Props = QueryEditorProps<DataSource, EventsQuery, ChaosMeshOptions>;
+type Props = QueryEditorProps<DataSource, EventsQuery, ChaosMeshOptions>
 
 export function QueryEditor({ query, onChange, onRunQuery }: Props) {
   const onInputChange =
     (key: keyof EventsQuery) => (event: ChangeEvent<HTMLInputElement>) => {
-      let value: any = event.target.value;
+      let value: any = event.target.value
 
       if (key === 'limit') {
-        value = parseInt(value, 10);
+        value = parseInt(value, 10)
       }
 
-      onChange({ ...query, [key]: value });
+      onChange({ ...query, [key]: value })
       // executes the query
-      onRunQuery();
-    };
+      onRunQuery()
+    }
 
   const onSelectChange =
     (key: keyof EventsQuery) => (option: SelectableValue<string> | null) => {
-      onChange({ ...query, [key]: option ? option.value : undefined });
+      onChange({ ...query, [key]: option ? option.value : undefined })
       // executes the query
-      onRunQuery();
-    };
+      onRunQuery()
+    }
 
-  const { object_id, namespace, name, kind, limit } = query;
+  const { object_id, namespace, name, kind, limit } = query
 
   return (
     <div className="gf-form">
@@ -73,5 +73,5 @@ export function QueryEditor({ query, onChange, onRunQuery }: Props) {
         <Input type="number" value={limit} onChange={onInputChange('limit')} />
       </InlineField>
     </div>
-  );
+  )
 }

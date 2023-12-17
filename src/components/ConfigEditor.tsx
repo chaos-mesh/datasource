@@ -14,11 +14,11 @@
  * limitations under the License.
  *
  */
-import { DataSourcePluginOptionsEditorProps } from '@grafana/data';
-import { DataSourceHttpSettings } from '@grafana/ui';
-import React from 'react';
+import { DataSourcePluginOptionsEditorProps } from '@grafana/data'
+import { DataSourceHttpSettings } from '@grafana/ui'
+import React from 'react'
 
-import { ChaosMeshOptions } from '../types';
+import { ChaosMeshOptions } from '../types'
 
 export function ConfigEditor({
   options,
@@ -30,5 +30,5 @@ export function ConfigEditor({
       dataSourceConfig={options}
       onChange={onOptionsChange}
     />
-  );
+  )
 }
