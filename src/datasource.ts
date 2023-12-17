@@ -15,8 +15,6 @@
  *
  */
 import {
-  AnnotationEvent,
-  AnnotationQueryRequest,
   DataQueryRequest,
   DataQueryResponse,
   DataSourceApi,
@@ -29,41 +27,27 @@ import { getBackendSrv, getTemplateSrv } from '@grafana/runtime';
 import _ from 'lodash';
 import { lastValueFrom } from 'rxjs';
 
-import { ChaosMeshOptions, Event, EventsQuery, VariableQuery, defaultQuery, kinds } from './types';
+import { ChaosMeshOptions, Event, EventsQuery } from './types';
 
 const timeformat = 'YYYY-MM-DDTHH:mm:ssZ';
 
 export class DataSource extends DataSourceApi<EventsQuery, ChaosMeshOptions> {
-  readonly url?: string;
-  readonly defaultQuery = defaultQuery;
-  readonly legacyFetch: boolean = false;
+  readonly endpoint: string;
 
   constructor(instanceSettings: DataSourceInstanceSettings<ChaosMeshOptions>) {
     super(instanceSettings);
 
-    this.url = instanceSettings.url + '/api';
-
-    if (instanceSettings.jsonData.limit) {
-      this.defaultQuery.limit = instanceSettings.jsonData.limit;
-    }
-
-    if (typeof getBackendSrv().fetch !== 'function') {
-      this.legacyFetch = true;
-    }
+    this.endpoint = instanceSettings.url + '/api';
   }
 
-  private fetch<T>(url: string, query?: Partial<EventsQuery>) {
-    const options = {
+  private fetch<T>(url: string, params?: Partial<EventsQuery>) {
+    const resp = getBackendSrv().fetch<T>({
       method: 'GET',
-      url: this.url + url,
-      params: _.defaults(query, this.defaultQuery),
-    };
+      url: this.endpoint + url,
+      params,
+    });
 
-    return (
-      !this.legacyFetch
-        ? lastValueFrom(getBackendSrv().fetch<T>(options))
-        : getBackendSrv().datasourceRequest<T>(options)
-    ).then(({ data }) => data);
+    return lastValueFrom(resp).then(({ data }) => data);
   }
 
   private fetchEvents(query: Partial<EventsQuery>) {
@@ -81,19 +65,23 @@ export class DataSource extends DataSourceApi<EventsQuery, ChaosMeshOptions> {
    */
   private applyVariables(query: EventsQuery, scopedVars: ScopedVars) {
     const keys = _.keys(query);
-    const values = getTemplateSrv().replace(_.values(query).join('|'), scopedVars).split('|');
+    const values = getTemplateSrv()
+      .replace(_.values(query).join('|'), scopedVars)
+      .split('|');
 
     return _.zipObject(keys, values) as unknown as EventsQuery;
   }
 
-  async query(options: DataQueryRequest<EventsQuery>): Promise<DataQueryResponse> {
+  async query(
+    options: DataQueryRequest<EventsQuery>
+  ): Promise<DataQueryResponse> {
     const { range, scopedVars } = options;
 
     const from = range.from.utc().format(timeformat);
     const to = range.to.utc().format(timeformat);
 
     return Promise.all(
-      options.targets.map(async query => {
+      options.targets.map(async (query) => {
         query.start = from;
         query.end = to;
 
@@ -111,95 +99,101 @@ export class DataSource extends DataSourceApi<EventsQuery, ChaosMeshOptions> {
           ],
         });
 
-        (await this.fetchEvents(this.applyVariables(query, scopedVars))).forEach(d => frame.add(d));
+        (
+          await this.fetchEvents(this.applyVariables(query, scopedVars))
+        ).forEach((d) => frame.add(d));
 
         return frame;
       })
-    ).then(data => ({ data }));
+    ).then((data) => ({ data }));
   }
 
   async testDatasource() {
     return getBackendSrv()
-      .get(this.url + '/common/config')
+      .get(this.endpoint + '/common/config')
       .then(() => {
         return {
           status: 'success',
           message: 'Chaos Mesh API status is normal.',
         };
       })
-      .catch(error => {
+      .catch((error) => {
         const { data } = error;
 
         return {
           status: 'error',
-          message: data ? data.message : error.statusText ? error.statusText : 'Chaos Mesh API is not available.',
+          message: data
+            ? data.message
+            : error.statusText
+            ? error.statusText
+            : 'Chaos Mesh API is not available.',
         };
       });
   }
 
-  async annotationQuery(options: AnnotationQueryRequest<EventsQuery>): Promise<AnnotationEvent[]> {
-    const { range, annotation: query } = options;
+  // async annotationQuery(options: AnnotationQueryRequest<EventsQuery>): Promise<AnnotationEvent[]> {
+  //   const { range, annotation: query } = options;
 
-    const from = range.from.utc().format(timeformat);
-    const to = range.to.utc().format(timeformat);
+  //   const from = range.from.utc().format(timeformat);
+  //   const to = range.to.utc().format(timeformat);
 
-    const vars = _.mapValues(
-      _.keyBy(getTemplateSrv().getVariables(), d => '$' + d.name),
-      'current.value'
-    );
+  //   const vars = _.mapValues(
+  //     _.keyBy(getTemplateSrv().getVariables(), (d) => '$' + d.name),
+  //     'current.value'
+  //   );
 
-    const queryCloned = _.merge({}, query); // Clone query to avoid mutating it.
-    for (const q in queryCloned) {
-      if (!queryCloned.hasOwnProperty(q)) {
-        continue;
-      }
+  //   const queryCloned = _.merge({}, query); // Clone query to avoid mutating it.
+  //   for (const q in queryCloned) {
+  //     if (!queryCloned.hasOwnProperty(q)) {
+  //       continue;
+  //     }
 
-      const val = (queryCloned as any)[q];
+  //     const val = (queryCloned as any)[q];
 
-      // Handle variables.
-      if (typeof val === 'string' && val.startsWith('$') && vars[val]) {
-        (queryCloned as any)[q] = vars[val];
-      }
-    }
+  //     // Handle variables.
+  //     if (typeof val === 'string' && val.startsWith('$') && vars[val]) {
+  //       (queryCloned as any)[q] = vars[val];
+  //     }
+  //   }
 
-    queryCloned.start = from;
-    queryCloned.end = to;
+  //   queryCloned.start = from;
+  //   queryCloned.end = to;
 
-    return this.fetchEvents({ ...queryCloned, name: (queryCloned as any).eventName }).then(data => {
-      const grouped = _.groupBy(data, 'name');
+  //   return this.fetchEvents({ ...queryCloned, name: (queryCloned as any).eventName }).then((data) => {
+  //     const grouped = _.groupBy(data, 'name');
 
-      return _.entries(grouped).map(([k, v]) => {
-        const first = v[v.length - 1];
-        const last = v[0];
+  //     return _.entries(grouped).map(([k, v]) => {
+  //       const first = v[v.length - 1];
+  //       const last = v[0];
 
-        return {
-          title: `<h6>${k}</h6>`,
-          text: v
-            .map(d => `<div>${new Date(d.created_at).toLocaleString()}: ${d.message}</div>`)
-            .reverse()
-            .join('\n'),
-          tags: [`namespace:${first.namespace}`, `kind:${first.kind}`],
-          time: Date.parse(first.created_at),
-          timeEnd: Date.parse(last.created_at),
-        };
-      });
-    });
-  }
+  //       return {
+  //         title: `<h6>${k}</h6>`,
+  //         text: v
+  //           .map((d) => `<div>${new Date(d.created_at).toLocaleString()}: ${d.message}</div>`)
+  //           .reverse()
+  //           .join('\n'),
+  //         tags: [`namespace:${first.namespace}`, `kind:${first.kind}`],
+  //         time: Date.parse(first.created_at),
+  //         timeEnd: Date.parse(last.created_at),
+  //       };
+  //     });
+  //   });
+  // }
 
-  async metricFindQuery(query: VariableQuery) {
-    switch (query.metric) {
-      case 'namespace':
-        return this.fetch<string[]>('/common/namespaces').then(data => data.map(d => ({ text: d })));
-      case 'kind':
-        return kinds.map(d => ({ text: d }));
-      case 'experiment':
-      case 'schedule':
-      case 'workflow':
-        return this.fetch<Array<{ name: string }>>(`/${query.metric}s${query.queryString || ''}`).then(data =>
-          data.map(d => ({ text: d.name }))
-        );
-      default:
-        return [];
-    }
-  }
+  // async metricFindQuery(query: VariableQuery) {
+  //   switch (query.metric) {
+  //     case 'namespace':
+  //       return this.fetch<string[]>('/common/namespaces').then((data) => data.map((d) => ({ text: d })));
+  //     case 'kind':
+  //       return kinds.map((d) => ({ text: d }));
+  //     case 'experiment':
+  //     case 'schedule':
+  //     case 'workflow':
+  //       return this.fetch<Array<{ name: string }>>(`/${query.metric}s${query.queryString || ''}`).then((data) =>
+  //         data.map((d) => ({ text: d.name }))
+  //       );
+  //     default:
+  //       return [];
+  //   }
+  // }
 }

@@ -14,7 +14,8 @@
  * limitations under the License.
  *
  */
-import { DataQuery, DataSourceJsonData } from '@grafana/data';
+import { DataSourceJsonData } from '@grafana/data';
+import { DataQuery } from '@grafana/schema';
 
 interface EventBase {
   object_id: uuid;
@@ -35,10 +36,6 @@ export interface EventsQuery extends DataQuery, EventBase {
   end: string;
   limit?: number;
 }
-
-export const defaultQuery: Partial<EventsQuery> = {
-  limit: 300,
-};
 
 export const kinds = [
   'AWSChaos',
@@ -65,6 +62,4 @@ export interface VariableQuery {
 /**
  * These are options configured for each DataSource instance
  */
-export interface ChaosMeshOptions extends DataSourceJsonData {
-  limit?: number;
-}
+export interface ChaosMeshOptions extends DataSourceJsonData {}

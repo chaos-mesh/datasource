@@ -14,21 +14,21 @@
  * limitations under the License.
  *
  */
-import '@testing-library/jest-dom';
-import { render, screen } from '@testing-library/react';
-import { ChaosMeshSettings } from 'ChaosMeshSettings';
+import { DataSourcePluginOptionsEditorProps } from '@grafana/data';
+import { DataSourceHttpSettings } from '@grafana/ui';
 import React from 'react';
 
-const defaultOptions = {
-  jsonData: {
-    limit: 300,
-  },
-};
+import { ChaosMeshOptions } from '../types';
 
-describe('<ChaosMeshSettings />', () => {
-  it('loaded successfully', () => {
-    render(<ChaosMeshSettings options={defaultOptions as any} onOptionsChange={() => {}} />);
-
-    expect(screen.getByText('Limit')).toBeInTheDocument();
-  });
-});
+export function ConfigEditor({
+  options,
+  onOptionsChange,
+}: DataSourcePluginOptionsEditorProps<ChaosMeshOptions>) {
+  return (
+    <DataSourceHttpSettings
+      defaultUrl="http://localhost:2333"
+      dataSourceConfig={options}
+      onChange={onOptionsChange}
+    />
+  );
+}

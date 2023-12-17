@@ -14,8 +14,6 @@
  * limitations under the License.
  *
  */
-import { defaultQuery } from './types';
-
 export class AnnotationQueryEditor {
   static templateUrl = 'partials/annotations.editor.html';
 
@@ -26,6 +24,5 @@ export class AnnotationQueryEditor {
     this.annotation.namespace = this.annotation.namespace || '';
     this.annotation.eventName = this.annotation.eventName || ''; // There is a conflict with annotation name, so rename it to eventName.
     this.annotation.kind = this.annotation.kind || '';
-    this.annotation.limit = this.annotation.limit || defaultQuery.limit;
   }
 }

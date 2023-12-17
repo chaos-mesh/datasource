@@ -1,5 +1,5 @@
 {
-  "$schema": "https://raw.githubusercontent.com/grafana/grafana/master/docs/sources/developers/plugins/plugin.schema.json",
+  "$schema": "https://raw.githubusercontent.com/grafana/grafana/main/docs/sources/developers/plugins/plugin.schema.json",
   "type": "datasource",
   "name": "Chaos Mesh",
   "id": "chaosmeshorg-datasource",
@@ -7,12 +7,12 @@
   "annotations": true,
   "metrics": true,
   "info": {
-    "description": "Chaos Mesh (A Chaos Engineering Platform for Kubernetes) Data Source",
+    "description": "Data source for Chaos Mesh (A Chaos Engineering Platform for Kubernetes)",
     "author": {
       "name": "Chaos Mesh Project Team",
       "url": "https://github.com/chaos-mesh"
     },
-    "keywords": ["Cloud", "Chaos Engineering", "Chaos Mesh"],
+    "keywords": ["datasource", "Cloud", "Chaos Engineering", "Chaos Mesh"],
     "logos": {
       "small": "img/logo.svg",
       "large": "img/logo.svg"
@@ -45,11 +45,11 @@
         "path": "img/variables.png"
       }
     ],
-    "version": "2.2.3",
+    "version": "%VERSION%",
     "updated": "%TODAY%"
   },
   "dependencies": {
-    "grafanaDependency": ">=7.0.0",
+    "grafanaDependency": ">=10.0.3",
     "plugins": []
   }
 }
