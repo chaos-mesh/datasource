@@ -38,8 +38,8 @@ export function QueryEditor({ query, onChange, onRunQuery }: Props) {
     };
 
   const onSelectChange =
-    (key: keyof EventsQuery) => (val: SelectableValue<string> | null) => {
-      onChange({ ...query, [key]: val ? val.value : undefined });
+    (key: keyof EventsQuery) => (option: SelectableValue<string> | null) => {
+      onChange({ ...query, [key]: option ? option.value : undefined });
       // executes the query
       onRunQuery();
     };

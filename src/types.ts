@@ -35,6 +35,7 @@ export interface EventsQuery extends DataQuery, EventBase {
   start: string;
   end: string;
   limit?: number;
+  [key: string]: any;
 }
 
 export const kinds = [
@@ -56,7 +57,7 @@ export const kinds = [
 
 export const kindOptions = kinds.map((kind) => ({ label: kind, value: kind }));
 
-export interface VariableQuery {
+export interface ChaosMeshVariableQuery {
   metric: 'namespace' | 'kind' | 'experiment' | 'schedule' | 'workflow';
   queryString?: string;
 }

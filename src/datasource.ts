@@ -25,12 +25,19 @@ import {
 import {
   BackendSrvRequest,
   getBackendSrv,
+  getTemplateSrv,
   isFetchError,
 } from '@grafana/runtime';
 import _ from 'lodash';
 import { lastValueFrom } from 'rxjs';
 
-import { ChaosMeshOptions, Event, EventsQuery } from './types';
+import {
+  ChaosMeshOptions,
+  ChaosMeshVariableQuery,
+  Event,
+  EventsQuery,
+  kinds,
+} from './types';
 
 export class DataSource extends DataSourceApi<EventsQuery, ChaosMeshOptions> {
   readonly baseUrl: string;
@@ -106,34 +113,21 @@ export class DataSource extends DataSourceApi<EventsQuery, ChaosMeshOptions> {
     });
   }
 
-  /**
-   * This function use a tricky way to apply all the variables to the query.
-   *
-   * It firstly joins all values to a string and then replace by scoped vars, then zip the result to a object.
-   *
-   * @param query
-   * @param scopedVars
-   * @returns
-   */
-  // private applyVariables(query: EventsQuery, scopedVars: ScopedVars) {
-  //   const keys = _.keys(query);
-  //   const values = getTemplateSrv()
-  //     .replace(_.values(query).join('|'), scopedVars)
-  //     .split('|');
-
-  //   return _.zipObject(keys, values) as unknown as EventsQuery;
-  // }
-
   async query(
     options: DataQueryRequest<EventsQuery>
   ): Promise<DataQueryResponse> {
-    const { range } = options;
-
+    const { range, scopedVars } = options;
     const from = range.from.toISOString();
     const to = range.to.toISOString();
 
     return Promise.all(
       options.targets.map(async (query) => {
+        for (const [key, value] of Object.entries(query)) {
+          if (typeof value === 'string' && value.startsWith('$')) {
+            query[key] = getTemplateSrv().replace(query[key], scopedVars);
+          }
+        }
+
         query.start = from;
         query.end = to;
 
@@ -238,20 +232,22 @@ export class DataSource extends DataSourceApi<EventsQuery, ChaosMeshOptions> {
   //   });
   // }
 
-  // async metricFindQuery(query: VariableQuery) {
-  //   switch (query.metric) {
-  //     case 'namespace':
-  //       return this.fetch<string[]>('/common/namespaces').then((data) => data.map((d) => ({ text: d })));
-  //     case 'kind':
-  //       return kinds.map((d) => ({ text: d }));
-  //     case 'experiment':
-  //     case 'schedule':
-  //     case 'workflow':
-  //       return this.fetch<Array<{ name: string }>>(`/${query.metric}s${query.queryString || ''}`).then((data) =>
-  //         data.map((d) => ({ text: d.name }))
-  //       );
-  //     default:
-  //       return [];
-  //   }
-  // }
+  async metricFindQuery(query: ChaosMeshVariableQuery) {
+    switch (query.metric) {
+      case 'namespace':
+        return this.fetch<string[]>({
+          url: '/common/chaos-available-namespaces',
+        }).then(({ data }) => data.map((d) => ({ text: d })));
+      case 'kind':
+        return kinds.map((d) => ({ text: d }));
+      case 'experiment':
+      case 'schedule':
+      case 'workflow':
+        return this.fetch<Array<{ name: string }>>({
+          url: `/${query.metric}s${query.queryString || ''}`,
+        }).then(({ data }) => data.map((d) => ({ text: d.name })));
+      default:
+        return [];
+    }
+  }
 }

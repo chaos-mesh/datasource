@@ -18,6 +18,7 @@ import { DataSourcePlugin } from '@grafana/data';
 
 import { ConfigEditor } from './components/ConfigEditor';
 import { QueryEditor } from './components/QueryEditor';
+import { VariableQueryEditor } from './components/VariableQueryEditor';
 import { DataSource } from './datasource';
 import { ChaosMeshOptions, EventsQuery } from './types';
 
@@ -27,6 +28,6 @@ export const plugin = new DataSourcePlugin<
   ChaosMeshOptions
 >(DataSource)
   .setConfigEditor(ConfigEditor)
-  .setQueryEditor(QueryEditor);
-// .setVariableQueryEditor(VariableQueryEditor)
+  .setQueryEditor(QueryEditor)
+  .setVariableQueryEditor(VariableQueryEditor);
 // .setAnnotationQueryCtrl(AnnotationQueryEditor);
