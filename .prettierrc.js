@@ -1,16 +1,10 @@
 module.exports = {
-  ...require('./node_modules/@grafana/toolkit/src/config/prettier.plugin.config.json'),
-  arrowParens: 'avoid',
-  importOrder: [
-    '<THIRD_PARTY_MODULES>',
-    '^@ui/(.*)$',
-    'store',
-    '^slices/(.*)$',
-    '^components/(.*)$',
-    '^lib/(.*)$',
-    '^images/(.*)$',
-    '^[./]',
-  ],
+  // Prettier configuration provided by Grafana scaffolding
+  ...require('./.config/.prettierrc.js'),
+  semi: false,
+  printWidth: 80,
+  importOrder: ['<THIRD_PARTY_MODULES>', '^[./]'],
   importOrderSeparation: true,
   importOrderSortSpecifiers: true,
+  plugins: ['@trivago/prettier-plugin-sort-imports'],
 }

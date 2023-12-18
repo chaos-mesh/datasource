@@ -14,17 +14,19 @@
  * limitations under the License.
  *
  */
-import { DataSourcePlugin } from '@grafana/data';
-import { AnnotationQueryEditor } from 'AnnotationQueryEditor';
+import { DataSourcePlugin } from '@grafana/data'
 
-import { ConfigEditor } from './ConfigEditor';
-import { QueryEditor } from './QueryEditor';
-import { VariableQueryEditor } from './VariableQueryEditor';
-import { DataSource } from './datasource';
-import { ChaosMeshOptions, EventsQuery } from './types';
+import { ConfigEditor } from './components/ConfigEditor'
+import { QueryEditor } from './components/QueryEditor'
+import { VariableQueryEditor } from './components/VariableQueryEditor'
+import { DataSource } from './datasource'
+import { ChaosMeshOptions, EventQuery } from './types'
 
-export const plugin = new DataSourcePlugin<DataSource, EventsQuery, ChaosMeshOptions>(DataSource)
+export const plugin = new DataSourcePlugin<
+  DataSource,
+  EventQuery,
+  ChaosMeshOptions
+>(DataSource)
   .setConfigEditor(ConfigEditor)
   .setQueryEditor(QueryEditor)
   .setVariableQueryEditor(VariableQueryEditor)
-  .setAnnotationQueryCtrl(AnnotationQueryEditor);

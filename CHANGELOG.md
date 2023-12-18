@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.0] - 2023-12-18
+
+### Changed
+
+Deprecate Angular support. Refer to [#55](https://github.com/chaos-mesh/datasource/issues/55) for more details.
+Please also read the README for new information.
+
 ## [2.2.3] - 2022-08-07
 
 ### Fixed
@@ -43,7 +50,7 @@ Ready for submission to grafana official plugins repository. 🥰
 
 ### Changed
 
-- Compatible with Chaos Mesh 2.x. **(After 2.0.x, will start with 2.1.x)**
+- Compatible with Chaos Mesh 2.x (**after 2.0.x, will start with 2.1.x**).
 - Bump the minimal grafana version to 7.0.0
 - Bump grafana/toolkit to 8.x
 
@@ -57,6 +64,6 @@ Ready for submission to grafana official plugins repository. 🥰
 
 ### Added
 
-- Visualize Chaos Events on the table
-- Show Chaos Events on the graph with [Annotations](https://grafana.com/docs/grafana/latest/dashboards/annotations/)
-- Display different Chaos Events by [Variables](https://grafana.com/docs/grafana/latest/variables/)
+- Displaying Chaos events in a table visualization
+- Support [variables](https://grafana.com/docs/grafana/latest/variables/) to filter Chaos events
+- Support [Annotations](https://grafana.com/docs/grafana/latest/dashboards/annotations/) to annotate Chaos events on the panel

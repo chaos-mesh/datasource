@@ -14,31 +14,29 @@
  * limitations under the License.
  *
  */
-import { DataQuery, DataSourceJsonData } from '@grafana/data';
+import { DataSourceJsonData } from '@grafana/data'
+import { DataQuery } from '@grafana/schema'
 
 interface EventBase {
-  object_id: uuid;
-  namespace: string;
-  name: string;
-  kind: string;
+  object_id: uuid
+  namespace: string
+  name: string
+  kind: string
 }
 
 export interface Event extends EventBase {
-  created_at: string;
-  type: 'Normal' | 'Warning';
-  reason: string;
-  message: string;
+  created_at: string
+  type: string
+  reason: string
+  message: string
 }
 
-export interface EventsQuery extends DataQuery, EventBase {
-  start: string;
-  end: string;
-  limit?: number;
+export interface EventQuery extends DataQuery, EventBase {
+  start: string
+  end: string
+  limit?: number
+  [key: string]: any
 }
-
-export const defaultQuery: Partial<EventsQuery> = {
-  limit: 300,
-};
 
 export const kinds = [
   'AWSChaos',
@@ -55,16 +53,16 @@ export const kinds = [
   'StressChaos',
   'TimeChaos',
   'PhysicalMachineChaos',
-];
+]
 
-export interface VariableQuery {
-  metric: 'namespace' | 'kind' | 'experiment' | 'schedule' | 'workflow';
-  queryString?: string;
+export const kindOptions = kinds.map((kind) => ({ label: kind, value: kind }))
+
+export interface ChaosMeshVariableQuery {
+  metric: 'namespace' | 'kind' | 'experiment' | 'schedule' | 'workflow'
+  queryString?: string
 }
 
 /**
  * These are options configured for each DataSource instance
  */
-export interface ChaosMeshOptions extends DataSourceJsonData {
-  limit?: number;
-}
+export interface ChaosMeshOptions extends DataSourceJsonData {}

@@ -14,18 +14,21 @@
  * limitations under the License.
  *
  */
-import { defaultQuery } from './types';
+import { DataSourcePluginOptionsEditorProps } from '@grafana/data'
+import { DataSourceHttpSettings } from '@grafana/ui'
+import React from 'react'
 
-export class AnnotationQueryEditor {
-  static templateUrl = 'partials/annotations.editor.html';
+import { ChaosMeshOptions } from '../types'
 
-  annotation: any;
-
-  constructor() {
-    this.annotation.object_id = this.annotation.object_id || '';
-    this.annotation.namespace = this.annotation.namespace || '';
-    this.annotation.eventName = this.annotation.eventName || ''; // There is a conflict with annotation name, so rename it to eventName.
-    this.annotation.kind = this.annotation.kind || '';
-    this.annotation.limit = this.annotation.limit || defaultQuery.limit;
-  }
+export function ConfigEditor({
+  options,
+  onOptionsChange,
+}: DataSourcePluginOptionsEditorProps<ChaosMeshOptions>) {
+  return (
+    <DataSourceHttpSettings
+      defaultUrl="http://localhost:2333"
+      dataSourceConfig={options}
+      onChange={onOptionsChange}
+    />
+  )
 }
