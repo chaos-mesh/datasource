@@ -1,6 +1,6 @@
 {
   "name": "chaosmeshorg-datasource",
-  "version": "2.2.3",
+  "version": "3.0.0",
   "description": "Grafana data source plugin for Chaos Mesh (A Chaos Engineering Platform for Kubernetes)",
   "scripts": {
     "build": "webpack -c ./.config/webpack/webpack.config.ts --env production",
@@ -59,7 +59,7 @@
     "webpack-livereload-plugin": "^3.0.2"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   },
   "dependencies": {
     "@emotion/css": "11.10.6",

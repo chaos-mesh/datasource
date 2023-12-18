@@ -37,12 +37,12 @@
         "path": "img/settings.png"
       },
       {
-        "name": "Annotations",
-        "path": "img/annotations.png"
-      },
-      {
         "name": "Variables",
         "path": "img/variables.png"
+      },
+      {
+        "name": "Annotations",
+        "path": "img/annotations.png"
       }
     ],
     "version": "%VERSION%",
