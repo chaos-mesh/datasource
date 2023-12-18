@@ -15,7 +15,10 @@
  *
  */
 import {
+  AnnotationEvent,
+  AnnotationQuery,
   AnnotationSupport,
+  DataFrame,
   DataQueryRequest,
   DataQueryResponse,
   DataSourceApi,
@@ -30,17 +33,17 @@ import {
   isFetchError,
 } from '@grafana/runtime'
 import _ from 'lodash'
-import { lastValueFrom } from 'rxjs'
+import { lastValueFrom, of } from 'rxjs'
 
 import {
   ChaosMeshOptions,
   ChaosMeshVariableQuery,
   Event,
-  EventsQuery,
+  EventQuery,
   kinds,
 } from './types'
 
-export class DataSource extends DataSourceApi<EventsQuery, ChaosMeshOptions> {
+export class DataSource extends DataSourceApi<EventQuery, ChaosMeshOptions> {
   readonly baseUrl: string
   readonly fields = [
     {
@@ -107,7 +110,7 @@ export class DataSource extends DataSourceApi<EventsQuery, ChaosMeshOptions> {
     return lastValueFrom(resp)
   }
 
-  private fetchEvents(query: Partial<EventsQuery>) {
+  private fetchEvents(query: Partial<EventQuery>) {
     return this.fetch<Event[]>({
       url: '/events',
       params: query,
@@ -115,7 +118,7 @@ export class DataSource extends DataSourceApi<EventsQuery, ChaosMeshOptions> {
   }
 
   async query(
-    options: DataQueryRequest<EventsQuery>
+    options: DataQueryRequest<EventQuery>
   ): Promise<DataQueryResponse> {
     const { range, scopedVars } = options
     const from = range.from.toISOString()
@@ -184,56 +187,44 @@ export class DataSource extends DataSourceApi<EventsQuery, ChaosMeshOptions> {
     }
   }
 
-  annotations: AnnotationSupport<EventsQuery> = {}
+  annotations: AnnotationSupport<EventQuery> = {
+    processEvents: (anno, data) => {
+      return of(this.eventFrameToAnnotation(anno, data))
+    },
+  }
 
-  // async annotationQuery(options: AnnotationQueryRequest<EventsQuery>): Promise<AnnotationEvent[]> {
-  //   const { range, annotation: query } = options;
+  private eventFrameToAnnotation(
+    anno: AnnotationQuery<EventQuery>,
+    data: DataFrame[]
+  ): AnnotationEvent[] {
+    return data.map((frame) => {
+      const times = frame.fields
+        .find((f) => f.name === 'created_at')!
+        .values.reverse() // Default descending order.
+      const startTime = Date.parse(times[0])
+      const endTime = Date.parse(times[times.length - 1])
+      const messages = frame.fields
+        .find((f) => f.name === 'message')!
+        .values.reverse()
 
-  //   const from = range.from.utc().format(timeformat);
-  //   const to = range.to.utc().format(timeformat);
-
-  //   const vars = _.mapValues(
-  //     _.keyBy(getTemplateSrv().getVariables(), (d) => '$' + d.name),
-  //     'current.value'
-  //   );
-
-  //   const queryCloned = _.merge({}, query); // Clone query to avoid mutating it.
-  //   for (const q in queryCloned) {
-  //     if (!queryCloned.hasOwnProperty(q)) {
-  //       continue;
-  //     }
-
-  //     const val = (queryCloned as any)[q];
-
-  //     // Handle variables.
-  //     if (typeof val === 'string' && val.startsWith('$') && vars[val]) {
-  //       (queryCloned as any)[q] = vars[val];
-  //     }
-  //   }
-
-  //   queryCloned.start = from;
-  //   queryCloned.end = to;
-
-  //   return this.fetchEvents({ ...queryCloned, name: (queryCloned as any).eventName }).then((data) => {
-  //     const grouped = _.groupBy(data, 'name');
-
-  //     return _.entries(grouped).map(([k, v]) => {
-  //       const first = v[v.length - 1];
-  //       const last = v[0];
-
-  //       return {
-  //         title: `<h6>${k}</h6>`,
-  //         text: v
-  //           .map((d) => `<div>${new Date(d.created_at).toLocaleString()}: ${d.message}</div>`)
-  //           .reverse()
-  //           .join('\n'),
-  //         tags: [`namespace:${first.namespace}`, `kind:${first.kind}`],
-  //         time: Date.parse(first.created_at),
-  //         timeEnd: Date.parse(last.created_at),
-  //       };
-  //     });
-  //   });
-  // }
+      return {
+        title: `<div><b>${anno.name}</b></div>`,
+        time: startTime,
+        timeEnd: endTime,
+        text: `<ul style="margin-bottom: 1rem;">
+        ${messages
+          .map(
+            (d, i) =>
+              `<li style="margin-bottom: .5rem">${new Date(
+                times[i]
+              ).toLocaleTimeString()} - ${d}</li>`
+          )
+          .join('')}
+        </ul>`,
+        tags: ['Chaos Mesh'],
+      }
+    })
+  }
 
   async metricFindQuery(query: ChaosMeshVariableQuery) {
     switch (query.metric) {

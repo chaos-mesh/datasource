@@ -31,7 +31,7 @@ export interface Event extends EventBase {
   message: string
 }
 
-export interface EventsQuery extends DataQuery, EventBase {
+export interface EventQuery extends DataQuery, EventBase {
   start: string
   end: string
   limit?: number

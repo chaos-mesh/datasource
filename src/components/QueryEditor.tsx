@@ -19,13 +19,13 @@ import { InlineField, Input, Select } from '@grafana/ui'
 import React, { ChangeEvent } from 'react'
 
 import { DataSource } from '../datasource'
-import { ChaosMeshOptions, EventsQuery, kindOptions } from '../types'
+import { ChaosMeshOptions, EventQuery, kindOptions } from '../types'
 
-type Props = QueryEditorProps<DataSource, EventsQuery, ChaosMeshOptions>
+type Props = QueryEditorProps<DataSource, EventQuery, ChaosMeshOptions>
 
 export function QueryEditor({ query, onChange, onRunQuery }: Props) {
   const onInputChange =
-    (key: keyof EventsQuery) => (event: ChangeEvent<HTMLInputElement>) => {
+    (key: keyof EventQuery) => (event: ChangeEvent<HTMLInputElement>) => {
       let value: any = event.target.value
 
       if (key === 'limit') {
@@ -38,7 +38,7 @@ export function QueryEditor({ query, onChange, onRunQuery }: Props) {
     }
 
   const onSelectChange =
-    (key: keyof EventsQuery) => (option: SelectableValue<string> | null) => {
+    (key: keyof EventQuery) => (option: SelectableValue<string> | null) => {
       onChange({ ...query, [key]: option ? option.value : undefined })
       // executes the query
       onRunQuery()
