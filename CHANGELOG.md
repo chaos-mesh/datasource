@@ -65,5 +65,5 @@ Ready for submission to grafana official plugins repository. 🥰
 ### Added
 
 - Displaying Chaos events in a table visualization
-- Support [variables](https://grafana.com/docs/grafana/latest/variables/) to filter Chaos events
+- Support [Variables](https://grafana.com/docs/grafana/latest/variables/) to filter Chaos events
 - Support [Annotations](https://grafana.com/docs/grafana/latest/dashboards/annotations/) to annotate Chaos events on the panel
