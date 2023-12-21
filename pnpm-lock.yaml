@@ -4,6 +4,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  underscore: ^1.13.6
+
 dependencies:
   '@emotion/css':
     specifier: 11.10.6
@@ -2480,7 +2483,7 @@ packages:
       react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
     dependencies:
       '@babel/runtime': 7.23.6
-      '@react-aria/focus': 3.8.0(react@18.2.0)
+      '@react-aria/focus': 3.15.0(react@18.2.0)
       '@react-aria/interactions': 3.20.0(react@18.2.0)
       '@react-aria/utils': 3.22.0(react@18.2.0)
       '@react-stately/toggle': 3.7.0(react@18.2.0)
@@ -2495,7 +2498,7 @@ packages:
       react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
     dependencies:
       '@babel/runtime': 7.23.6
-      '@react-aria/focus': 3.8.0(react@18.2.0)
+      '@react-aria/focus': 3.15.0(react@18.2.0)
       '@react-aria/utils': 3.22.0(react@18.2.0)
       '@react-stately/overlays': 3.6.4(react@18.2.0)
       '@react-types/dialog': 3.5.7(react@18.2.0)
@@ -8398,7 +8401,7 @@ packages:
       pngjs: 2.3.1
       request: 2.88.2
       stream-buffers: 1.0.1
-      underscore: 1.7.0
+      underscore: 1.13.6
     dev: true
 
   /pngjs@2.3.1:
@@ -8483,7 +8486,7 @@ packages:
     resolution: {integrity: sha512-WLDk+UowEESixvlhiamGOj/iqWrp8IWeCCHvBZrLh0g4/A1Fa77fDQWqQUd5S5rScT+9u49aDfa45xYRkxqmiA==}
     dependencies:
       log4js: 1.1.1
-      underscore: 1.7.0
+      underscore: 1.13.6
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -10592,8 +10595,8 @@ packages:
       which-boxed-primitive: 1.0.2
     dev: true
 
-  /underscore@1.7.0:
-    resolution: {integrity: sha512-cp0oQQyZhUM1kpJDLdGO1jPZHgS/MpzoWYfe9+CM2h/QGDZlqwT2T3YGukuBdaNJ/CAPoeyAZRRHz8JFo176vA==}
+  /underscore@1.13.6:
+    resolution: {integrity: sha512-+A5Sja4HP1M08MaXya7p5LvjuM7K6q/2EaC0+iovj/wOcMsTzMvDFbasi/oSapiwOlt252IqsKqPjCl7huKS0A==}
     dev: true
 
   /undici-types@5.26.5:
