@@ -29,11 +29,11 @@ import {
 import {
   BackendSrvRequest,
   getBackendSrv,
-  getTemplateSrv,
   isFetchError,
 } from '@grafana/runtime'
 import _ from 'lodash'
 import { lastValueFrom, of } from 'rxjs'
+import { processMultipleVariables, processVariables } from 'utils'
 
 import {
   ChaosMeshOptions,
@@ -126,21 +126,20 @@ export class DataSource extends DataSourceApi<EventQuery, ChaosMeshOptions> {
 
     return Promise.all(
       options.targets.map(async (query) => {
-        for (const [key, value] of Object.entries(query)) {
-          if (typeof value === 'string' && value.startsWith('$')) {
-            query[key] = getTemplateSrv().replace(query[key], scopedVars)
-          }
-        }
+        processVariables(query, scopedVars)
 
         query.start = from
         query.end = to
 
+        const queries = processMultipleVariables(query)
         const frame = new MutableDataFrame<Event>({
           refId: query.refId,
           fields: this.fields,
         })
 
-        ;(await this.fetchEvents(query)).data.forEach((d) => frame.add(d))
+        for (const q of queries) {
+          ;(await this.fetchEvents(q)).data.forEach((d) => frame.add(d))
+        }
 
         return frame
       })
