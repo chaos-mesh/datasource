@@ -199,9 +199,12 @@ export class DataSource extends DataSourceApi<EventQuery, ChaosMeshOptions> {
     return data.map((frame) => {
       const times = frame.fields
         .find((f) => f.name === 'created_at')!
-        .values.reverse() // Default descending order.
+        .values.reverse() // Default descending order. So reverse it.
       const startTime = Date.parse(times[0])
       const endTime = Date.parse(times[times.length - 1])
+      const names = frame.fields
+        .find((f) => f.name === 'name')!
+        .values.reverse()
       const messages = frame.fields
         .find((f) => f.name === 'message')!
         .values.reverse()
@@ -210,13 +213,19 @@ export class DataSource extends DataSourceApi<EventQuery, ChaosMeshOptions> {
         title: `<div><b>${anno.name}</b></div>`,
         time: startTime,
         timeEnd: endTime,
-        text: `<ul style="margin-bottom: 1rem;">
+        text: `<ul style="max-height: 500px; margin-bottom: 1rem; overflow: auto;">
         ${messages
           .map(
             (d, i) =>
-              `<li style="margin-bottom: .5rem">${new Date(
-                times[i]
-              ).toLocaleTimeString()} - ${d}</li>`
+              `<li style="margin-bottom: .5rem;">
+                <div>${i + 1}: ${d}</div>
+                <div>
+                  <span class="label">${names[i]}</span>
+                  <span class="label">${new Date(
+                    times[i]
+                  ).toLocaleTimeString()}</span>
+                </div>
+              </li>`
           )
           .join('')}
         </ul>`,
