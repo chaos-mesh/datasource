@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.0.0] - 2023-12-18
 
+### Added
+
+- Support multi-value variables (for example, you can select multiple experiment names as a filter)
+
 ### Changed
 
 Deprecate Angular support. Refer to [#55](https://github.com/chaos-mesh/datasource/issues/55) for more details.
