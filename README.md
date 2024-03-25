@@ -13,7 +13,7 @@ Grafana data source plugin for Chaos Mesh.
 - Support [Variables](https://grafana.com/docs/grafana/latest/variables/) to filter Chaos events
 - Support [Annotations](https://grafana.com/docs/grafana/latest/dashboards/annotations/) to annotate Chaos events on the panel
 
-## Install
+## Installation
 
 ### With dashboard
 
@@ -56,10 +56,10 @@ Once installed, go to **Administration -> Data sources** and add Chaos Mesh, the
 
 Assuming you have Chaos Mesh installed locally, the Chaos Dashboard will export the API on port `2333` by default. So, if you haven't changed anything, you can fill in `http://localhost:2333`.
 
-Then use the `port-forward` command to activate:
+Then use the `port-forward` command to make the API externally accessible:
 
 ```shell
-kubectl port-forward -n chaos-testing svc/chaos-dashboard 2333:2333
+kubectl port-forward -n chaos-mesh svc/chaos-dashboard 2333:2333
 ```
 
 Finally, click **Save & test** to test the connection. If it shows a successful notification, the setup is complete.
