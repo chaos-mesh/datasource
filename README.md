@@ -64,6 +64,18 @@ kubectl port-forward -n chaos-testing svc/chaos-dashboard 2333:2333
 
 Finally, click **Save & test** to test the connection. If it shows a successful notification, the setup is complete.
 
+### Authentication
+
+If you deploy Chaos Mesh with [permission authentication](https://chaos-mesh.org/docs/manage-user-permissions), you need to add the `Authorization` header to the configuration.
+You can follow the steps below to add the header:
+
+1. Click the **Add header** button.
+2. Fill in the `Authorization` in the **Header** field.
+3. Follow [this section](https://chaos-mesh.org/docs/manage-user-permissions/#get-the-token) to get the token.
+4. Fill in the `Bearer YOUR_TOKEN` in the **Value** field.
+
+Then don't forget to click **Save & test** to test the connection.
+
 ## Query
 
 The data source plugin looks at the Chaos Mesh through the lens of events, and the following options are responsible for filtering the different events:
