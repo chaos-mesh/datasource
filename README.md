@@ -2,10 +2,7 @@
 
 Grafana data source plugin for Chaos Mesh.
 
-> This plugin requires Chaos Mesh **>=2.1**, Grafana >= **10.0**.
->
-> Note: We only test the plugin on Grafana 10.0.3, it may support lower versions, but we are not sure.
-> Upgrading to Grafana v10 is because of the [Angular support deprecation](https://github.com/chaos-mesh/datasource/issues/55). If you encounter any problems, please open an issue to let us know.
+> This plugin requires Chaos Mesh **>=2.1**, Grafana **>=12.4.14**.
 
 ## Features
 

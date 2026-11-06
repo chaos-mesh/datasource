@@ -4,19 +4,25 @@ on: [pull_request]
 jobs:
   compatibilitycheck:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@v3
-      # pnpm action uses the packageManager field in package.json to
-      # understand which version to install.
-      - uses: pnpm/action-setup@v2
-      - name: Setup Node.js environment
-        uses: actions/setup-node@v3
+      - uses: actions/checkout@v7
         with:
-          node-version: '20'
+          persist-credentials: false
+      - uses: pnpm/action-setup@v6
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
           cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install --frozen-lockfile --prefer-offline
       - name: Build plugin
         run: pnpm run build
       - name: Compatibility check
-        run: npx @grafana/levitate@latest is-compatible --path src/module.ts --target @grafana/data,@grafana/ui,@grafana/runtime
+        uses: grafana/plugin-actions/is-compatible@is-compatible/v1.1.0
+        with:
+          module: src/module.ts
+          comment-pr: 'no'
+          fail-if-incompatible: 'yes'

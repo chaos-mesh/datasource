@@ -24,7 +24,7 @@ import {
   DataSourceApi,
   DataSourceInstanceSettings,
   FieldType,
-  MutableDataFrame,
+  createDataFrame,
 } from '@grafana/data'
 import {
   BackendSrvRequest,
@@ -132,16 +132,25 @@ export class DataSource extends DataSourceApi<EventQuery, ChaosMeshOptions> {
         query.end = to
 
         const queries = processMultipleVariables(query)
-        const frame = new MutableDataFrame<Event>({
-          refId: query.refId,
-          fields: this.fields,
-        })
+        const events: Event[] = []
 
         for (const q of queries) {
-          ;(await this.fetchEvents(q)).data.forEach((d) => frame.add(d))
+          ;(await this.fetchEvents(q)).data.forEach((event) =>
+            events.push(event)
+          )
         }
 
-        return frame
+        return createDataFrame({
+          refId: query.refId,
+          fields: this.fields.map((field) => ({
+            ...field,
+            values: events.map((event) =>
+              field.type === FieldType.time
+                ? Date.parse(event.created_at)
+                : event[field.name as keyof Event]
+            ),
+          })),
+        })
       })
     ).then((data) => ({ data }))
   }
@@ -200,8 +209,8 @@ export class DataSource extends DataSourceApi<EventQuery, ChaosMeshOptions> {
       const times = frame.fields
         .find((f) => f.name === 'created_at')!
         .values.reverse() // Default descending order. So reverse it.
-      const startTime = Date.parse(times[0])
-      const endTime = Date.parse(times[times.length - 1])
+      const startTime = times[0]
+      const endTime = times[times.length - 1]
       const names = frame.fields
         .find((f) => f.name === 'name')!
         .values.reverse()
