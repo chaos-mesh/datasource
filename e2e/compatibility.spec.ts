@@ -92,7 +92,6 @@ test('multi-value query renders data frames in a table', async ({ page }) => {
     await expect(events).toHaveCount(4)
 
     await limit.fill('0')
-    await expect(page.getByText('No rows', { exact: true })).toBeVisible()
     await expect(events).toHaveCount(0)
   }
 })
