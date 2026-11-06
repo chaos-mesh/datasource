@@ -125,7 +125,8 @@ export class DataSource extends DataSourceApi<EventQuery, ChaosMeshOptions> {
     const to = range.to.toISOString()
 
     return Promise.all(
-      options.targets.map(async (query) => {
+      options.targets.map(async (target) => {
+        const query = { ...target }
         processVariables(query, scopedVars)
 
         query.start = from
