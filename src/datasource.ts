@@ -206,24 +206,29 @@ export class DataSource extends DataSourceApi<EventQuery, ChaosMeshOptions> {
     anno: AnnotationQuery<EventQuery>,
     data: DataFrame[]
   ): AnnotationEvent[] {
-    return data.map((frame) => {
-      const times = frame.fields
-        .find((f) => f.name === 'created_at')!
-        .values.reverse() // Default descending order. So reverse it.
-      const startTime = times[0]
-      const endTime = times[times.length - 1]
-      const names = frame.fields
-        .find((f) => f.name === 'name')!
-        .values.reverse()
-      const messages = frame.fields
-        .find((f) => f.name === 'message')!
-        .values.reverse()
+    return data
+      .filter((frame) => frame.length > 0)
+      .map((frame) => {
+        const times = frame.fields
+          .find((f) => f.name === 'created_at')!
+          .values.slice()
+          .reverse()
+        const startTime = _.min(times)
+        const endTime = _.max(times)
+        const names = frame.fields
+          .find((f) => f.name === 'name')!
+          .values.slice()
+          .reverse()
+        const messages = frame.fields
+          .find((f) => f.name === 'message')!
+          .values.slice()
+          .reverse()
 
-      return {
-        title: `<div><b>${anno.name}</b></div>`,
-        time: startTime,
-        timeEnd: endTime,
-        text: `<ul style="max-height: 500px; margin-bottom: 1rem; overflow: auto;">
+        return {
+          title: `<div><b>${anno.name}</b></div>`,
+          time: startTime,
+          timeEnd: endTime,
+          text: `<ul style="max-height: 500px; margin-bottom: 1rem; overflow: auto;">
         ${messages
           .map(
             (d, i) =>
@@ -239,9 +244,9 @@ export class DataSource extends DataSourceApi<EventQuery, ChaosMeshOptions> {
           )
           .join('')}
         </ul>`,
-        tags: ['Chaos Mesh'],
-      }
-    })
+          tags: ['Chaos Mesh'],
+        }
+      })
   }
 
   async metricFindQuery(query: ChaosMeshVariableQuery) {
