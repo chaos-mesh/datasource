@@ -7,6 +7,7 @@ export default defineConfig<PluginOptions>(baseConfig, {
   testDir: './e2e',
   fullyParallel: false,
   use: {
+    baseURL: process.env.GRAFANA_URL || 'http://localhost:3002',
     timezoneId: 'UTC',
   },
   webServer: process.env.CHAOS_MESH_LIVE

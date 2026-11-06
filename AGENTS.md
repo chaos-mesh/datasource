@@ -1,4 +1,4 @@
-# Project guide
+# Agent guideline
 
 This repository contains the Chaos Mesh Grafana data source plugin. It is a TypeScript and React frontend plugin. HTTP requests reach the Chaos Dashboard API through Grafana's data source proxy. There is no plugin backend.
 
@@ -39,23 +39,25 @@ pnpm run lint
 pnpm run build
 ```
 
-Run focused tests for the changed behavior. `test:ci` currently allows Jest to pass without any tests, so its exit status alone is not evidence of test coverage. For documentation-only changes, check formatting and verify referenced paths and commands.
+Run `pnpm run test:ci` for query or annotation changes. Add only the regression tests needed for the changed behavior. For documentation-only changes, check formatting and verify referenced paths and commands.
 
 For Grafana API, dependency, or bundler changes, run the browser suite against the stable Grafana versions resolved from `src/plugin.json` by the official version resolver in `.github/workflows/ci.yml`:
 
 ```sh
 pnpm exec playwright install chromium
 docker compose -f e2e/docker-compose.yaml up -d --build
-curl --fail --retry 30 --retry-connrefused --retry-delay 1 http://127.0.0.1:3000/api/health
+curl --fail --retry 30 --retry-connrefused --retry-delay 1 http://127.0.0.1:3002/api/health
 pnpm run e2e
 docker compose -f e2e/docker-compose.yaml down --volumes
 ```
 
 Set `GRAFANA_VERSION` on the Compose command to select a host version. Set `GRAFANA_URL` for a different browser target. Playwright starts the fixture API on port 23033. The fixture enforces the test-only authorization header configured in `e2e/provisioning/`.
 
-For real Chaos Mesh validation, explicitly configure the Grafana data source to reach the real Dashboard API. `CHAOS_MESH_LIVE=1` only disables fixture startup; it does not switch the data source URL. Set `CHAOS_MESH_TEST_NAMESPACE` and `CHAOS_MESH_TEST_EXPERIMENT` to the dedicated test resources. Grafana containers must use an API address reachable from inside the container.
+For real Chaos Mesh validation, use an existing instance or follow the [official Helm installation guide](https://chaos-mesh.org/docs/production-installation-using-helm/). Generate events with an experiment scoped to a dedicated test workload before checking query results.
 
-Verify table results, variable queries, and annotation times in a real Grafana host. Distinguish fixture checks, real Chaos Mesh checks, container execution, CI, and signing in the result. A valid Compose configuration does not prove a container starts.
+Configure the Grafana data source URL and authentication for the real Dashboard API. `CHAOS_MESH_LIVE=1` disables fixture startup and fixture-specific assertions; it does not switch the data source URL. Set `CHAOS_MESH_TEST_NAMESPACE` and `CHAOS_MESH_TEST_EXPERIMENT` to the dedicated test resources. Grafana containers must use an API address reachable from inside the container.
+
+For query, variable, or annotation changes, verify the affected behavior in Grafana. Report which checks used the fixture API, real Chaos Mesh, containers, or CI, and whether signing ran.
 
 ## Reuse caches and clean up owned resources
 

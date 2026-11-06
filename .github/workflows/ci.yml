@@ -136,7 +136,7 @@ jobs:
       - name: Wait for Grafana
         uses: grafana/plugin-actions/wait-for-grafana@wait-for-grafana/v1.0.5
         with:
-          url: http://localhost:3000/login
+          url: http://localhost:3002/login
       - name: Install Playwright browsers
         run: pnpm exec playwright install chromium --with-deps
       - name: Run Playwright tests
