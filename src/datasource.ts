@@ -219,10 +219,7 @@ export class DataSource extends DataSourceApi<EventQuery, ChaosMeshOptions> {
     return data
       .filter((frame) => frame.length > 0)
       .map((frame) => {
-        const times = frame.fields
-          .find((f) => f.name === 'created_at')!
-          .values.slice()
-          .reverse()
+        const times = frame.fields.find((f) => f.name === 'created_at')!.values
         const startTime = _.min(times)
         const endTime = _.max(times)
         const names = frame.fields
