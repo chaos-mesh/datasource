@@ -14,12 +14,20 @@
  * limitations under the License.
  *
  */
-import { SelectableValue } from '@grafana/data'
+import {
+  CustomVariableSupport,
+  DataQueryRequest,
+  DataQueryResponse,
+  QueryEditorProps,
+  SelectableValue,
+} from '@grafana/data'
 import { InlineField, Input, Select } from '@grafana/ui'
 import _ from 'lodash'
 import React, { ChangeEvent, useEffect, useMemo, useState } from 'react'
+import { Observable, from, map } from 'rxjs'
 
-import { ChaosMeshVariableQuery } from '../types'
+import type { DataSource } from '../datasource'
+import { ChaosMeshOptions, ChaosMeshVariableQuery, EventQuery } from '../types'
 
 type Option = SelectableValue<ChaosMeshVariableQuery['metric']>
 
@@ -47,10 +55,12 @@ const metricOptions: Option[] = [
   },
 ]
 
-interface VariableQueryProps {
-  query: ChaosMeshVariableQuery
-  onChange: (query: ChaosMeshVariableQuery, definition: string) => void
-}
+type VariableQueryProps = QueryEditorProps<
+  DataSource,
+  EventQuery,
+  ChaosMeshOptions,
+  ChaosMeshVariableQuery
+>
 
 export const VariableQueryEditor = ({
   onChange,
@@ -60,7 +70,7 @@ export const VariableQueryEditor = ({
   const [state, setState] = useState(query)
 
   useEffect(() => {
-    debouncedOnChange(state, `metric: ${state.metric}`)
+    debouncedOnChange(state)
   }, [debouncedOnChange, state])
 
   const onMetricChange = (
@@ -102,4 +112,25 @@ export const VariableQueryEditor = ({
       )}
     </div>
   )
+}
+
+export class ChaosMeshVariableSupport extends CustomVariableSupport<
+  DataSource,
+  ChaosMeshVariableQuery,
+  EventQuery,
+  ChaosMeshOptions
+> {
+  editor = VariableQueryEditor
+
+  constructor(private datasource: DataSource) {
+    super()
+  }
+
+  query(
+    request: DataQueryRequest<ChaosMeshVariableQuery>
+  ): Observable<DataQueryResponse> {
+    return from(this.datasource.metricFindQuery(request.targets[0])).pipe(
+      map((data) => ({ data }))
+    )
+  }
 }

@@ -96,9 +96,9 @@ The data source plugin looks at the Chaos Mesh through the lens of events, and t
 
 - **Limit**
 
-  > Limit the number of events.
+  > Return at most this many events, newest first, across all selected variable values. Leave empty or use a negative integer for no limit. Use `0` to return no events.
 
-All of them will be passed as parameters to the `/api/events` API.
+The Object ID, Namespace, Name, and Kind filters are passed as parameters to the `/api/events` API.
 
 ## Variables
 

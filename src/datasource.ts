@@ -35,6 +35,7 @@ import _ from 'lodash'
 import { lastValueFrom, of } from 'rxjs'
 import { processMultipleVariables, processVariables } from 'utils'
 
+import { ChaosMeshVariableSupport } from './components/VariableQueryEditor'
 import {
   ChaosMeshOptions,
   ChaosMeshVariableQuery,
@@ -44,6 +45,8 @@ import {
 } from './types'
 
 export class DataSource extends DataSourceApi<EventQuery, ChaosMeshOptions> {
+  variables = new ChaosMeshVariableSupport(this)
+
   readonly baseUrl: string
   readonly fields = [
     {
@@ -125,19 +128,27 @@ export class DataSource extends DataSourceApi<EventQuery, ChaosMeshOptions> {
     const to = range.to.toISOString()
 
     return Promise.all(
-      options.targets.map(async (query) => {
+      options.targets.map(async (target) => {
+        const { limit, ...query } = target
         processVariables(query, scopedVars)
 
         query.start = from
         query.end = to
 
-        const queries = processMultipleVariables(query)
+        const queries = limit === 0 ? [] : processMultipleVariables(query)
         const events: Event[] = []
 
         for (const q of queries) {
           ;(await this.fetchEvents(q)).data.forEach((event) =>
             events.push(event)
           )
+        }
+
+        if (limit !== undefined && limit > 0) {
+          events.sort(
+            (a, b) => Date.parse(b.created_at) - Date.parse(a.created_at)
+          )
+          events.splice(limit)
         }
 
         return createDataFrame({
@@ -205,24 +216,26 @@ export class DataSource extends DataSourceApi<EventQuery, ChaosMeshOptions> {
     anno: AnnotationQuery<EventQuery>,
     data: DataFrame[]
   ): AnnotationEvent[] {
-    return data.map((frame) => {
-      const times = frame.fields
-        .find((f) => f.name === 'created_at')!
-        .values.reverse() // Default descending order. So reverse it.
-      const startTime = times[0]
-      const endTime = times[times.length - 1]
-      const names = frame.fields
-        .find((f) => f.name === 'name')!
-        .values.reverse()
-      const messages = frame.fields
-        .find((f) => f.name === 'message')!
-        .values.reverse()
+    return data
+      .filter((frame) => frame.length > 0)
+      .map((frame) => {
+        const times = frame.fields.find((f) => f.name === 'created_at')!.values
+        const startTime = _.min(times)
+        const endTime = _.max(times)
+        const names = frame.fields
+          .find((f) => f.name === 'name')!
+          .values.slice()
+          .reverse()
+        const messages = frame.fields
+          .find((f) => f.name === 'message')!
+          .values.slice()
+          .reverse()
 
-      return {
-        title: `<div><b>${anno.name}</b></div>`,
-        time: startTime,
-        timeEnd: endTime,
-        text: `<ul style="max-height: 500px; margin-bottom: 1rem; overflow: auto;">
+        return {
+          title: `<div><b>${anno.name}</b></div>`,
+          time: startTime,
+          timeEnd: endTime,
+          text: `<ul style="max-height: 500px; margin-bottom: 1rem; overflow: auto;">
         ${messages
           .map(
             (d, i) =>
@@ -238,9 +251,9 @@ export class DataSource extends DataSourceApi<EventQuery, ChaosMeshOptions> {
           )
           .join('')}
         </ul>`,
-        tags: ['Chaos Mesh'],
-      }
-    })
+          tags: ['Chaos Mesh'],
+        }
+      })
   }
 
   async metricFindQuery(query: ChaosMeshVariableQuery) {

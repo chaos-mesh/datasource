@@ -49,8 +49,15 @@ createServer((request, response) => {
           (!end || time <= Date.parse(end))
         )
       })
-      const limit = Number(url.searchParams.get('limit'))
-      return send(200, limit > 0 ? filtered.slice(0, limit) : filtered)
+      const rawLimit = url.searchParams.get('limit')
+      const limit = rawLimit ? Number(rawLimit) : -1
+      if (
+        rawLimit &&
+        (!/^[+-]?\d+$/.test(rawLimit) || !Number.isInteger(limit))
+      ) {
+        return send(500, { error: 'Invalid limit' })
+      }
+      return send(200, limit >= 0 ? filtered.slice(0, limit) : filtered)
     }
     default:
       return send(404, { error: 'Not found' })

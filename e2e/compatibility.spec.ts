@@ -73,6 +73,26 @@ test('multi-value query renders data frames in a table', async ({ page }) => {
     await expect(
       page.getByText('experiment-b', { exact: true }).first()
     ).toBeVisible()
+    await page.goto('/d/chaosmesh-compat/chaos-mesh-compatibility?editPanel=1')
+    const limit = page.locator('.gf-form input[type="number"]')
+    const events = page.getByText(/^experiment-[ab]$/)
+    await limit.fill('1')
+    await expect(events).toHaveCount(1)
+
+    const clearedRequest = page.waitForRequest((request) =>
+      request.url().includes('/api/events?')
+    )
+    await limit.fill('')
+    expect(
+      new URL((await clearedRequest).url()).searchParams.has('limit')
+    ).toBe(false)
+    await expect(events).toHaveCount(4)
+
+    await limit.fill('-1')
+    await expect(events).toHaveCount(4)
+
+    await limit.fill('0')
+    await expect(events).toHaveCount(0)
   }
 })
 
