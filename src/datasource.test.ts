@@ -2,6 +2,7 @@ import {
   AnnotationQuery,
   DataQueryRequest,
   DataSourceInstanceSettings,
+  Field,
   FieldType,
   createDataFrame,
   dateTime,
@@ -97,4 +98,33 @@ test('empty event results produce no annotations', async () => {
     )
   )
   expect(result).toEqual([])
+})
+
+test('a total limit returns the newest events across variable combinations', async () => {
+  replace.mockReturnValue('["first","second"]')
+  fetch.mockImplementation(({ params }) => {
+    const events =
+      params.namespace === 'first'
+        ? [
+            { name: 'oldest', created_at: new Date(1000).toISOString() },
+            { name: 'newest', created_at: new Date(4000).toISOString() },
+          ]
+        : [
+            { name: 'older', created_at: new Date(2000).toISOString() },
+            { name: 'newer', created_at: new Date(3000).toISOString() },
+          ]
+    return of({
+      data: params.limit === undefined ? events : events.slice(0, params.limit),
+    })
+  })
+  const response = await datasource.query({
+    targets: [{ refId: 'A', namespace: '$namespace', limit: 1 }],
+    range: { from: dateTime(0), to: dateTime(5000) },
+    scopedVars: {},
+  } as DataQueryRequest<EventQuery>)
+
+  expect(
+    response.data[0].fields.find((field: Field) => field.name === 'name')
+      ?.values
+  ).toEqual(['newest'])
 })
