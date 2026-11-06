@@ -20,6 +20,11 @@ jest.mock('@grafana/runtime', () => ({
   getTemplateSrv: () => ({ replace }),
 }))
 
+beforeEach(() => {
+  fetch.mockReset()
+  replace.mockReset()
+})
+
 const datasource = new DataSource({
   url: '/proxy',
 } as DataSourceInstanceSettings<ChaosMeshOptions>)
@@ -107,11 +112,11 @@ test('a total limit returns the newest events across variable combinations', asy
       params.namespace === 'first'
         ? [
             { name: 'oldest', created_at: new Date(1000).toISOString() },
-            { name: 'newest', created_at: new Date(4000).toISOString() },
+            { name: 'newer', created_at: new Date(3000).toISOString() },
           ]
         : [
             { name: 'older', created_at: new Date(2000).toISOString() },
-            { name: 'newer', created_at: new Date(3000).toISOString() },
+            { name: 'newest', created_at: new Date(4000).toISOString() },
           ]
     return of({
       data: params.limit === undefined ? events : events.slice(0, params.limit),
