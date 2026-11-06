@@ -1,0 +1,12 @@
+minimumReleaseAge: 0
+
+resolutionMode: highest
+
+publicHoistPattern:
+  - '*eslint*'
+  - '*prettier*'
+  - '@types/*'
+
+allowBuilds:
+  '@parcel/watcher': true
+  '@swc/core': true

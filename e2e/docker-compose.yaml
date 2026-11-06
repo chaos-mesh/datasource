@@ -1,0 +1,21 @@
+name: datasource-compat
+
+services:
+  grafana:
+    extends:
+      file: ../docker-compose.yaml
+      service: grafana
+    container_name: chaosmeshorg-datasource-e2e
+    build:
+      args:
+        development: 'false'
+        anonymous_auth_enabled: 'false'
+    ports: !override
+      - '127.0.0.1:3000:3000'
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    environment:
+      GF_PLUGINS_PREINSTALL_DISABLED: 'true'
+      CHAOS_MESH_URL: http://host.docker.internal:23033
+    volumes:
+      - ./provisioning:/etc/grafana/provisioning:ro
