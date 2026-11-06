@@ -126,19 +126,26 @@ export class DataSource extends DataSourceApi<EventQuery, ChaosMeshOptions> {
 
     return Promise.all(
       options.targets.map(async (target) => {
-        const query = { ...target }
+        const { limit, ...query } = target
         processVariables(query, scopedVars)
 
         query.start = from
         query.end = to
 
-        const queries = processMultipleVariables(query)
+        const queries = limit === 0 ? [] : processMultipleVariables(query)
         const events: Event[] = []
 
         for (const q of queries) {
           ;(await this.fetchEvents(q)).data.forEach((event) =>
             events.push(event)
           )
+        }
+
+        if (limit !== undefined && limit > 0) {
+          events.sort(
+            (a, b) => Date.parse(b.created_at) - Date.parse(a.created_at)
+          )
+          events.splice(limit)
         }
 
         return createDataFrame({

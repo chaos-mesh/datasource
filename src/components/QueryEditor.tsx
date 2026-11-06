@@ -26,10 +26,13 @@ type Props = QueryEditorProps<DataSource, EventQuery, ChaosMeshOptions>
 export function QueryEditor({ query, onChange, onRunQuery }: Props) {
   const onInputChange =
     (key: keyof EventQuery) => (event: ChangeEvent<HTMLInputElement>) => {
-      let value: any = event.target.value
+      let value: string | number | undefined = event.target.value
 
       if (key === 'limit') {
-        value = parseInt(value, 10)
+        value = value === '' ? undefined : Number(value)
+        if (value !== undefined && !Number.isInteger(value)) {
+          return
+        }
       }
 
       onChange({ ...query, [key]: value })
@@ -68,9 +71,13 @@ export function QueryEditor({ query, onChange, onRunQuery }: Props) {
       </InlineField>
       <InlineField
         label="Limit"
-        tooltip="Limit the number of events to be fetched from the server"
+        tooltip="Limit the number of newest events returned by the query"
       >
-        <Input type="number" value={limit} onChange={onInputChange('limit')} />
+        <Input
+          type="number"
+          value={limit ?? ''}
+          onChange={onInputChange('limit')}
+        />
       </InlineField>
     </div>
   )
