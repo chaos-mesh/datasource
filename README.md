@@ -27,13 +27,13 @@ grafana-cli plugins install chaosmeshorg-datasource
 Download the plugin zip package with the following command or go to <https://github.com/chaos-mesh/datasource/releases> to download:
 
 ```shell
-curl -LO https://github.com/chaos-mesh/datasource/releases/download/v3.0.0/chaosmeshorg-datasource-3.0.0.zip
+curl -LO https://github.com/chaos-mesh/datasource/releases/download/v4.0.0/chaosmeshorg-datasource-4.0.0.zip
 ```
 
 After downloading, unzip:
 
 ```shell
-unzip chaosmeshorg-datasource-3.0.0.zip -d YOUR_PLUGIN_DIR
+unzip chaosmeshorg-datasource-4.0.0.zip -d YOUR_PLUGIN_DIR
 ```
 
 Then update and save the `grafana.ini` file:
@@ -96,9 +96,9 @@ The data source plugin looks at the Chaos Mesh through the lens of events, and t
 
 - **Limit**
 
-  > Limit the number of events.
+  > Return at most this many events, newest first, across all selected variable values. Leave empty or use a negative integer for no limit. Use `0` to return no events.
 
-All of them will be passed as parameters to the `/api/events` API.
+The Object ID, Namespace, Name, and Kind filters are passed as parameters to the `/api/events` API.
 
 ## Variables
 
