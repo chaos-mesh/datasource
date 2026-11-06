@@ -57,7 +57,7 @@ export const kinds = [
 
 export const kindOptions = kinds.map((kind) => ({ label: kind, value: kind }))
 
-export interface ChaosMeshVariableQuery {
+export interface ChaosMeshVariableQuery extends DataQuery {
   metric: 'namespace' | 'kind' | 'experiment' | 'schedule' | 'workflow'
   queryString?: string
 }

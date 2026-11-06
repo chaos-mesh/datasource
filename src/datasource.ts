@@ -35,6 +35,7 @@ import _ from 'lodash'
 import { lastValueFrom, of } from 'rxjs'
 import { processMultipleVariables, processVariables } from 'utils'
 
+import { ChaosMeshVariableSupport } from './components/VariableQueryEditor'
 import {
   ChaosMeshOptions,
   ChaosMeshVariableQuery,
@@ -44,6 +45,8 @@ import {
 } from './types'
 
 export class DataSource extends DataSourceApi<EventQuery, ChaosMeshOptions> {
+  variables = new ChaosMeshVariableSupport(this)
+
   readonly baseUrl: string
   readonly fields = [
     {
