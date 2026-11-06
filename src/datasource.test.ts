@@ -45,9 +45,21 @@ test('reusing a query follows changed template variables without changing the sa
 test('reusing a frame produces the same annotation without reversing its rows', async () => {
   const frame = createDataFrame({
     fields: [
-      { name: 'created_at', type: FieldType.time, values: [2000, 1000] },
-      { name: 'name', type: FieldType.string, values: ['second', 'first'] },
-      { name: 'message', type: FieldType.string, values: ['later', 'earlier'] },
+      {
+        name: 'created_at',
+        type: FieldType.time,
+        values: [4000, 1000, 3000, 2000],
+      },
+      {
+        name: 'name',
+        type: FieldType.string,
+        values: ['fourth', 'first', 'third', 'second'],
+      },
+      {
+        name: 'message',
+        type: FieldType.string,
+        values: ['fourth event', 'first event', 'third event', 'second event'],
+      },
     ],
   })
   const annotation = { name: 'events' } as AnnotationQuery<EventQuery>
@@ -61,11 +73,28 @@ test('reusing a frame produces the same annotation without reversing its rows', 
 
   expect(second).toEqual(first)
   expect(first).toEqual([
-    expect.objectContaining({ time: 1000, timeEnd: 2000 }),
+    expect.objectContaining({ time: 1000, timeEnd: 4000 }),
   ])
   expect(frame.fields.map((field) => field.values)).toEqual([
-    [2000, 1000],
-    ['second', 'first'],
-    ['later', 'earlier'],
+    [4000, 1000, 3000, 2000],
+    ['fourth', 'first', 'third', 'second'],
+    ['fourth event', 'first event', 'third event', 'second event'],
   ])
+})
+
+test('empty event results produce no annotations', async () => {
+  const frame = createDataFrame({
+    fields: [
+      { name: 'created_at', type: FieldType.time, values: [] },
+      { name: 'name', type: FieldType.string, values: [] },
+      { name: 'message', type: FieldType.string, values: [] },
+    ],
+  })
+  const result = await lastValueFrom(
+    datasource.annotations.processEvents!(
+      { name: 'events' } as AnnotationQuery<EventQuery>,
+      [frame]
+    )
+  )
+  expect(result).toEqual([])
 })
