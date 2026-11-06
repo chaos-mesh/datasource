@@ -1,0 +1,71 @@
+import {
+  AnnotationQuery,
+  DataQueryRequest,
+  DataSourceInstanceSettings,
+  FieldType,
+  createDataFrame,
+  dateTime,
+} from '@grafana/data'
+import { lastValueFrom, of } from 'rxjs'
+
+import { DataSource } from './datasource'
+import { ChaosMeshOptions, EventQuery } from './types'
+
+const fetch = jest.fn()
+const replace = jest.fn()
+
+jest.mock('@grafana/runtime', () => ({
+  getBackendSrv: () => ({ fetch }),
+  getTemplateSrv: () => ({ replace }),
+}))
+
+const datasource = new DataSource({
+  url: '/proxy',
+} as DataSourceInstanceSettings<ChaosMeshOptions>)
+
+test('reusing a query follows changed template variables without changing the saved query', async () => {
+  fetch.mockReturnValue(of({ data: [] }))
+  replace.mockReturnValueOnce('first').mockReturnValueOnce('second')
+  const query = { refId: 'A', namespace: '$namespace' } as EventQuery
+  const request = {
+    targets: [query],
+    range: { from: dateTime(0), to: dateTime(1000) },
+    scopedVars: {},
+  } as DataQueryRequest<EventQuery>
+
+  await datasource.query(request)
+  await datasource.query(request)
+
+  expect(fetch.mock.calls.map(([options]) => options.params.namespace)).toEqual(
+    ['first', 'second']
+  )
+  expect(query).toEqual({ refId: 'A', namespace: '$namespace' })
+})
+
+test('reusing a frame produces the same annotation without reversing its rows', async () => {
+  const frame = createDataFrame({
+    fields: [
+      { name: 'created_at', type: FieldType.time, values: [2000, 1000] },
+      { name: 'name', type: FieldType.string, values: ['second', 'first'] },
+      { name: 'message', type: FieldType.string, values: ['later', 'earlier'] },
+    ],
+  })
+  const annotation = { name: 'events' } as AnnotationQuery<EventQuery>
+
+  const first = await lastValueFrom(
+    datasource.annotations.processEvents!(annotation, [frame])
+  )
+  const second = await lastValueFrom(
+    datasource.annotations.processEvents!(annotation, [frame])
+  )
+
+  expect(second).toEqual(first)
+  expect(first).toEqual([
+    expect.objectContaining({ time: 1000, timeEnd: 2000 }),
+  ])
+  expect(frame.fields.map((field) => field.values)).toEqual([
+    [2000, 1000],
+    ['second', 'first'],
+    ['later', 'earlier'],
+  ])
+})
