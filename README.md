@@ -2,10 +2,7 @@
 
 Grafana data source plugin for Chaos Mesh.
 
-> This plugin requires Chaos Mesh **>=2.1**, Grafana >= **10.0**.
->
-> Note: We only test the plugin on Grafana 10.0.3, it may support lower versions, but we are not sure.
-> Upgrading to Grafana v10 is because of the [Angular support deprecation](https://github.com/chaos-mesh/datasource/issues/55). If you encounter any problems, please open an issue to let us know.
+> Version 3.x of this plugin requires Chaos Mesh **2.1 or later** and Grafana **10.0.0 or later**.
 
 ## Features
 
@@ -27,26 +24,16 @@ grafana-cli plugins install chaosmeshorg-datasource
 
 ## Manual installation
 
-Download the plugin zip package with the following command or go to <https://github.com/chaos-mesh/datasource/releases> to download:
+Choose a version compatible with your Grafana installation and download its ZIP file from [GitHub Releases](https://github.com/chaos-mesh/datasource/releases). Extract the ZIP into your Grafana plugins directory and restart Grafana.
 
-```shell
-curl -LO https://github.com/chaos-mesh/datasource/releases/download/v3.0.0/chaosmeshorg-datasource-3.0.0.zip
-```
+### Local unsigned builds
 
-After downloading, unzip:
-
-```shell
-unzip chaosmeshorg-datasource-3.0.0.zip -d YOUR_PLUGIN_DIR
-```
-
-Then update and save the `grafana.ini` file:
+To load a local unsigned build for development, add the following to `grafana.ini` before restarting Grafana.
 
 ```ini
 [plugins]
-  allow_loading_unsigned_plugins = chaosmeshorg-datasource
+allow_loading_unsigned_plugins = chaosmeshorg-datasource
 ```
-
-Finally, restart Grafana to load the plugin.
 
 ## Setup
 
@@ -87,9 +74,11 @@ The data source plugin looks at the Chaos Mesh through the lens of events, and t
 
 - **Limit**
 
-  > Limit the number of events.
+  > Set the maximum number of events to return.
 
-All of them will be passed as parameters to the `/api/events` API.
+Starting with plugin 3.1.0, on Chaos Mesh Dashboard 2.8.9 and later stable releases, each Grafana query sends all selected filter values in one `/api/events` request. The Dashboard returns the newest matching events first, and **Limit** applies to all matches for that query. Leave **Limit** blank for no limit, or set it to `0` to return no events.
+
+On older Dashboard versions, the plugin sends one request per combination of selected filter values. **Limit** applies to each request.
 
 ## Variables
 

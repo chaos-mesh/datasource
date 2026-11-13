@@ -3,7 +3,7 @@ import {
   DataSourceInstanceSettings,
   dateTime,
 } from '@grafana/data'
-import { of } from 'rxjs'
+import { lastValueFrom, of } from 'rxjs'
 
 import { DataSource } from './datasource'
 import { ChaosMeshOptions, EventQuery } from './types'
@@ -68,3 +68,19 @@ test.each([
     expect(target.name).toBe('$experiment')
   }
 )
+
+test('queries variables when Grafana calls the query callback on its own', async () => {
+  fetch.mockReset()
+  fetch.mockReturnValue(of({ data: ['test-namespace'] }))
+  const datasource = new DataSource({
+    url: '/proxy',
+  } as DataSourceInstanceSettings<ChaosMeshOptions>)
+  const { query } = datasource.variables
+  const request = {
+    targets: [{ refId: 'variable-query', metric: 'namespace' }],
+  } as Parameters<typeof query>[0]
+
+  await expect(lastValueFrom(query(request))).resolves.toEqual({
+    data: [{ text: 'test-namespace' }],
+  })
+})

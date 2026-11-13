@@ -126,9 +126,9 @@ export class ChaosMeshVariableSupport extends CustomVariableSupport<
     super()
   }
 
-  query(
+  query = (
     request: DataQueryRequest<ChaosMeshVariableQuery>
-  ): Observable<DataQueryResponse> {
+  ): Observable<DataQueryResponse> => {
     return from(this.datasource.metricFindQuery(request.targets[0])).pipe(
       map((data) => ({ data }))
     )
