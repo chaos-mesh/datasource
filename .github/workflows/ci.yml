@@ -91,7 +91,7 @@ jobs:
     timeout-minutes: 3
     needs: build
     outputs:
-      matrix: ${{ steps.resolve-versions.outputs.matrix }}
+      matrix: ${{ steps.select-versions.outputs.matrix }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -101,6 +101,17 @@ jobs:
         uses: grafana/plugin-actions/e2e-version@e2e-version/v3.2.4
         with:
           skip-grafana-nightly-image: 'true'
+          limit: '0'
+      - name: Select the latest stable Grafana per major version
+        id: select-versions
+        env:
+          GRAFANA_VERSIONS: ${{ steps.resolve-versions.outputs.matrix }}
+        run: |
+          matrix=$(jq -c '
+            def version_parts: .version | split(".") | map(tonumber);
+            group_by(version_parts[0]) | map(max_by(version_parts))
+          ' <<< "$GRAFANA_VERSIONS")
+          printf 'matrix=%s\n' "$matrix" >> "$GITHUB_OUTPUT"
 
   playwright-tests:
     name: e2e test ${{ matrix.GRAFANA_IMAGE.name }}@${{ matrix.GRAFANA_IMAGE.version }}
