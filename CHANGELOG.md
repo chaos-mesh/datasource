@@ -2,8 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+### Changed
+
+- Use server-side multi-value event filters and apply one limit to the newest matching events on Chaos Mesh 2.8.9 and later stable releases.
+- Use Grafana's custom variable support to run saved variable queries and edit their settings.
 
 ## [3.0.0] - 2023-12-18
 
@@ -67,3 +74,5 @@ Ready for submission to grafana official plugins repository. 🥰
 - Displaying Chaos events in a table visualization
 - Support [Variables](https://grafana.com/docs/grafana/latest/variables/) to filter Chaos events
 - Support [Annotations](https://grafana.com/docs/grafana/latest/dashboards/annotations/) to annotate Chaos events on the panel
+
+[Unreleased]: https://github.com/chaos-mesh/datasource/compare/v3.0.0...release-3.x
