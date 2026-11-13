@@ -7,10 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.1.0]
+
 ### Changed
 
-- Use server-side multi-value event filters and apply one limit to the newest matching events on Chaos Mesh 2.8.9 and later stable releases.
-- Use Grafana's custom variable support to run saved variable queries and edit their settings.
+- On Chaos Mesh Dashboard 2.8.9 and later stable releases, fetch events for all selected filter values in one request. The limit applies to the newest matching events across all selections. [#69](https://github.com/chaos-mesh/datasource/pull/69)
+- Lower the minimum supported Grafana version to 10.0.0.
 
 ## [3.0.0] - 2023-12-18
 
@@ -75,4 +77,5 @@ Ready for submission to grafana official plugins repository. 🥰
 - Support [Variables](https://grafana.com/docs/grafana/latest/variables/) to filter Chaos events
 - Support [Annotations](https://grafana.com/docs/grafana/latest/dashboards/annotations/) to annotate Chaos events on the panel
 
-[Unreleased]: https://github.com/chaos-mesh/datasource/compare/v3.0.0...release-3.x
+[Unreleased]: https://github.com/chaos-mesh/datasource/compare/v3.1.0...release-3.x
+[3.1.0]: https://github.com/chaos-mesh/datasource/compare/v3.0.0...v3.1.0
