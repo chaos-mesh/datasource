@@ -15,7 +15,15 @@
  *
  */
 import { DataSourcePluginOptionsEditorProps } from '@grafana/data'
-import { DataSourceHttpSettings } from '@grafana/ui'
+import {
+  AdvancedHttpSettings,
+  Auth,
+  AuthMethod,
+  ConfigSection,
+  ConnectionSettings,
+  EditorStack,
+  convertLegacyAuthProps,
+} from '@grafana/plugin-ui'
 import React from 'react'
 
 import { ChaosMeshOptions } from '../types'
@@ -25,10 +33,27 @@ export function ConfigEditor({
   onOptionsChange,
 }: DataSourcePluginOptionsEditorProps<ChaosMeshOptions>) {
   return (
-    <DataSourceHttpSettings
-      defaultUrl="http://localhost:2333"
-      dataSourceConfig={options}
-      onChange={onOptionsChange}
-    />
+    <EditorStack>
+      <ConnectionSettings
+        config={options}
+        onChange={onOptionsChange}
+        urlPlaceholder="http://localhost:2333"
+      />
+      <Auth
+        {...convertLegacyAuthProps({
+          config: options,
+          onChange: onOptionsChange,
+        })}
+        visibleMethods={[
+          AuthMethod.NoAuth,
+          AuthMethod.BasicAuth,
+          AuthMethod.OAuthForward,
+          AuthMethod.CrossSiteCredentials,
+        ]}
+      />
+      <ConfigSection title="Advanced settings" isCollapsible>
+        <AdvancedHttpSettings config={options} onChange={onOptionsChange} />
+      </ConfigSection>
+    </EditorStack>
   )
 }

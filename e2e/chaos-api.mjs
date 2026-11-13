@@ -30,14 +30,16 @@ createServer((request, response) => {
 
   switch (url.pathname) {
     case '/api/common/config':
-      return send(200, { security_mode: true })
+      return send(200, { security_mode: true, version: 'v2.8.9' })
     case '/api/common/chaos-available-namespaces':
       return send(200, ['compat-e2e', 'canary-e2e'])
-    case '/api/events': {
+    case '/api/events':
+    case '/api/events/page': {
+      const paginated = url.pathname === '/api/events/page'
       const filtered = events.filter((event) => {
         for (const field of ['namespace', 'name', 'kind', 'object_id']) {
-          const value = url.searchParams.get(field)
-          if (value && event[field] !== value) {
+          const values = url.searchParams.getAll(field).filter(Boolean)
+          if (values.length > 0 && !values.includes(event[field])) {
             return false
           }
         }
@@ -57,6 +59,32 @@ createServer((request, response) => {
       ) {
         return send(500, { error: 'Invalid limit' })
       }
+
+      if (paginated) {
+        const page = Number(url.searchParams.get('page'))
+        const pageSize = rawLimit ? limit : 12
+        if (
+          !Number.isInteger(page) ||
+          page < 1 ||
+          pageSize < 1 ||
+          pageSize > 1000
+        ) {
+          return send(400, { error: 'Invalid page or limit' })
+        }
+        if (url.searchParams.get('sort') === 'created_at') {
+          filtered.sort(
+            (a, b) => Date.parse(b.created_at) - Date.parse(a.created_at)
+          )
+        }
+        const end = page * pageSize
+        return send(200, {
+          events: filtered.slice(end - pageSize, end),
+          page,
+          limit: pageSize,
+          next_page: end < filtered.length ? page + 1 : null,
+        })
+      }
+
       return send(200, limit >= 0 ? filtered.slice(0, limit) : filtered)
     }
     default:

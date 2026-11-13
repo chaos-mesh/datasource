@@ -31,7 +31,12 @@ export interface Event extends EventBase {
   message: string
 }
 
-export interface EventQuery extends DataQuery, EventBase {
+export interface EventPageResponse {
+  events: Event[]
+  next_page: number | null
+}
+
+export interface EventQuery extends DataQuery, Partial<EventBase> {
   start: string
   end: string
   limit?: number

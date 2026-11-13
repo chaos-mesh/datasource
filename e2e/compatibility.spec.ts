@@ -60,6 +60,11 @@ test('configuration loads and authenticates through the Grafana proxy', async ({
 })
 
 test('multi-value query renders data frames in a table', async ({ page }) => {
+  const pageRequest = process.env.CHAOS_MESH_LIVE
+    ? undefined
+    : page.waitForRequest((request) =>
+        new URL(request.url()).pathname.endsWith('/api/events/page')
+      )
   await page.goto('/d/chaosmesh-compat/chaos-mesh-compatibility')
   await expect(
     page.getByText(experiment, { exact: true }).first()
@@ -69,7 +74,10 @@ test('multi-value query renders data frames in a table', async ({ page }) => {
     page.getByText('PodChaos', { exact: true }).first()
   ).toBeVisible()
   await expect(page.getByText('Invalid date', { exact: false })).toHaveCount(0)
-  if (!process.env.CHAOS_MESH_LIVE) {
+  if (pageRequest) {
+    expect(
+      new URL((await pageRequest).url()).searchParams.getAll('namespace').sort()
+    ).toEqual([...selectedNamespaces].sort())
     await expect(
       page.getByText('experiment-b', { exact: true }).first()
     ).toBeVisible()
@@ -79,13 +87,7 @@ test('multi-value query renders data frames in a table', async ({ page }) => {
     await limit.fill('1')
     await expect(events).toHaveCount(1)
 
-    const clearedRequest = page.waitForRequest((request) =>
-      request.url().includes('/api/events?')
-    )
     await limit.fill('')
-    expect(
-      new URL((await clearedRequest).url()).searchParams.has('limit')
-    ).toBe(false)
     await expect(events).toHaveCount(4)
 
     await limit.fill('-1')

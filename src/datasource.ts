@@ -28,6 +28,7 @@ import {
 } from '@grafana/data'
 import {
   BackendSrvRequest,
+  FetchResponse,
   getBackendSrv,
   isFetchError,
 } from '@grafana/runtime'
@@ -40,12 +41,21 @@ import {
   ChaosMeshOptions,
   ChaosMeshVariableQuery,
   Event,
+  EventPageResponse,
   EventQuery,
   kinds,
 } from './types'
 
+type EventsApi = 'legacy' | 'paginated'
+
+interface DashboardConfigResponse {
+  version?: string
+}
+
 export class DataSource extends DataSourceApi<EventQuery, ChaosMeshOptions> {
   variables = new ChaosMeshVariableSupport(this)
+
+  private eventsApi?: Promise<EventsApi>
 
   readonly baseUrl: string
   readonly fields = [
@@ -113,11 +123,84 @@ export class DataSource extends DataSourceApi<EventQuery, ChaosMeshOptions> {
     return lastValueFrom(resp)
   }
 
-  private fetchEvents(query: Partial<EventQuery>) {
-    return this.fetch<Event[]>({
-      url: '/events',
-      params: query,
+  private async fetchEvents(query: EventQuery, limit?: number) {
+    const totalLimit =
+      limit !== undefined && limit > 0 ? Math.floor(limit) : undefined
+    if (
+      limit === 0 ||
+      totalLimit === 0 ||
+      Object.values(query).some(
+        (value) => Array.isArray(value) && value.length === 0
+      )
+    ) {
+      return []
+    }
+
+    this.eventsApi ??= this.fetch<DashboardConfigResponse>({
+      url: '/common/config',
     })
+      .then<EventsApi>(({ data }) => {
+        const version = /^v?(\d+)\.(\d+)\.(\d+)$/.exec(data.version ?? '')
+        if (!version) {
+          return 'legacy'
+        }
+        const [major, minor, patch] = version.slice(1).map(Number)
+        return major > 2 ||
+          (major === 2 && (minor > 8 || (minor === 8 && patch >= 9)))
+          ? 'paginated'
+          : 'legacy'
+      })
+      .catch((error) => {
+        this.eventsApi = undefined
+        throw error
+      })
+
+    const events: Event[] = []
+    if ((await this.eventsApi) === 'legacy') {
+      for (const q of processMultipleVariables(query)) {
+        const response = await this.fetch<Event[]>({
+          url: '/events',
+          params: q,
+        })
+        response.data.forEach((event) => events.push(event))
+      }
+      if (totalLimit !== undefined) {
+        events.sort(
+          (a, b) => Date.parse(b.created_at) - Date.parse(a.created_at)
+        )
+        events.splice(totalLimit)
+      }
+      return events
+    }
+
+    const params = {
+      ..._.pick(query, [
+        'object_id',
+        'namespace',
+        'name',
+        'kind',
+        'start',
+        'end',
+      ]),
+      limit: Math.min(totalLimit ?? 1000, 1000),
+      ...(totalLimit !== undefined
+        ? { sort: 'created_at', order: 'desc' }
+        : {}),
+    }
+    let page: number | null = 1
+    while (page !== null) {
+      const response: FetchResponse<EventPageResponse> = await this.fetch({
+        url: '/events/page',
+        params: { ...params, page },
+      })
+      events.push(...response.data.events)
+      if (totalLimit !== undefined && events.length >= totalLimit) {
+        events.splice(totalLimit)
+        return events
+      }
+      page = response.data.next_page
+    }
+    return events
   }
 
   async query(
@@ -135,21 +218,7 @@ export class DataSource extends DataSourceApi<EventQuery, ChaosMeshOptions> {
         query.start = from
         query.end = to
 
-        const queries = limit === 0 ? [] : processMultipleVariables(query)
-        const events: Event[] = []
-
-        for (const q of queries) {
-          ;(await this.fetchEvents(q)).data.forEach((event) =>
-            events.push(event)
-          )
-        }
-
-        if (limit !== undefined && limit > 0) {
-          events.sort(
-            (a, b) => Date.parse(b.created_at) - Date.parse(a.created_at)
-          )
-          events.splice(limit)
-        }
+        const events = await this.fetchEvents(query, limit)
 
         return createDataFrame({
           refId: query.refId,

@@ -19,9 +19,8 @@ import {
   DataQueryRequest,
   DataQueryResponse,
   QueryEditorProps,
-  SelectableValue,
 } from '@grafana/data'
-import { InlineField, Input, Select } from '@grafana/ui'
+import { Combobox, ComboboxOption, InlineField, Input } from '@grafana/ui'
 import _ from 'lodash'
 import React, { ChangeEvent, useEffect, useMemo, useState } from 'react'
 import { Observable, from, map } from 'rxjs'
@@ -29,9 +28,9 @@ import { Observable, from, map } from 'rxjs'
 import type { DataSource } from '../datasource'
 import { ChaosMeshOptions, ChaosMeshVariableQuery, EventQuery } from '../types'
 
-type Option = SelectableValue<ChaosMeshVariableQuery['metric']>
+type Metric = ChaosMeshVariableQuery['metric']
 
-const metricOptions: Option[] = [
+const metricOptions: Array<ComboboxOption<Metric>> = [
   {
     label: 'Namespace',
     value: 'namespace',
@@ -73,10 +72,8 @@ export const VariableQueryEditor = ({
     debouncedOnChange(state)
   }, [debouncedOnChange, state])
 
-  const onMetricChange = (
-    option: SelectableValue<ChaosMeshVariableQuery['metric']>
-  ) => {
-    setState({ ...state, metric: option.value! })
+  const onMetricChange = (option: ComboboxOption<Metric>) => {
+    setState({ ...state, metric: option.value })
   }
 
   const onQueryChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -89,7 +86,7 @@ export const VariableQueryEditor = ({
         label="Metric"
         tooltip="Select a metric to generate different sets of variable"
       >
-        <Select
+        <Combobox
           width={30}
           options={metricOptions}
           value={state.metric}
