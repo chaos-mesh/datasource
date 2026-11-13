@@ -1,0 +1,22 @@
+name: datasource-compat
+
+services:
+  grafana:
+    image: grafana/${GRAFANA_IMAGE:-grafana}:${GRAFANA_VERSION:-10.0.0}
+    ports:
+      - '127.0.0.1:3002:3000'
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    environment:
+      GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS: chaosmeshorg-datasource
+      GF_PLUGINS_PREINSTALL_DISABLED: 'true'
+      CHAOS_MESH_URL: http://host.docker.internal:23033
+    volumes:
+      - ../dist:/var/lib/grafana/plugins/chaosmeshorg-datasource:ro
+      - ./provisioning:/etc/grafana/provisioning:ro
+    healthcheck:
+      test:
+        ['CMD-SHELL', 'wget -q -O /dev/null http://127.0.0.1:3000/api/health']
+      interval: 2s
+      timeout: 5s
+      retries: 30

@@ -64,30 +64,29 @@ jobs:
           version: latest
           args: buildAll
 
-      - name: Check for E2E
-        id: check-for-e2e
-        run: |
-          if [ -d "cypress" ]
-          then
-            echo "has-e2e=true" >> $GITHUB_OUTPUT
-          fi
+      - name: Install Playwright browser
+        run: pnpm exec playwright install chromium --with-deps
 
-      - name: Start grafana docker
-        if: steps.check-for-e2e.outputs.has-e2e == 'true'
-        run: docker compose up -d
+      - name: Start Grafana
+        run: docker compose -f e2e/docker-compose.yaml up -d --build --wait
 
-      - name: Run e2e tests
-        if: steps.check-for-e2e.outputs.has-e2e == 'true'
+      - name: Run Playwright tests
         run: pnpm run e2e
 
-      - name: Stop grafana docker
-        if: steps.check-for-e2e.outputs.has-e2e == 'true'
-        run: docker compose down
+      - name: Docker logs
+        if: failure()
+        run: docker compose -f e2e/docker-compose.yaml logs grafana
+
+      - name: Stop Grafana
+        if: always()
+        run: docker compose -f e2e/docker-compose.yaml down --volumes
 
       - name: Archive E2E output
         uses: actions/upload-artifact@v7
-        if: steps.check-for-e2e.outputs.has-e2e == 'true' && steps.run-e2e-tests.outcome != 'success'
+        if: failure()
         with:
-          name: cypress-videos
-          path: cypress/videos
+          name: playwright-results
+          path: |
+            playwright-report
+            test-results
           retention-days: 5
