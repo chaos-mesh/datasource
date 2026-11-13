@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-import { QueryEditorProps, SelectableValue } from '@grafana/data'
-import { InlineField, Input, Select } from '@grafana/ui'
+import { QueryEditorProps } from '@grafana/data'
+import { Combobox, InlineField, Input } from '@grafana/ui'
 import React, { ChangeEvent } from 'react'
 
 import { DataSource } from '../datasource'
@@ -40,13 +40,6 @@ export function QueryEditor({ query, onChange, onRunQuery }: Props) {
       onRunQuery()
     }
 
-  const onSelectChange =
-    (key: keyof EventQuery) => (option: SelectableValue<string> | null) => {
-      onChange({ ...query, [key]: option ? option.value : undefined })
-      // executes the query
-      onRunQuery()
-    }
-
   const { object_id, namespace, name, kind, limit } = query
 
   return (
@@ -61,12 +54,15 @@ export function QueryEditor({ query, onChange, onRunQuery }: Props) {
         <Input value={name} onChange={onInputChange('name')} />
       </InlineField>
       <InlineField label="Kind" tooltip="Filter events by kind">
-        <Select
+        <Combobox
           value={kind}
           options={kindOptions}
-          onChange={onSelectChange('kind')}
+          onChange={(option) => {
+            onChange({ ...query, kind: option?.value })
+            onRunQuery()
+          }}
           isClearable
-          allowCustomValue
+          createCustomValue
         />
       </InlineField>
       <InlineField

@@ -78,6 +78,8 @@
   "dependencies": {
     "@emotion/css": "^11.13.5",
     "@grafana/data": "^12.4.14",
+    "@grafana/e2e-selectors": "^12.4.14",
+    "@grafana/plugin-ui": "^0.16.1",
     "@grafana/runtime": "^12.4.14",
     "@grafana/schema": "^12.4.14",
     "@grafana/ui": "^12.4.14",
