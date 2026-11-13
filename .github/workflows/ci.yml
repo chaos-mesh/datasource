@@ -5,23 +5,25 @@ on:
     branches:
       - master
       - main
+      - release-3.x
   pull_request:
     branches:
       - master
       - main
+      - release-3.x
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v7
       # pnpm action uses the packageManager field in package.json to
       # understand which version to install.
-      - uses: pnpm/action-setup@v2
+      - uses: pnpm/action-setup@v6
       - name: Setup Node.js environment
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v7
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'pnpm'
 
       - name: Install dependencies
@@ -46,20 +48,20 @@ jobs:
 
       - name: Setup Go environment
         if: steps.check-for-backend.outputs.has-backend == 'true'
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v7
         with:
           go-version: '1.21'
 
       - name: Test backend
         if: steps.check-for-backend.outputs.has-backend == 'true'
-        uses: magefile/mage-action@v2
+        uses: magefile/mage-action@v4
         with:
           version: latest
           args: coverage
 
       - name: Build backend
         if: steps.check-for-backend.outputs.has-backend == 'true'
-        uses: magefile/mage-action@v2
+        uses: magefile/mage-action@v4
         with:
           version: latest
           args: buildAll
@@ -74,7 +76,7 @@ jobs:
 
       - name: Start grafana docker
         if: steps.check-for-e2e.outputs.has-e2e == 'true'
-        run: docker-compose up -d
+        run: docker compose up -d
 
       - name: Run e2e tests
         if: steps.check-for-e2e.outputs.has-e2e == 'true'
@@ -82,10 +84,10 @@ jobs:
 
       - name: Stop grafana docker
         if: steps.check-for-e2e.outputs.has-e2e == 'true'
-        run: docker-compose down
+        run: docker compose down
 
       - name: Archive E2E output
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v7
         if: steps.check-for-e2e.outputs.has-e2e == 'true' && steps.run-e2e-tests.outcome != 'success'
         with:
           name: cypress-videos

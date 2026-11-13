@@ -33,8 +33,8 @@ import {
 } from '@grafana/runtime'
 import _ from 'lodash'
 import { lastValueFrom, of } from 'rxjs'
-import { processMultipleVariables, processVariables } from 'utils'
 
+import { ChaosMeshVariableSupport } from './components/VariableQueryEditor'
 import {
   ChaosMeshOptions,
   ChaosMeshVariableQuery,
@@ -42,8 +42,17 @@ import {
   EventQuery,
   kinds,
 } from './types'
+import { processMultipleVariables, processVariables } from './utils'
+
+interface DashboardConfig {
+  version?: string
+}
 
 export class DataSource extends DataSourceApi<EventQuery, ChaosMeshOptions> {
+  variables = new ChaosMeshVariableSupport(this)
+
+  private supportsEnhancedEvents?: Promise<boolean>
+
   readonly baseUrl: string
   readonly fields = [
     {
@@ -125,18 +134,67 @@ export class DataSource extends DataSourceApi<EventQuery, ChaosMeshOptions> {
     const to = range.to.toISOString()
 
     return Promise.all(
-      options.targets.map(async (query) => {
+      options.targets.map(async (target) => {
+        const query = { ...target }
         processVariables(query, scopedVars)
 
         query.start = from
         query.end = to
 
-        const queries = processMultipleVariables(query)
         const frame = new MutableDataFrame<Event>({
           refId: query.refId,
           fields: this.fields,
         })
 
+        if (
+          Object.values(query).some(
+            (value) => Array.isArray(value) && value.length === 0
+          )
+        ) {
+          return frame
+        }
+
+        this.supportsEnhancedEvents ??= this.fetch<DashboardConfig>({
+          url: '/common/config',
+        })
+          .then(({ data }) => {
+            const version = /^v?(\d+)\.(\d+)\.(\d+)$/.exec(data.version ?? '')
+            if (!version) {
+              return false
+            }
+            const [major, minor, patch] = version.slice(1).map(Number)
+            return (
+              major > 2 ||
+              (major === 2 && (minor > 8 || (minor === 8 && patch >= 9)))
+            )
+          })
+          .catch((error) => {
+            this.supportsEnhancedEvents = undefined
+            throw error
+          })
+
+        if (await this.supportsEnhancedEvents) {
+          const { limit } = query
+          const response = await this.fetchEvents({
+            ..._.pick(query, [
+              'object_id',
+              'namespace',
+              'name',
+              'kind',
+              'start',
+              'end',
+            ]),
+            sort: 'created_at',
+            order: 'desc',
+            ...(limit !== undefined && Number.isSafeInteger(limit) && limit >= 0
+              ? { limit }
+              : {}),
+          })
+          response.data.forEach((event) => frame.add(event))
+          return frame
+        }
+
+        const queries = processMultipleVariables(query)
         for (const q of queries) {
           ;(await this.fetchEvents(q)).data.forEach((d) => frame.add(d))
         }

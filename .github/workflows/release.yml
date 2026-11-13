@@ -3,19 +3,22 @@ name: Release
 on:
   push:
     tags:
-      - 'v*' # Run workflow on version tags, e.g. v1.0.0.
+      - 'v*'
+
+permissions:
+  contents: read
 
 jobs:
   release:
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: pnpm/action-setup@v2
+      - uses: actions/checkout@v7
         with:
-          version: 8
-      - uses: grafana/plugin-actions/build-plugin@release
-        # uncomment to enable plugin sign in
+          persist-credentials: false
+      - uses: pnpm/action-setup@v6
+      - uses: grafana/plugin-actions/build-plugin@build-plugin/v2
         with:
-          # see https://grafana.com/developers/plugin-tools/publish-a-plugin/sign-a-plugin#generate-an-access-policy-token to generate it
-          # save the value in your repository secrets
+          node-version: '22'
           policy_token: ${{ secrets.POLICY_TOKEN }}
