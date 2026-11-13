@@ -21,7 +21,7 @@ import {
   QueryEditorProps,
   SelectableValue,
 } from '@grafana/data'
-import { InlineField, Input, Select } from '@grafana/ui'
+import { InlineField, InlineSegmentGroup, Input, Select } from '@grafana/ui'
 import _ from 'lodash'
 import React, { ChangeEvent, useEffect, useMemo, useState } from 'react'
 import { Observable, from, map } from 'rxjs'
@@ -84,12 +84,13 @@ export const VariableQueryEditor = ({
   }
 
   return (
-    <div className="gf-form">
+    <InlineSegmentGroup>
       <InlineField
         label="Metric"
         tooltip="Select a metric to generate different sets of variable"
       >
         <Select
+          aria-label="Metric"
           width={30}
           options={metricOptions}
           value={state.metric}
@@ -110,7 +111,7 @@ export const VariableQueryEditor = ({
           />
         </InlineField>
       )}
-    </div>
+    </InlineSegmentGroup>
   )
 }
 

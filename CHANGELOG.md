@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.1.1] - 2026-11-13
+
+### Fixed
+
+- Replace deprecated Grafana layout classes in the query and variable editors.
+
 ## [3.1.0] - 2026-11-13
 
 ### Changed
@@ -77,5 +83,6 @@ Ready for submission to grafana official plugins repository. 🥰
 - Support [Variables](https://grafana.com/docs/grafana/latest/variables/) to filter Chaos events
 - Support [Annotations](https://grafana.com/docs/grafana/latest/dashboards/annotations/) to annotate Chaos events on the panel
 
-[Unreleased]: https://github.com/chaos-mesh/datasource/compare/v3.1.0...release-3.x
+[Unreleased]: https://github.com/chaos-mesh/datasource/compare/v3.1.1...release-3.x
+[3.1.1]: https://github.com/chaos-mesh/datasource/compare/v3.1.0...v3.1.1
 [3.1.0]: https://github.com/chaos-mesh/datasource/compare/v3.0.0...v3.1.0

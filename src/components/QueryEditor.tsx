@@ -15,7 +15,7 @@
  *
  */
 import { QueryEditorProps, SelectableValue } from '@grafana/data'
-import { InlineField, Input, Select } from '@grafana/ui'
+import { InlineField, InlineSegmentGroup, Input, Select } from '@grafana/ui'
 import React, { ChangeEvent } from 'react'
 
 import { DataSource } from '../datasource'
@@ -47,7 +47,7 @@ export function QueryEditor({ query, onChange, onRunQuery }: Props) {
   const { object_id, namespace, name, kind, limit } = query
 
   return (
-    <div className="gf-form">
+    <InlineSegmentGroup>
       <InlineField label="Object ID" tooltip="Filter events by object ID">
         <Input value={object_id} onChange={onInputChange('object_id')} />
       </InlineField>
@@ -70,8 +70,13 @@ export function QueryEditor({ query, onChange, onRunQuery }: Props) {
         label="Limit"
         tooltip="Limit the number of events to be fetched from the server"
       >
-        <Input type="number" value={limit} onChange={onInputChange('limit')} />
+        <Input
+          aria-label="Limit"
+          type="number"
+          value={limit}
+          onChange={onInputChange('limit')}
+        />
       </InlineField>
-    </div>
+    </InlineSegmentGroup>
   )
 }

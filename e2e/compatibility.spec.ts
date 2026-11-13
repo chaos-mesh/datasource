@@ -128,7 +128,7 @@ test('multi-value query renders data frames in a table', async ({ page }) => {
       page.getByText('experiment-b', { exact: true }).first()
     ).toBeVisible()
     await page.goto('/d/chaosmesh-compat/chaos-mesh-compatibility?editPanel=1')
-    const limit = page.locator('.gf-form input[type="number"]')
+    const limit = page.getByRole('spinbutton', { name: 'Limit' })
     const events = page.getByRole('table').getByText(/^experiment-[ab]$/)
     await limit.fill('1')
     await expect(events).toHaveCount(1)
@@ -149,7 +149,7 @@ test('namespace variable editor executes its query', async ({
   page,
 }) => {
   await variableEditPage.datasource.set('Chaos Mesh compatibility')
-  const metric = page.locator('.gf-form').getByRole('combobox')
+  const metric = page.getByRole('combobox', { name: 'Metric' })
   await metric.fill('Namespace')
   await metric.press('Enter')
   await variableEditPage.runQuery()
