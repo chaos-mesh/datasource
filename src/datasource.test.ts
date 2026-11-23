@@ -2,6 +2,7 @@ import {
   DataQueryRequest,
   DataSourceInstanceSettings,
   dateTime,
+  toDataFrame,
 } from '@grafana/data'
 import { lastValueFrom, of } from 'rxjs'
 
@@ -83,4 +84,35 @@ test('queries variables when Grafana calls the query callback on its own', async
   await expect(lastValueFrom(query(request))).resolves.toEqual({
     data: [{ text: 'test-namespace' }],
   })
+})
+
+test('renders annotation names, event names, and messages as plain text', async () => {
+  const datasource = new DataSource({
+    url: '/proxy',
+  } as DataSourceInstanceSettings<ChaosMeshOptions>)
+  const annotationName = '<em>Chaos events</em>'
+  const eventName = '<em>experiment</em>'
+  const message = '<em>Ready</em> &amp; waiting'
+  const frame = toDataFrame({
+    fields: [
+      { name: 'created_at', values: ['2026-11-12T00:00:00Z'] },
+      { name: 'name', values: [eventName] },
+      { name: 'message', values: [message] },
+    ],
+  })
+
+  const events = await lastValueFrom(
+    datasource.annotations.processEvents!(
+      { name: annotationName, enable: true, iconColor: 'blue' },
+      [frame]
+    )
+  )
+  const annotation = document.createElement('div')
+  annotation.innerHTML = `${events?.[0].title}${events?.[0].text}`
+
+  expect(annotation.querySelector('b')?.textContent).toBe(annotationName)
+  expect(annotation.querySelector('li .label')?.textContent).toBe(eventName)
+  expect(annotation.querySelector('li > div')?.textContent).toBe(
+    `1: ${message}`
+  )
 })

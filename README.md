@@ -10,31 +10,6 @@ Grafana data source plugin for Chaos Mesh.
 - Support [Variables](https://grafana.com/docs/grafana/latest/variables/) to filter Chaos events
 - Support [Annotations](https://grafana.com/docs/grafana/latest/dashboards/annotations/) to annotate Chaos events on the panel
 
-## Install
-
-### With dashboard
-
-[https://grafana.com/docs/grafana/latest/administration/plugin-management/#install-a-plugin](https://grafana.com/docs/grafana/latest/administration/plugin-management/#install-a-plugin)
-
-### With cli
-
-```sh
-grafana-cli plugins install chaosmeshorg-datasource
-```
-
-## Manual installation
-
-Choose a version compatible with your Grafana installation and download its ZIP file from [GitHub Releases](https://github.com/chaos-mesh/datasource/releases). Extract the ZIP into your Grafana plugins directory and restart Grafana.
-
-### Local unsigned builds
-
-To load a local unsigned build for development, add the following to `grafana.ini` before restarting Grafana.
-
-```ini
-[plugins]
-allow_loading_unsigned_plugins = chaosmeshorg-datasource
-```
-
 ## Setup
 
 Once installed, go to **Administration -> Data sources** and add Chaos Mesh, then go to the configuration page:

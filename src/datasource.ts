@@ -268,7 +268,7 @@ export class DataSource extends DataSourceApi<EventQuery, ChaosMeshOptions> {
         .values.reverse()
 
       return {
-        title: `<div><b>${anno.name}</b></div>`,
+        title: `<div><b>${_.escape(anno.name)}</b></div>`,
         time: startTime,
         timeEnd: endTime,
         text: `<ul style="max-height: 500px; margin-bottom: 1rem; overflow: auto;">
@@ -276,9 +276,9 @@ export class DataSource extends DataSourceApi<EventQuery, ChaosMeshOptions> {
           .map(
             (d, i) =>
               `<li style="margin-bottom: .5rem;">
-                <div>${i + 1}: ${d}</div>
+                <div>${i + 1}: ${_.escape(d)}</div>
                 <div>
-                  <span class="label">${names[i]}</span>
+                  <span class="label">${_.escape(names[i])}</span>
                   <span class="label">${new Date(
                     times[i]
                   ).toLocaleTimeString()}</span>

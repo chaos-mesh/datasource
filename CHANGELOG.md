@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.1.2] - 2026-11-23
+
+### Fixed
+
+- Escape annotation names, event names, and event messages in annotation tooltips.
+- Remove installation instructions from the Grafana catalog README.
+- Fill in the copyright notice in the license.
+
 ## [3.1.1] - 2026-11-13
 
 ### Fixed
@@ -83,6 +91,7 @@ Ready for submission to grafana official plugins repository. 🥰
 - Support [Variables](https://grafana.com/docs/grafana/latest/variables/) to filter Chaos events
 - Support [Annotations](https://grafana.com/docs/grafana/latest/dashboards/annotations/) to annotate Chaos events on the panel
 
-[Unreleased]: https://github.com/chaos-mesh/datasource/compare/v3.1.1...release-3.x
+[Unreleased]: https://github.com/chaos-mesh/datasource/compare/v3.1.2...release-3.x
+[3.1.2]: https://github.com/chaos-mesh/datasource/compare/v3.1.1...v3.1.2
 [3.1.1]: https://github.com/chaos-mesh/datasource/compare/v3.1.0...v3.1.1
 [3.1.0]: https://github.com/chaos-mesh/datasource/compare/v3.0.0...v3.1.0
